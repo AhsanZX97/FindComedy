@@ -82,6 +82,12 @@ export default function BrowsePage({ preset }: BrowsePageProps) {
             >
               Tonight
             </Link>
+            <Link
+              to="/map"
+              className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              Map
+            </Link>
           </nav>
         </div>
       </header>
