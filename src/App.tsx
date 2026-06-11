@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import BrowsePage from './features/browse/BrowsePage'
 import NightDetailPage from './features/night/NightDetailPage'
 import MapPage from './features/map/MapPage'
+import AuthPage from './features/auth/AuthPage'
+import MyNightsPage from './features/my/MyNightsPage'
 
 export default function App() {
   return (
@@ -10,6 +12,8 @@ export default function App() {
       <Route path="/tonight" element={<BrowsePage key="tonight" preset="tonight" />} />
       <Route path="/night/:id" element={<NightDetailPage />} />
       <Route path="/map" element={<MapPage />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/my" element={<MyNightsPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

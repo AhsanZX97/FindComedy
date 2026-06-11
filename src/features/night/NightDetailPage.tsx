@@ -1,8 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { useParams, Link, Navigate } from 'react-router-dom'
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { getFreshnessLabel, getFreshnessStatus } from '../../utils/freshness'
 import type { ComedyNight, NightType, Level, SocialLinks } from '../../types/comedyNight'
+import { useAuth } from '../auth/AuthContext'
+import { useSocial } from '../social/SocialContext'
+import FavouriteButton from '../../components/FavouriteButton'
+import GoingButton from '../../components/GoingButton'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
@@ -143,6 +147,9 @@ function BookingTabs({ night }: { night: ComedyNight }) {
 }
 
 function NightDetail({ night }: { night: ComedyNight }) {
+  const { user } = useAuth()
+  const { isFavourite, isGoing, goingCounts, toggleFavourite, toggleGoing } = useSocial()
+  const navigate = useNavigate()
   const scheduleFreq = FREQ_LABELS[night.schedule.frequency]
   const scheduleDay = WEEKDAY_LABELS[night.schedule.weekday]
   const scheduleTime = formatTime(night.schedule.startTime)
@@ -191,6 +198,24 @@ function NightDetail({ night }: { night: ComedyNight }) {
           <p className="text-zinc-300 leading-relaxed">{night.description}</p>
 
           <FreshnessBadge lastVerified={night.lastVerified} />
+
+          {/* Action row */}
+          <div className="flex items-center gap-3 flex-wrap pt-1">
+            <GoingButton
+              goingCount={goingCounts[night.id] ?? 0}
+              isGoing={isGoing(night.id)}
+              onToggle={() => void toggleGoing(night.id)}
+              isLoggedIn={Boolean(user)}
+              onAuthRequired={() => navigate('/auth')}
+            />
+            <FavouriteButton
+              isFavourited={isFavourite(night.id)}
+              onToggle={() => void toggleFavourite(night.id)}
+              isLoggedIn={Boolean(user)}
+              onAuthRequired={() => navigate('/auth')}
+              size="large"
+            />
+          </div>
         </div>
 
         <hr className="border-zinc-800" />

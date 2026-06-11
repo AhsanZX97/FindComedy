@@ -6,6 +6,7 @@ import NightCard from '../../components/NightCard'
 import FilterBar from './FilterBar'
 import type { NightFilters, Weekday } from '../../types/comedyNight'
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
+import { useAuth } from '../auth/AuthContext'
 
 function todayWeekday(): Weekday {
   return new Date().getDay() as Weekday
@@ -38,6 +39,7 @@ interface BrowsePageProps {
 }
 
 export default function BrowsePage({ preset }: BrowsePageProps) {
+  const { user } = useAuth()
   const [filters, setFilters] = useState<NightFilters>(() =>
     preset === 'tonight' ? { ...DEFAULT_FILTERS, weekday: todayWeekday() } : DEFAULT_FILTERS,
   )
@@ -65,7 +67,7 @@ export default function BrowsePage({ preset }: BrowsePageProps) {
           <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
             FindComedy
           </Link>
-          <nav className="flex gap-3 ml-auto text-sm">
+          <nav className="flex gap-3 ml-auto text-sm items-center">
             <Link
               to="/"
               className={`px-3 py-1 rounded-lg transition-colors ${
@@ -88,6 +90,16 @@ export default function BrowsePage({ preset }: BrowsePageProps) {
             >
               Map
             </Link>
+            <span className="text-zinc-700 select-none">·</span>
+            {user ? (
+              <Link to="/my" className="px-3 py-1 rounded-lg text-amber-400 hover:text-amber-300 transition-colors">
+                My nights
+              </Link>
+            ) : (
+              <Link to="/auth" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
+                Sign in
+              </Link>
+            )}
           </nav>
         </div>
       </header>
