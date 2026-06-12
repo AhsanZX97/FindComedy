@@ -31,7 +31,6 @@ const EMPTY: NightSubmission = {
   startTime: '20:00',
   venueName: '',
   venueAddress: '',
-  venueArea: '',
   entry: 'Free',
 }
 
@@ -122,8 +121,6 @@ export default function SubmitPage() {
           <VenueSection
             venueName={form.venueName} onVenueNameChange={(v) => set('venueName', v)}
             venueAddress={form.venueAddress} onVenueAddressChange={(v) => set('venueAddress', v)}
-            venueArea={form.venueArea} onVenueAreaChange={(v) => set('venueArea', v)}
-            venueNearestStation={form.venueNearestStation} onVenueNearestStationChange={(v) => set('venueNearestStation', v)}
           />
 
           <PricingSection

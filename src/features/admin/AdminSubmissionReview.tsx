@@ -103,8 +103,7 @@ function AdminSubmissionReviewInner() {
           id: slugify(form.venueName) + '-venue',
           name: form.venueName,
           address: form.venueAddress,
-          area: form.venueArea,
-          nearestStation: form.venueNearestStation,
+          area: '',
           location: coords ?? { lat: 0, lng: 0 },
         },
         pricing: {
@@ -214,8 +213,6 @@ function AdminSubmissionReviewInner() {
         <VenueSection
           venueName={form.venueName} onVenueNameChange={(v) => setField('venueName', v)}
           venueAddress={form.venueAddress} onVenueAddressChange={(v) => setField('venueAddress', v)}
-          venueArea={form.venueArea} onVenueAreaChange={(v) => setField('venueArea', v)}
-          venueNearestStation={form.venueNearestStation} onVenueNearestStationChange={(v) => setField('venueNearestStation', v)}
         >
           <div className="flex items-center gap-2">
             {geoStatus === 'loading' && <span className="text-xs text-gray-400 dark:text-zinc-500">Checking location…</span>}

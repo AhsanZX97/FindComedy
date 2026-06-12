@@ -90,8 +90,7 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
       id: slugify(form.venueName) + '-venue',
       name: form.venueName,
       address: form.venueAddress,
-      area: form.venueArea,
-      nearestStation: form.venueNearestStation,
+      area: '',
       location: { lat: 0, lng: 0 },
     },
     pricing: {

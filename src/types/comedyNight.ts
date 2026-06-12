@@ -134,8 +134,6 @@ export interface NightSubmission {
   scheduleNote?: string
   venueName: string
   venueAddress: string
-  venueArea: string
-  venueNearestStation?: string
   entry: string
   performerPay?: string
   audienceBooking?: string

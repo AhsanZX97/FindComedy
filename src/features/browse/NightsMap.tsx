@@ -30,6 +30,15 @@ function InvalidateSize({ trigger }: { trigger: unknown }) {
   return null
 }
 
+function PanToSelected({ night }: { night: ComedyNight | null }) {
+  const map = useMap()
+  useEffect(() => {
+    if (!night) return
+    map.panTo([night.venue.location.lat, night.venue.location.lng])
+  }, [map, night])
+  return null
+}
+
 interface PopupTrackerProps {
   night: ComedyNight | null
   onPositionChange: (pos: { x: number; y: number } | null) => void
@@ -236,6 +245,7 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
           onPositionChange={setPopupPos}
           onMapClick={onDeselect}
         />
+        <PanToSelected night={selectedNight} />
         <InvalidateSize trigger={invalidateTrigger} />
       </MapContainer>
 

@@ -14,7 +14,7 @@ export default function SubmissionCard({ sub, className = '' }: SubmissionCardPr
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">{d.name}</h3>
           <p className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">
-            {d.venueArea} · {d.venueName} · Submitted {new Date(sub.createdAt).toLocaleDateString('en-GB')}
+            {d.venueName} · Submitted {new Date(sub.createdAt).toLocaleDateString('en-GB')}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
