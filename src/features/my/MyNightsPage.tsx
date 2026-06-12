@@ -1,41 +1,10 @@
-import { Navigate, Link } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import type { ComedyNight } from '../../types/comedyNight'
 import { useAuth } from '../auth/AuthContext'
 import { useSocial } from '../social/SocialContext'
 import { useNights } from '../../hooks/useNights'
 import NightCard from '../../components/NightCard'
-
-function NavHeader({ displayName }: { displayName: string }) {
-  const { signOut } = useAuth()
-  return (
-    <header className="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-4">
-        <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
-          FindComedy
-        </Link>
-        <nav className="flex gap-3 ml-auto text-sm items-center">
-          <Link to="/" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-            Browse
-          </Link>
-          <Link to="/tonight" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-            Tonight
-          </Link>
-          <Link to="/map" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-            Map
-          </Link>
-          <span className="text-zinc-700">·</span>
-          <span className="text-xs text-zinc-400 truncate max-w-[120px]">{displayName}</span>
-          <button
-            onClick={() => void signOut()}
-            className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            Sign out
-          </button>
-        </nav>
-      </div>
-    </header>
-  )
-}
+import Header from '../../components/Header'
 
 function NightGrid({ title, nights, emptyMessage }: {
   title: string
@@ -61,7 +30,7 @@ function NightGrid({ title, nights, emptyMessage }: {
 }
 
 export default function MyNightsPage() {
-  const { user, isLoading: authLoading, profile } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const { favouriteIds, userGoingIds } = useSocial()
   const nightsState = useNights()
 
@@ -75,15 +44,13 @@ export default function MyNightsPage() {
 
   if (!user) return <Navigate to="/auth" replace />
 
-  const displayName = profile?.displayName ?? user.email ?? 'You'
-
   const allNights = nightsState.status === 'ready' ? nightsState.data : []
   const favouriteNights = allNights.filter((n) => favouriteIds.has(n.id))
   const goingNights = allNights.filter((n) => userGoingIds.has(n.id))
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <NavHeader displayName={displayName} />
+      <Header />
       <main className="max-w-5xl mx-auto px-4 py-8 flex flex-col gap-10">
         <div>
           <h1 className="text-2xl font-display font-bold">My nights</h1>

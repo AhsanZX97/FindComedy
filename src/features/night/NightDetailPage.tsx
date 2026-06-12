@@ -9,10 +9,11 @@ import FavouriteButton from '../../components/FavouriteButton'
 import GoingButton from '../../components/GoingButton'
 import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
+import Header from '../../components/Header'
+import { formatTime, WEEKDAY_LONG_LABELS } from '../../utils/formatSchedule'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
-const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const FREQ_LABELS: Record<string, string> = {
   weekly: 'Every',
   biweekly: 'Every other',
@@ -38,13 +39,6 @@ const LEVEL_LABELS: Record<Level, string> = {
   new: 'New Acts',
   experienced: 'Experienced',
   pro: 'Pro',
-}
-
-function formatTime(time: string): string {
-  const [h, m] = time.split(':').map(Number)
-  const suffix = h >= 12 ? 'pm' : 'am'
-  const hour = h > 12 ? h - 12 : h === 0 ? 12 : h
-  return m === 0 ? `${hour}${suffix}` : `${hour}:${m.toString().padStart(2, '0')}${suffix}`
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -153,21 +147,12 @@ function NightDetail({ night }: { night: ComedyNight }) {
   const { isFavourite, isGoing, goingCounts, toggleFavourite, toggleGoing } = useSocial()
   const navigate = useNavigate()
   const scheduleFreq = FREQ_LABELS[night.schedule.frequency]
-  const scheduleDay = WEEKDAY_LABELS[night.schedule.weekday]
+  const scheduleDay = WEEKDAY_LONG_LABELS[night.schedule.weekday]
   const scheduleTime = formatTime(night.schedule.startTime)
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
-            FindComedy
-          </Link>
-          <span className="text-zinc-700 select-none">/</span>
-          <span className="text-sm text-zinc-400 truncate">{night.name}</span>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Hero */}

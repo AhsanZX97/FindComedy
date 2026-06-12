@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import type { Venue } from '../../types/comedyNight'
@@ -17,17 +16,6 @@ interface VenueMiniMapProps {
 
 export default function VenueMiniMap({ venue }: VenueMiniMapProps) {
   const { lat, lng } = venue.location
-
-  // Import Leaflet CSS once
-  useEffect(() => {
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-    link.crossOrigin = ''
-    if (!document.head.querySelector('link[href*="leaflet"]')) {
-      document.head.appendChild(link)
-    }
-  }, [])
 
   return (
     <div className="rounded-xl overflow-hidden h-48 ring-1 ring-zinc-800">

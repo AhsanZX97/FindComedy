@@ -1,21 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import { useNights } from '../../hooks/useNights'
 import type { ComedyNight, NightType } from '../../types/comedyNight'
-
-// Load Leaflet CSS once
-function useLeafletCss() {
-  useEffect(() => {
-    if (!document.head.querySelector('link[href*="leaflet"]')) {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      link.crossOrigin = ''
-      document.head.appendChild(link)
-    }
-  }, [])
-}
+import { formatSchedule } from '../../utils/formatSchedule'
+import Header from '../../components/Header'
 
 const TYPE_COLORS: Record<NightType, string> = {
   'open-mic': '#3b82f6',  // blue
@@ -29,29 +18,6 @@ const TYPE_LABELS: Record<NightType, string> = {
   showcase: 'Showcase',
   pro: 'Pro Night',
   mixed: 'Mixed Bill',
-}
-
-const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const FREQ_LABELS: Record<string, string> = {
-  weekly: 'Every',
-  biweekly: 'Every other',
-  monthly: 'Monthly',
-  irregular: '',
-}
-
-function formatTime(time: string): string {
-  const [h, m] = time.split(':').map(Number)
-  const suffix = h >= 12 ? 'pm' : 'am'
-  const hour = h > 12 ? h - 12 : h === 0 ? 12 : h
-  return m === 0 ? `${hour}${suffix}` : `${hour}:${m.toString().padStart(2, '0')}${suffix}`
-}
-
-function formatSchedule(night: ComedyNight): string {
-  const freq = FREQ_LABELS[night.schedule.frequency]
-  const day = WEEKDAY_LABELS[night.schedule.weekday]
-  const time = formatTime(night.schedule.startTime)
-  if (night.schedule.frequency === 'irregular') return time
-  return `${freq} ${day} · ${time}`.trim()
 }
 
 interface BottomCardProps {
@@ -114,7 +80,6 @@ function Legend() {
 }
 
 export default function MapPage() {
-  useLeafletCss()
   const nightsState = useNights()
   const [selected, setSelected] = useState<ComedyNight | null>(null)
 
@@ -139,25 +104,7 @@ export default function MapPage() {
 
   return (
     <div className="h-screen w-full flex flex-col bg-zinc-950">
-      {/* Header */}
-      <header className="shrink-0 z-[1000] relative bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
-            FindComedy
-          </Link>
-          <nav className="flex gap-3 ml-auto text-sm">
-            <Link to="/" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-              Browse
-            </Link>
-            <Link to="/tonight" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-              Tonight
-            </Link>
-            <Link to="/map" className="px-3 py-1 rounded-lg text-amber-400 transition-colors">
-              Map
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Map fills remaining space */}
       <div className="flex-1 relative">

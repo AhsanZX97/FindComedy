@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { submitNight } from '../../services/submissionsService'
+import Header from '../../components/Header'
 import { isSupabaseConfigured } from '../../services/supabase'
 import type { NightSubmission, NightType, Level, Frequency, Weekday } from '../../types/comedyNight'
 
@@ -84,15 +85,7 @@ export default function SubmitPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <header className="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
-            FindComedy
-          </Link>
-          <span className="text-zinc-700 select-none">/</span>
-          <span className="text-sm text-zinc-400">Submit a night</span>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-8">
         <div>

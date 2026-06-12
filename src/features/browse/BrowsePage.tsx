@@ -1,15 +1,22 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { filterNights, sortByTime, getUniqueAreas } from '../../utils/filterNights'
 import NightCard from '../../components/NightCard'
 import FilterBar from './FilterBar'
-import type { NightFilters, Weekday } from '../../types/comedyNight'
+import Header from '../../components/Header'
+import NightsMap, { TYPE_COLORS, TYPE_LABELS } from './NightsMap'
+import type { ComedyNight, NightFilters, Weekday } from '../../types/comedyNight'
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
-import { useAuth } from '../auth/AuthContext'
 
 function todayWeekday(): Weekday {
   return new Date().getDay() as Weekday
+}
+
+const WEEKDAY_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+function formatTodayDate(): string {
+  return new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 }
 
 function CardSkeleton() {
@@ -34,17 +41,57 @@ function CardSkeleton() {
   )
 }
 
-interface BrowsePageProps {
-  preset?: 'tonight'
+interface BottomCardProps {
+  nightId: string | null
+  nights: ComedyNight[]
+  onClose: () => void
 }
 
-export default function BrowsePage({ preset }: BrowsePageProps) {
-  const { user } = useAuth()
-  const [filters, setFilters] = useState<NightFilters>(() =>
-    preset === 'tonight' ? { ...DEFAULT_FILTERS, weekday: todayWeekday() } : DEFAULT_FILTERS,
+function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
+  const night = nights.find((n) => n.id === nightId)
+  if (!night) return null
+  const isFree = night.pricing.entry.toLowerCase() === 'free'
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-[1001] bg-zinc-900 border-t border-zinc-800 rounded-t-2xl p-5 flex flex-col gap-3 animate-[slideUp_150ms_ease-out]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-1 min-w-0">
+          <span
+            className="text-xs font-medium px-2 py-0.5 rounded-full w-fit"
+            style={{ background: `${TYPE_COLORS[night.type]}22`, color: TYPE_COLORS[night.type], border: `1px solid ${TYPE_COLORS[night.type]}44` }}
+          >
+            {TYPE_LABELS[night.type]}
+          </span>
+          <h2 className="text-lg font-display font-bold text-amber-400 leading-tight">{night.name}</h2>
+          <p className="text-sm text-zinc-400">{night.venue.name} · {night.venue.area}</p>
+        </div>
+        <button onClick={onClose} aria-label="Close" className="text-zinc-500 hover:text-zinc-300 text-xl shrink-0 leading-none mt-1">×</button>
+      </div>
+      <div className="flex items-center justify-between">
+        <span className={`text-sm font-semibold ${isFree ? 'text-emerald-400' : 'text-zinc-300'}`}>
+          {isFree ? 'Free entry' : night.pricing.entry}
+        </span>
+        <Link
+          to={`/night/${night.id}`}
+          className="px-4 py-1.5 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors"
+        >
+          View night →
+        </Link>
+      </div>
+    </div>
   )
+}
+
+export default function BrowsePage() {
+  const [filters, setFilters] = useState<NightFilters>(() => ({
+    ...DEFAULT_FILTERS,
+    weekday: todayWeekday(),
+  }))
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
 
   const nightsState = useNights()
+  const listRef = useRef<HTMLDivElement>(null)
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const areas = useMemo(
     () => (nightsState.status === 'ready' ? getUniqueAreas(nightsState.data) : []),
@@ -54,114 +101,141 @@ export default function BrowsePage({ preset }: BrowsePageProps) {
   const filtered = useMemo(() => {
     if (nightsState.status !== 'ready') return []
     const results = filterNights(nightsState.data, filters)
-    return preset === 'tonight' ? sortByTime(results) : results
-  }, [nightsState, filters, preset])
+    return filters.weekday !== null ? sortByTime(results) : results
+  }, [nightsState, filters])
 
-  const isTonight = preset === 'tonight'
+  // Deselect if selected night filtered out
+  const selectedNight = filtered.find((n) => n.id === selectedId) ?? null
+  const effectiveSelectedId = selectedNight ? selectedId : null
+
+  const isTonight = filters.weekday === todayWeekday()
+
+  function handleMarkerSelect(id: string) {
+    setSelectedId(id)
+    // Scroll matching card into view in the list panel
+    const el = cardRefs.current[id]
+    if (el) {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }
+  }
+
+  const pageTitle = filters.weekday !== null
+    ? (isTonight ? "What's on tonight" : `${WEEKDAY_LONG[filters.weekday]} nights`)
+    : 'London comedy nights'
+
+  const countLine = nightsState.status === 'ready'
+    ? `${filtered.length} ${filtered.length === 1 ? 'night' : 'nights'}${isTonight ? ` · ${formatTodayDate()}` : ''}`
+    : null
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link to="/" className="text-xl font-display font-bold text-amber-400 shrink-0">
-            FindComedy
-          </Link>
-          <nav className="flex gap-3 ml-auto text-sm items-center">
-            <Link
-              to="/"
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                !isTonight ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              Browse
-            </Link>
-            <Link
-              to="/tonight"
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                isTonight ? 'text-amber-400' : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              Tonight
-            </Link>
-            <Link
-              to="/map"
-              className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors"
-            >
-              Map
-            </Link>
-            <Link
-              to="/submit"
-              className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors"
-            >
-              Submit
-            </Link>
-            <span className="text-zinc-700 select-none">·</span>
-            {user ? (
-              <Link to="/my" className="px-3 py-1 rounded-lg text-amber-400 hover:text-amber-300 transition-colors">
-                My nights
-              </Link>
-            ) : (
-              <Link to="/auth" className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors">
-                Sign in
-              </Link>
-            )}
-          </nav>
-        </div>
-      </header>
+    <div className="h-dvh flex flex-col bg-zinc-950 text-white overflow-hidden">
+      <Header />
 
-      <main className="max-w-5xl mx-auto px-4 py-6 flex flex-col gap-6">
-        {/* Page title */}
-        <div>
-          <h1 className="text-2xl font-display font-bold">
-            {isTonight ? "What's on tonight" : 'London comedy nights'}
-          </h1>
-          {isTonight && (
-            <p className="text-sm text-zinc-400 mt-1">
-              {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </p>
+      {/* Split view — desktop: map left (3fr) + list right (2fr); mobile: single panel */}
+      <div className="flex-1 min-h-0 md:grid md:grid-cols-[3fr_2fr]">
+
+        {/* MAP PANEL */}
+        <div className={`relative h-full ${mobileView === 'map' ? 'block' : 'hidden md:block'}`}>
+          {nightsState.status === 'loading' && (
+            <div className="h-full bg-zinc-900 animate-pulse" />
           )}
+          {nightsState.status === 'ready' && (
+            <NightsMap
+              nights={filtered}
+              selectedId={effectiveSelectedId}
+              onSelect={handleMarkerSelect}
+              onDeselect={() => setSelectedId(null)}
+              invalidateTrigger={mobileView}
+            />
+          )}
+
+          {/* Mobile: recenter / close map button */}
+          <div className="absolute top-3 right-3 z-[1000] flex gap-2 md:hidden">
+            <button
+              onClick={() => setMobileView('list')}
+              className="px-3 py-1.5 rounded-full bg-zinc-900/95 text-sm font-medium text-zinc-300 ring-1 ring-zinc-700 shadow"
+            >
+              ← List
+            </button>
+          </div>
+
+          {/* Mobile bottom card on map */}
+          <div className="md:hidden">
+            <BottomCard
+              nightId={effectiveSelectedId}
+              nights={filtered}
+              onClose={() => setSelectedId(null)}
+            />
+          </div>
         </div>
 
-        {/* Filter bar */}
-        <FilterBar filters={filters} areas={areas} onChange={setFilters} />
-
-        {/* Results */}
-        {nightsState.status === 'loading' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <CardSkeleton key={i} />
-            ))}
+        {/* LIST PANEL */}
+        <div
+          ref={listRef}
+          className={`flex flex-col h-full overflow-y-auto bg-zinc-950 ${mobileView === 'list' ? 'block' : 'hidden md:flex'}`}
+        >
+          {/* Filters + title */}
+          <div className="sticky top-0 z-10 bg-zinc-950/95 backdrop-blur border-b border-zinc-800 px-4 pt-4 pb-3 flex flex-col gap-3">
+            <div>
+              <h1 className="text-lg font-display font-bold leading-tight">{pageTitle}</h1>
+              {countLine && <p className="text-xs text-zinc-500 mt-0.5">{countLine}</p>}
+            </div>
+            <FilterBar filters={filters} areas={areas} onChange={(f) => { setFilters(f); setSelectedId(null) }} />
           </div>
-        )}
 
-        {nightsState.status === 'error' && (
-          <div className="rounded-2xl bg-zinc-900 p-8 text-center ring-1 ring-zinc-800">
-            <p className="text-zinc-400">{nightsState.message}</p>
-          </div>
-        )}
+          {/* Cards */}
+          <div className="flex-1 px-4 py-4">
+            {nightsState.status === 'loading' && (
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: 5 }).map((_, i) => <CardSkeleton key={i} />)}
+              </div>
+            )}
 
-        {nightsState.status === 'ready' && (
-          <>
-            <p className="text-sm text-zinc-500">
-              {filtered.length} {filtered.length === 1 ? 'night' : 'nights'}
-            </p>
+            {nightsState.status === 'error' && (
+              <div className="rounded-2xl bg-zinc-900 p-8 text-center ring-1 ring-zinc-800">
+                <p className="text-zinc-400">{nightsState.message}</p>
+              </div>
+            )}
 
-            {filtered.length === 0 ? (
+            {nightsState.status === 'ready' && filtered.length === 0 && (
               <div className="rounded-2xl bg-zinc-900 p-10 text-center ring-1 ring-zinc-800 flex flex-col gap-2">
                 <p className="text-zinc-300 font-medium">No nights match your filters.</p>
                 <p className="text-zinc-500 text-sm">Try adjusting or clearing the filters above.</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            )}
+
+            {nightsState.status === 'ready' && filtered.length > 0 && (
+              <div className="flex flex-col gap-3">
                 {filtered.map((night) => (
-                  <NightCard key={night.id} night={night} />
+                  <div
+                    key={night.id}
+                    ref={(el) => { cardRefs.current[night.id] = el }}
+                    className={`rounded-2xl transition-all ${
+                      effectiveSelectedId === night.id
+                        ? 'ring-2 ring-amber-400'
+                        : 'ring-0'
+                    }`}
+                    onMouseEnter={() => setSelectedId(night.id)}
+                    onMouseLeave={() => setSelectedId(null)}
+                  >
+                    <NightCard night={night} />
+                  </div>
                 ))}
               </div>
             )}
-          </>
-        )}
-      </main>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: floating Map toggle pill */}
+      {mobileView === 'list' && (
+        <button
+          onClick={() => setMobileView('map')}
+          className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] px-5 py-2.5 rounded-full bg-zinc-800 ring-1 ring-zinc-600 text-sm font-semibold text-white shadow-lg"
+        >
+          Map
+        </button>
+      )}
     </div>
   )
 }
