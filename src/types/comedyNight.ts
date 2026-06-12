@@ -74,6 +74,7 @@ export interface Report {
   userId: string
   type: ReportType
   note?: string
+  resolvedAt?: string
   createdAt: string
 }
 
@@ -145,6 +146,14 @@ export interface NightSubmission {
   submitterNote?: string
 }
 
+export interface StoredSubmission {
+  id: string
+  data: NightSubmission
+  status: 'pending' | 'approved' | 'rejected'
+  submitterNote?: string
+  createdAt: string
+}
+
 export interface NightFilters {
   search: string
   weekday: Weekday | null
@@ -163,4 +172,11 @@ export const DEFAULT_FILTERS: NightFilters = {
   level: null,
   noBringer: false,
   freeEntry: false,
+}
+
+export interface SiteFeedback {
+  id: string
+  message: string
+  email?: string
+  createdAt: string
 }

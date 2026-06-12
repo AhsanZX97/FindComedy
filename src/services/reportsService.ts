@@ -7,6 +7,7 @@ interface ReportRow {
   user_id: string
   type: string
   note: string | null
+  resolved_at: string | null
   created_at: string
 }
 
@@ -17,6 +18,7 @@ function rowToReport(row: ReportRow): Report {
     userId: row.user_id,
     type: row.type as ReportType,
     note: row.note ?? undefined,
+    resolvedAt: row.resolved_at ?? undefined,
     createdAt: row.created_at,
   }
 }
@@ -55,4 +57,29 @@ export async function getReportCountsByNight(): Promise<Record<string, number>> 
     counts[nightId] = (counts[nightId] ?? 0) + 1
   }
   return counts
+}
+
+export async function getAllReports(): Promise<Report[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((r) => rowToReport(r as ReportRow))
+}
+
+export async function resolveReport(id: string): Promise<void> {
+  if (!supabase) return
+  const { error } = await supabase
+    .from('reports')
+    .update({ resolved_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+}
+
+export async function deleteReportById(id: string): Promise<void> {
+  if (!supabase) return
+  const { error } = await supabase.from('reports').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }

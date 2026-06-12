@@ -10,6 +10,7 @@ import {
   getUserReviewForNight,
   upsertReview,
   deleteReview,
+  deleteReviewById,
 } from '../reviewsService'
 
 describe('getReviewsForNight', () => {
@@ -37,5 +38,11 @@ describe('upsertReview', () => {
 describe('deleteReview', () => {
   it('is a no-op when Supabase is not configured', async () => {
     await expect(deleteReview('user-1', 'night-abc')).resolves.toBeUndefined()
+  })
+})
+
+describe('deleteReviewById', () => {
+  it('is a no-op when Supabase is not configured', async () => {
+    await expect(deleteReviewById('review-uuid-1')).resolves.toBeUndefined()
   })
 })

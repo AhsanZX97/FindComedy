@@ -31,7 +31,7 @@ function NightGrid({ title, nights, emptyMessage }: {
 
 export default function MyNightsPage() {
   const { user, isLoading: authLoading } = useAuth()
-  const { favouriteIds, userGoingIds } = useSocial()
+  const { favouriteIds } = useSocial()
   const nightsState = useNights()
 
   if (authLoading) {
@@ -46,7 +46,6 @@ export default function MyNightsPage() {
 
   const allNights = nightsState.status === 'ready' ? nightsState.data : []
   const favouriteNights = allNights.filter((n) => favouriteIds.has(n.id))
-  const goingNights = allNights.filter((n) => userGoingIds.has(n.id))
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white">
@@ -61,12 +60,6 @@ export default function MyNightsPage() {
           title="Favourites"
           nights={favouriteNights}
           emptyMessage="No favourites yet — tap ♡ on any night to save it here."
-        />
-
-        <NightGrid
-          title="I'm going"
-          nights={goingNights}
-          emptyMessage="Not going to anything yet — mark yourself as going on a night's detail page."
         />
       </main>
     </div>

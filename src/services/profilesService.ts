@@ -22,6 +22,16 @@ export async function getProfile(userId: string): Promise<Profile | null> {
   return rowToProfile(data as Record<string, unknown>)
 }
 
+export async function getIsAdmin(userId: string): Promise<boolean> {
+  if (!supabase) return false
+  const { data } = await supabase
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userId)
+    .maybeSingle()
+  return Boolean(data)
+}
+
 export async function updateProfile(
   userId: string,
   updates: Partial<Pick<Profile, 'displayName' | 'role'>>,

@@ -14,8 +14,20 @@ interface VenueMiniMapProps {
   venue: Venue
 }
 
+function isPlausibleCoord(lat: number, lng: number): boolean {
+  return lat !== 0 || lng !== 0
+}
+
 export default function VenueMiniMap({ venue }: VenueMiniMapProps) {
   const { lat, lng } = venue.location
+
+  if (!isPlausibleCoord(lat, lng)) {
+    return (
+      <div className="rounded-xl h-48 ring-1 ring-gray-200 dark:ring-zinc-800 bg-gray-50 dark:bg-zinc-900 flex items-center justify-center">
+        <p className="text-xs text-gray-400 dark:text-zinc-500">Map location not set</p>
+      </div>
+    )
+  }
 
   return (
     <div className="rounded-xl overflow-hidden h-48 ring-1 ring-gray-200 dark:ring-zinc-800">

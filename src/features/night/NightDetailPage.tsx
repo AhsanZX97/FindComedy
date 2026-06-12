@@ -6,7 +6,6 @@ import type { ComedyNight, NightType, Level, SocialLinks } from '../../types/com
 import { useAuth } from '../auth/AuthContext'
 import { useSocial } from '../social/SocialContext'
 import FavouriteButton from '../../components/FavouriteButton'
-import GoingButton from '../../components/GoingButton'
 import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
@@ -50,14 +49,23 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+function isSafeUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'https:' || protocol === 'http:'
+  } catch {
+    return false
+  }
+}
+
 function SocialRow({ socials }: { socials: SocialLinks }) {
   const links: { label: string; href: string; icon: string }[] = []
-  if (socials.website) links.push({ label: 'Website', href: socials.website, icon: '🌐' })
-  if (socials.instagram) links.push({ label: 'Instagram', href: socials.instagram, icon: '📸' })
-  if (socials.facebook) links.push({ label: 'Facebook', href: socials.facebook, icon: '👥' })
-  if (socials.facebookGroup) links.push({ label: 'FB Group', href: socials.facebookGroup, icon: '👥' })
-  if (socials.tiktok) links.push({ label: 'TikTok', href: socials.tiktok, icon: '🎵' })
-  if (socials.youtube) links.push({ label: 'YouTube', href: socials.youtube, icon: '▶️' })
+  if (socials.website && isSafeUrl(socials.website)) links.push({ label: 'Website', href: socials.website, icon: '🌐' })
+  if (socials.instagram && isSafeUrl(socials.instagram)) links.push({ label: 'Instagram', href: socials.instagram, icon: '📸' })
+  if (socials.facebook && isSafeUrl(socials.facebook)) links.push({ label: 'Facebook', href: socials.facebook, icon: '👥' })
+  if (socials.facebookGroup && isSafeUrl(socials.facebookGroup)) links.push({ label: 'FB Group', href: socials.facebookGroup, icon: '👥' })
+  if (socials.tiktok && isSafeUrl(socials.tiktok)) links.push({ label: 'TikTok', href: socials.tiktok, icon: '🎵' })
+  if (socials.youtube && isSafeUrl(socials.youtube)) links.push({ label: 'YouTube', href: socials.youtube, icon: '▶️' })
 
   if (links.length === 0) return <p className="text-sm text-gray-400 dark:text-zinc-500">No social links listed.</p>
 
@@ -143,8 +151,8 @@ function BookingTabs({ night }: { night: ComedyNight }) {
 }
 
 function NightDetail({ night }: { night: ComedyNight }) {
-  const { user } = useAuth()
-  const { isFavourite, isGoing, goingCounts, toggleFavourite, toggleGoing } = useSocial()
+  const { user, isAdmin } = useAuth()
+  const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
   const scheduleFreq = FREQ_LABELS[night.schedule.frequency]
   const scheduleDay = WEEKDAY_LONG_LABELS[night.schedule.weekday]
@@ -157,9 +165,19 @@ function NightDetail({ night }: { night: ComedyNight }) {
       <main className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Hero */}
         <div className="flex flex-col gap-4">
-          <Link to="/" className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors w-fit">
-            ← Back to browse
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link to="/" className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors">
+              ← Back to browse
+            </Link>
+            {isAdmin && (
+              <Link
+                to={`/admin/nights/${night.id}`}
+                className="text-xs px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 ring-1 ring-amber-200 dark:ring-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors font-medium"
+              >
+                Edit night
+              </Link>
+            )}
+          </div>
 
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5">
@@ -188,13 +206,6 @@ function NightDetail({ night }: { night: ComedyNight }) {
 
           {/* Action row */}
           <div className="flex items-center gap-3 flex-wrap pt-1">
-            <GoingButton
-              goingCount={goingCounts[night.id] ?? 0}
-              isGoing={isGoing(night.id)}
-              onToggle={() => void toggleGoing(night.id)}
-              isLoggedIn={Boolean(user)}
-              onAuthRequired={() => navigate('/auth')}
-            />
             <FavouriteButton
               isFavourited={isFavourite(night.id)}
               onToggle={() => void toggleFavourite(night.id)}
@@ -251,6 +262,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
           nightId={night.id}
           userId={user?.id ?? null}
           displayName={user?.email?.split('@')[0] ?? 'Anonymous'}
+          isAdmin={isAdmin}
           onAuthRequired={() => navigate('/auth')}
         />
 

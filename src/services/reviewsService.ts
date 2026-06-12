@@ -79,3 +79,9 @@ export async function deleteReview(userId: string, nightId: string): Promise<voi
     .eq('night_id', nightId)
   if (error) throw new Error(error.message)
 }
+
+export async function deleteReviewById(id: string): Promise<void> {
+  if (!supabase) return
+  const { error } = await supabase.from('reviews').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+}

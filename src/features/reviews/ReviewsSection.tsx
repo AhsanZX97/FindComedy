@@ -4,6 +4,7 @@ import {
   getUserReviewForNight,
   upsertReview,
   deleteReview,
+  deleteReviewById,
 } from '../../services/reviewsService'
 import { isSupabaseConfigured } from '../../services/supabase'
 import type { Review, VibeTag } from '../../types/comedyNight'
@@ -15,6 +16,7 @@ interface ReviewsSectionProps {
   nightId: string
   userId: string | null
   displayName: string
+  isAdmin?: boolean
   onAuthRequired: () => void
 }
 
@@ -51,6 +53,7 @@ export default function ReviewsSection({
   nightId,
   userId,
   displayName,
+  isAdmin = false,
   onAuthRequired,
 }: ReviewsSectionProps) {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -159,9 +162,21 @@ export default function ReviewsSection({
             <div key={r.id} className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 shadow-sm dark:shadow-none px-4 py-3 flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">{r.displayName ?? 'Anonymous'}</span>
-                <span className="text-xs text-gray-400 dark:text-zinc-600">
-                  {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 dark:text-zinc-600">
+                    {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        void deleteReviewById(r.id).then(() => void load())
+                      }}
+                      className="text-xs px-2 py-0.5 rounded-md bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {r.tags.map((tag) => (

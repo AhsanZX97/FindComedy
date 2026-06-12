@@ -80,7 +80,7 @@ export default function AuthPage() {
         {/* Logo */}
         <div className="text-center">
           <Link to="/" className="text-2xl font-display font-bold text-amber-500">FindComedy</Link>
-          <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1">Sign in to save nights and say you're going</p>
+          <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1">Sign in to save your favourite nights</p>
         </div>
 
         {/* Email step */}

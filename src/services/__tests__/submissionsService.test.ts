@@ -5,8 +5,8 @@ vi.mock('../supabase', () => ({
   isSupabaseConfigured: false,
 }))
 
-import { submitNight } from '../submissionsService'
-import type { NightSubmission } from '../../types/comedyNight'
+import { submitNight, getSubmissions, setSubmissionStatus, approveSubmission } from '../submissionsService'
+import type { NightSubmission, StoredSubmission } from '../../types/comedyNight'
 
 const validSubmission: NightSubmission = {
   name: 'Test Comedy Night',
@@ -23,8 +23,34 @@ const validSubmission: NightSubmission = {
   entry: 'Free',
 }
 
+const validStoredSubmission: StoredSubmission = {
+  id: 'sub-uuid-1234',
+  data: validSubmission,
+  status: 'pending',
+  createdAt: '2025-01-01T00:00:00Z',
+}
+
 describe('submitNight', () => {
   it('throws when Supabase is not configured', async () => {
     await expect(submitNight(validSubmission)).rejects.toThrow('Supabase is not configured')
+  })
+})
+
+describe('getSubmissions', () => {
+  it('returns empty array when Supabase is not configured', async () => {
+    expect(await getSubmissions()).toEqual([])
+    expect(await getSubmissions('pending')).toEqual([])
+  })
+})
+
+describe('setSubmissionStatus', () => {
+  it('is a no-op when Supabase is not configured', async () => {
+    await expect(setSubmissionStatus('sub-1', 'approved')).resolves.toBeUndefined()
+  })
+})
+
+describe('approveSubmission', () => {
+  it('is a no-op when Supabase is not configured', async () => {
+    await expect(approveSubmission(validStoredSubmission)).resolves.toBeUndefined()
   })
 })

@@ -4,6 +4,11 @@ import NightDetailPage from './features/night/NightDetailPage'
 import AuthPage from './features/auth/AuthPage'
 import MyNightsPage from './features/my/MyNightsPage'
 import SubmitPage from './features/submit/SubmitPage'
+import AdminDashboard from './features/admin/AdminDashboard'
+import AdminNightEdit from './features/admin/AdminNightEdit'
+import AdminSubmissions from './features/admin/AdminSubmissions'
+import AdminFeedback from './features/admin/AdminFeedback'
+import AdminSubmissionReview from './features/admin/AdminSubmissionReview'
 
 export default function App() {
   return (
@@ -15,6 +20,11 @@ export default function App() {
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/my" element={<MyNightsPage />} />
       <Route path="/submit" element={<SubmitPage />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/nights/:id" element={<AdminNightEdit />} />
+      <Route path="/admin/queue" element={<AdminSubmissions />} />
+      <Route path="/admin/queue/:id" element={<AdminSubmissionReview />} />
+      <Route path="/admin/feedback" element={<AdminFeedback />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

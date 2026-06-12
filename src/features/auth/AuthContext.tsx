@@ -2,12 +2,13 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase, isSupabaseConfigured } from '../../services/supabase'
 import type { Profile } from '../../types/auth'
-import { getProfile } from '../../services/profilesService'
+import { getProfile, getIsAdmin } from '../../services/profilesService'
 
 interface AuthState {
   user: User | null
   session: Session | null
   profile: Profile | null
+  isAdmin: boolean
   isLoading: boolean
 }
 
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: null,
     session: null,
     profile: null,
+    isAdmin: false,
     isLoading: true,
   })
 
@@ -35,19 +37,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setState((s) => ({ ...s, session, user: session?.user ?? null, isLoading: false }))
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setState((s) => ({ ...s, session, user: session?.user ?? null }))
       if (session?.user) {
-        getProfile(session.user.id).then((profile) => setState((s) => ({ ...s, profile })))
+        const [profile, isAdmin] = await Promise.all([
+          getProfile(session.user.id),
+          getIsAdmin(session.user.id),
+        ])
+        setState((s) => ({ ...s, profile, isAdmin, isLoading: false }))
+      } else {
+        setState((s) => ({ ...s, isLoading: false }))
       }
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setState((s) => ({ ...s, session, user: session?.user ?? null }))
       if (session?.user) {
-        getProfile(session.user.id).then((profile) => setState((s) => ({ ...s, profile })))
+        void getProfile(session.user.id).then((profile) => setState((s) => ({ ...s, profile })))
+        void getIsAdmin(session.user.id).then((isAdmin) => setState((s) => ({ ...s, isAdmin })))
       } else {
-        setState((s) => ({ ...s, profile: null }))
+        setState((s) => ({ ...s, profile: null, isAdmin: false }))
       }
     })
 

@@ -1,6 +1,8 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthContext'
 import { useTheme } from '../context/ThemeContext'
+import FeedbackModal from './FeedbackModal'
 
 function SunIcon() {
   return (
@@ -27,12 +29,20 @@ function MoonIcon() {
 }
 
 export default function Header() {
-  const { user } = useAuth()
+  const { user, isAdmin, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/')
+  }
 
   const isSubmit = pathname === '/submit'
   const isAuth = pathname === '/auth' || pathname === '/my'
+  const isAdminRoute = pathname.startsWith('/admin')
 
   return (
     <header className="shrink-0 sticky top-0 z-[1000] bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
@@ -88,6 +98,35 @@ export default function Header() {
             </Link>
           )}
 
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                isAdminRoute
+                  ? 'bg-amber-500 text-white'
+                  : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              }`}
+            >
+              Admin
+            </Link>
+          )}
+
+          {user && (
+            <button
+              onClick={() => void handleSignOut()}
+              className="ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+            >
+              Sign out
+            </button>
+          )}
+
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            className="ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+          >
+            Feedback
+          </button>
+
           <button
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -98,6 +137,8 @@ export default function Header() {
           </button>
         </nav>
       </div>
+
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
     </header>
   )
 }

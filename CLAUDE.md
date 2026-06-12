@@ -72,6 +72,14 @@ src/
 - Verify UI changes by actually running the dev server and looking, not by reasoning about the code.
 - Commit messages: short imperative subject line ("Add venue filter to event list"), no fluff.
 
+## Token discipline
+
+- **Default to inline tools, not subagents.** Subagents start cold and re-derive context that already exists in the main thread, so they're the expensive path. Only spawn one when the user explicitly asks, or when a task needs a wide read-only sweep whose file contents should stay *out* of the main context (you want the conclusion, not the dumps). "Multi-step" or "thorough" is not a reason to fan out — handle it inline.
+- **Pin mechanical subagents to a cheaper model.** When a subagent is genuinely warranted but the work is grunt-level (searching, find-and-replace, rote test scaffolding), run it on Haiku or Sonnet, not Opus.
+- **Prefer the dedicated Grep/Glob/Read tools over an exploration agent** for locating code. A targeted search in the main thread is far cheaper than spinning up `Explore`/`general-purpose`.
+- **One feature per session.** Don't drag a full types→services→tests→UI arc through a single long chat; the whole history gets re-read each turn. Finish a task, then start fresh for the next.
+- **Read narrowly.** Read only the file region you need, batch independent edits into one turn, and don't re-read a file just to confirm an edit landed.
+
 ## What a senior dev does NOT do
 
 - Doesn't scaffold features speculatively ("we might need this later").
