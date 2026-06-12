@@ -53,6 +53,98 @@ export interface ComedyNight {
   images?: string[]
 }
 
+export type ReportType =
+  | 'no-longer-running'
+  | 'wrong-time'
+  | 'wrong-venue'
+  | 'wrong-info'
+  | 'other'
+
+export const REPORT_TYPE_LABELS: Record<ReportType, string> = {
+  'no-longer-running': 'Night is no longer running',
+  'wrong-time': 'Wrong time or day',
+  'wrong-venue': 'Wrong venue or address',
+  'wrong-info': 'Other info is wrong',
+  'other': 'Something else',
+}
+
+export interface Report {
+  id: string
+  nightId: string
+  userId: string
+  type: ReportType
+  note?: string
+  createdAt: string
+}
+
+export type VibeTag =
+  | 'rowdy-crowd'
+  | 'chill-vibe'
+  | 'good-for-first-timers'
+  | 'friendly-host'
+  | 'strong-lineup'
+  | 'noisy-pub'
+  | 'intimate'
+  | 'long-sets'
+
+export const VIBE_TAG_LABELS: Record<VibeTag, string> = {
+  'rowdy-crowd': 'Rowdy crowd',
+  'chill-vibe': 'Chill vibe',
+  'good-for-first-timers': 'Good for first-timers',
+  'friendly-host': 'Friendly host',
+  'strong-lineup': 'Strong lineup',
+  'noisy-pub': 'Noisy pub',
+  'intimate': 'Intimate',
+  'long-sets': 'Long sets',
+}
+
+export const ALL_VIBE_TAGS: VibeTag[] = [
+  'rowdy-crowd',
+  'chill-vibe',
+  'good-for-first-timers',
+  'friendly-host',
+  'strong-lineup',
+  'noisy-pub',
+  'intimate',
+  'long-sets',
+]
+
+export interface Review {
+  id: string
+  nightId: string
+  userId: string
+  displayName?: string
+  tags: VibeTag[]
+  note?: string
+  createdAt: string
+}
+
+export interface NightSubmission {
+  name: string
+  description: string
+  type: NightType
+  levels: Level[]
+  bringerRequired: boolean
+  bringerCount?: number
+  bringerNote?: string
+  frequency: Frequency
+  weekday: Weekday
+  startTime: string
+  scheduleNote?: string
+  venueName: string
+  venueAddress: string
+  venueArea: string
+  venueNearestStation?: string
+  entry: string
+  performerPay?: string
+  audienceBooking?: string
+  performerBooking?: string
+  website?: string
+  instagram?: string
+  facebook?: string
+  submitterNote?: string
+}
+
 export interface NightFilters {
   search: string
   weekday: Weekday | null

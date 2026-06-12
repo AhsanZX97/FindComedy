@@ -90,6 +90,12 @@ export default function BrowsePage({ preset }: BrowsePageProps) {
             >
               Map
             </Link>
+            <Link
+              to="/submit"
+              className="px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              Submit
+            </Link>
             <span className="text-zinc-700 select-none">·</span>
             {user ? (
               <Link to="/my" className="px-3 py-1 rounded-lg text-amber-400 hover:text-amber-300 transition-colors">

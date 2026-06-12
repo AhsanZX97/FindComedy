@@ -7,6 +7,8 @@ import { useAuth } from '../auth/AuthContext'
 import { useSocial } from '../social/SocialContext'
 import FavouriteButton from '../../components/FavouriteButton'
 import GoingButton from '../../components/GoingButton'
+import ReportModal from '../../components/ReportModal'
+import ReviewsSection from '../reviews/ReviewsSection'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
@@ -259,6 +261,16 @@ function NightDetail({ night }: { night: ComedyNight }) {
           <SocialRow socials={night.socials} />
         </Section>
 
+        {/* Reviews */}
+        <ReviewsSection
+          nightId={night.id}
+          userId={user?.id ?? null}
+          displayName={user?.email?.split('@')[0] ?? 'Anonymous'}
+          onAuthRequired={() => navigate('/auth')}
+        />
+
+        <hr className="border-zinc-800" />
+
         {/* Share */}
         <Section title="Share this night">
           <div className="rounded-xl bg-zinc-900 ring-1 ring-zinc-800 p-4 flex flex-col gap-2">
@@ -266,6 +278,16 @@ function NightDetail({ night }: { night: ComedyNight }) {
             <code className="text-sm text-amber-300 break-all">{window.location.href}</code>
           </div>
         </Section>
+
+        {/* Report */}
+        <div className="flex justify-end pb-4">
+          <ReportModal
+            nightId={night.id}
+            userId={user?.id ?? ''}
+            isLoggedIn={Boolean(user)}
+            onAuthRequired={() => navigate('/auth')}
+          />
+        </div>
       </main>
     </div>
   )

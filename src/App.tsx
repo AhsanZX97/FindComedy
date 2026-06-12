@@ -4,6 +4,7 @@ import NightDetailPage from './features/night/NightDetailPage'
 import MapPage from './features/map/MapPage'
 import AuthPage from './features/auth/AuthPage'
 import MyNightsPage from './features/my/MyNightsPage'
+import SubmitPage from './features/submit/SubmitPage'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/map" element={<MapPage />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/my" element={<MyNightsPage />} />
+      <Route path="/submit" element={<SubmitPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
