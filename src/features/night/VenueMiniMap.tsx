@@ -18,7 +18,7 @@ export default function VenueMiniMap({ venue }: VenueMiniMapProps) {
   const { lat, lng } = venue.location
 
   return (
-    <div className="rounded-xl overflow-hidden h-48 ring-1 ring-zinc-800">
+    <div className="rounded-xl overflow-hidden h-48 ring-1 ring-gray-200 dark:ring-zinc-800">
       <MapContainer
         center={[lat, lng]}
         zoom={15}

@@ -31,15 +31,15 @@ function TagPill({ tag, count, selected, onClick }: {
       disabled={!onClick}
       className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors
         ${selected
-          ? 'bg-amber-500 text-zinc-950'
+          ? 'bg-amber-500 text-white'
           : onClick
-            ? 'bg-zinc-800 text-zinc-300 ring-1 ring-zinc-700 hover:ring-amber-500 hover:text-amber-300'
-            : 'bg-zinc-800 text-zinc-400 ring-1 ring-zinc-700 cursor-default'
+            ? 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 ring-1 ring-gray-200 dark:ring-zinc-700 hover:ring-amber-400 hover:text-amber-600 dark:hover:text-amber-400'
+            : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 ring-1 ring-gray-200 dark:ring-zinc-700 cursor-default'
         }`}
     >
       {VIBE_TAG_LABELS[tag]}
       {count !== undefined && count > 0 && (
-        <span className={`text-[10px] px-1 rounded-full ${selected ? 'bg-amber-700 text-amber-100' : 'bg-zinc-700 text-zinc-400'}`}>
+        <span className={`text-[10px] px-1 rounded-full ${selected ? 'bg-amber-700 text-amber-100' : 'bg-gray-200 dark:bg-zinc-700 text-gray-500 dark:text-zinc-400'}`}>
           {count}
         </span>
       )}
@@ -141,7 +141,7 @@ export default function ReviewsSection({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Vibes</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Vibes</h2>
 
       {/* Aggregate tags */}
       {topTags.length > 0 && (
@@ -156,21 +156,21 @@ export default function ReviewsSection({
       {reviews.length > 0 && (
         <div className="flex flex-col gap-2">
           {reviews.slice(0, 5).map((r) => (
-            <div key={r.id} className="rounded-xl bg-zinc-900 ring-1 ring-zinc-800 px-4 py-3 flex flex-col gap-2">
+            <div key={r.id} className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 shadow-sm dark:shadow-none px-4 py-3 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-400">{r.displayName ?? 'Anonymous'}</span>
-                <span className="text-xs text-zinc-600">
+                <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">{r.displayName ?? 'Anonymous'}</span>
+                <span className="text-xs text-gray-400 dark:text-zinc-600">
                   {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {r.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 ring-1 ring-zinc-700">
+                  <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 ring-1 ring-gray-200 dark:ring-zinc-700">
                     {VIBE_TAG_LABELS[tag]}
                   </span>
                 ))}
               </div>
-              {r.note && <p className="text-sm text-zinc-300">{r.note}</p>}
+              {r.note && <p className="text-sm text-gray-700 dark:text-zinc-300">{r.note}</p>}
             </div>
           ))}
         </div>
@@ -181,14 +181,14 @@ export default function ReviewsSection({
         <div className="flex items-center gap-3">
           <button
             onClick={openForm}
-            className="text-sm text-amber-400 hover:text-amber-300 transition-colors font-medium"
+            className="text-sm text-amber-500 hover:text-amber-600 transition-colors font-medium"
           >
             {userReview ? 'Edit your review' : '+ Leave a vibe check'}
           </button>
           {userReview && (
             <button
               onClick={handleDelete}
-              className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+              className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors"
             >
               Remove review
             </button>
@@ -197,8 +197,8 @@ export default function ReviewsSection({
       )}
 
       {(formState === 'open' || formState === 'submitting' || formState === 'error') && (
-        <form onSubmit={handleSubmit} className="rounded-xl bg-zinc-900 ring-1 ring-zinc-800 p-4 flex flex-col gap-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+        <form onSubmit={handleSubmit} className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
             {userReview ? 'Update your vibe check' : 'Your vibe check'}
           </p>
 
@@ -214,33 +214,33 @@ export default function ReviewsSection({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-zinc-500">Note (optional)</label>
+            <label className="text-xs text-gray-400 dark:text-zinc-500">Note (optional)</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               maxLength={300}
               placeholder="Anything else worth knowing…"
-              className="w-full rounded-lg bg-zinc-800 ring-1 ring-zinc-700 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-amber-500 resize-none"
+              className="w-full rounded-lg bg-gray-50 dark:bg-zinc-800 ring-1 ring-gray-200 dark:ring-zinc-700 px-3 py-2 text-sm text-gray-700 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-amber-400 resize-none"
             />
           </div>
 
           {formState === 'error' && (
-            <p className="text-xs text-red-400">{errorMsg}</p>
+            <p className="text-xs text-red-500">{errorMsg}</p>
           )}
 
           <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={cancelForm}
-              className="px-4 py-2 rounded-lg bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700 transition-colors"
+              className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-sm text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={selectedTags.size === 0 || formState === 'submitting'}
-              className="px-4 py-2 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
             >
               {formState === 'submitting' ? 'Saving…' : 'Save'}
             </button>
@@ -249,7 +249,7 @@ export default function ReviewsSection({
       )}
 
       {reviews.length === 0 && formState === 'idle' && (
-        <p className="text-sm text-zinc-600">No reviews yet. Be the first!</p>
+        <p className="text-sm text-gray-400 dark:text-zinc-600">No reviews yet. Be the first!</p>
       )}
     </section>
   )

@@ -44,8 +44,8 @@ function PillButton({
       onClick={onClick}
       className={`shrink-0 text-sm px-3 py-1.5 rounded-full font-medium transition-colors ${
         active
-          ? 'bg-amber-400 text-zinc-950'
-          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white'
+          ? 'bg-gray-900 text-white dark:bg-amber-400 dark:text-zinc-950'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white'
       }`}
     >
       {children}
@@ -67,8 +67,8 @@ function TogglePill({
       onClick={onClick}
       className={`shrink-0 text-sm px-3 py-1.5 rounded-full font-medium border transition-colors ${
         active
-          ? 'bg-emerald-900 border-emerald-600 text-emerald-300'
-          : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700 hover:text-white'
+          ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900 dark:border-emerald-600 dark:text-emerald-300'
+          : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-white'
       }`}
     >
       {children}
@@ -106,12 +106,12 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
           placeholder="Search nights, venues, areas..."
           value={filters.search}
           onChange={(e) => set('search', e.target.value)}
-          className="w-full rounded-xl bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50"
+          className="w-full rounded-xl bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50"
         />
         {filters.search && (
           <button
             onClick={() => set('search', '')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-white"
             aria-label="Clear search"
           >
             ×
@@ -143,7 +143,7 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
             {label}
           </PillButton>
         ))}
-        <span className="shrink-0 w-px bg-zinc-700 mx-1" />
+        <span className="shrink-0 w-px bg-gray-300 dark:bg-zinc-700 mx-1" />
         {LEVELS.map(({ label, value }) => (
           <PillButton
             key={value}
@@ -160,7 +160,7 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
         <select
           value={filters.area ?? ''}
           onChange={(e) => set('area', e.target.value || null)}
-          className="text-sm rounded-xl bg-zinc-900 border border-zinc-700 px-3 py-1.5 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 cursor-pointer"
+          className="text-sm rounded-xl bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 px-3 py-1.5 text-gray-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 cursor-pointer"
         >
           <option value="">All areas</option>
           {areas.map((area) => (
@@ -181,7 +181,7 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
         {hasActiveFilters(filters) && (
           <button
             onClick={() => onChange(DEFAULT_FILTERS)}
-            className="text-xs text-zinc-500 hover:text-zinc-300 underline underline-offset-2 ml-auto"
+            className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 underline underline-offset-2 ml-auto"
           >
             Clear all
           </button>

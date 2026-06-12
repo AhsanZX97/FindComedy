@@ -33,8 +33,8 @@ export default function FavouriteButton({
       title={label}
       className={`rounded-lg transition-colors ${sizeClass} ${
         isFavourited
-          ? 'text-amber-400 hover:text-amber-300'
-          : 'text-zinc-600 hover:text-zinc-400'
+          ? 'text-amber-500 hover:text-amber-600'
+          : 'text-gray-300 dark:text-zinc-600 hover:text-gray-500 dark:hover:text-zinc-400'
       }`}
     >
       {isFavourited ? '♥' : '♡'}

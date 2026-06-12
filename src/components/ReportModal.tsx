@@ -62,24 +62,24 @@ export default function ReportModal({
     <>
       <button
         onClick={open}
-        className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors underline underline-offset-2"
+        className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors underline underline-offset-2"
       >
         Report a problem
       </button>
 
       {state !== 'closed' && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 dark:bg-black/70"
           onClick={(e) => { if (e.target === e.currentTarget) close() }}
         >
-          <div className="w-full max-w-md rounded-2xl bg-zinc-900 ring-1 ring-zinc-800 p-6 flex flex-col gap-5">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 shadow-xl p-6 flex flex-col gap-5">
             {state === 'done' ? (
               <>
-                <p className="text-sm text-zinc-200 font-medium">Thanks for the report!</p>
-                <p className="text-sm text-zinc-400">We'll review it and update the listing if needed.</p>
+                <p className="text-sm text-gray-800 dark:text-zinc-200 font-medium">Thanks for the report!</p>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">We'll review it and update the listing if needed.</p>
                 <button
                   onClick={close}
-                  className="self-end px-4 py-2 rounded-lg bg-zinc-800 text-sm text-zinc-200 hover:bg-zinc-700 transition-colors"
+                  className="self-end px-4 py-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-sm text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
                 >
                   Close
                 </button>
@@ -87,11 +87,11 @@ export default function ReportModal({
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-white">Report a problem</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Report a problem</h3>
                   <button
                     type="button"
                     onClick={close}
-                    className="text-zinc-500 hover:text-zinc-300 text-lg leading-none"
+                    className="text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-200 text-lg leading-none"
                     aria-label="Close"
                   >
                     ×
@@ -100,19 +100,16 @@ export default function ReportModal({
 
                 <fieldset className="flex flex-col gap-2">
                   {REPORT_TYPES.map((type) => (
-                    <label
-                      key={type}
-                      className="flex items-center gap-3 cursor-pointer group"
-                    >
+                    <label key={type} className="flex items-center gap-3 cursor-pointer group">
                       <input
                         type="radio"
                         name="report-type"
                         value={type}
                         checked={selected === type}
                         onChange={() => setSelected(type)}
-                        className="accent-amber-400"
+                        className="accent-amber-500"
                       />
-                      <span className="text-sm text-zinc-300 group-hover:text-white transition-colors">
+                      <span className="text-sm text-gray-700 dark:text-zinc-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
                         {REPORT_TYPE_LABELS[type]}
                       </span>
                     </label>
@@ -120,7 +117,7 @@ export default function ReportModal({
                 </fieldset>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-zinc-500 uppercase tracking-wide">
+                  <label className="text-xs text-gray-400 dark:text-zinc-500 uppercase tracking-wide">
                     Extra details (optional)
                   </label>
                   <textarea
@@ -129,26 +126,26 @@ export default function ReportModal({
                     rows={2}
                     maxLength={300}
                     placeholder="e.g. moved to a new venue in March"
-                    className="w-full rounded-lg bg-zinc-800 ring-1 ring-zinc-700 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-amber-500 resize-none"
+                    className="w-full rounded-lg bg-gray-50 dark:bg-zinc-800 ring-1 ring-gray-200 dark:ring-zinc-700 px-3 py-2 text-sm text-gray-700 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-amber-400 resize-none"
                   />
                 </div>
 
                 {state === 'error' && (
-                  <p className="text-xs text-red-400">{errorMsg}</p>
+                  <p className="text-xs text-red-500">{errorMsg}</p>
                 )}
 
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={close}
-                    className="px-4 py-2 rounded-lg bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-sm text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={state === 'submitting'}
-                    className="px-4 py-2 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
                   >
                     {state === 'submitting' ? 'Sending…' : 'Send report'}
                   </button>
