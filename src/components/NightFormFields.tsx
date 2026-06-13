@@ -192,12 +192,10 @@ export function ScheduleSection({ schedules, onSchedulesChange }: ScheduleProps)
 interface VenueProps {
   venueName: string; onVenueNameChange: (v: string) => void
   venueAddress: string; onVenueAddressChange: (v: string) => void
-  venueArea?: string; onVenueAreaChange?: (v: string) => void
-  venueNearestStation?: string; onVenueNearestStationChange?: (v: string | undefined) => void
   children?: React.ReactNode
 }
 
-export function VenueSection({ venueName, onVenueNameChange, venueAddress, onVenueAddressChange, venueArea, onVenueAreaChange, venueNearestStation, onVenueNearestStationChange, children }: VenueProps) {
+export function VenueSection({ venueName, onVenueNameChange, venueAddress, onVenueAddressChange, children }: VenueProps) {
   return (
     <section className={sectionCls}>
       <h2 className={sectionHeadingCls}>Venue</h2>
@@ -207,16 +205,6 @@ export function VenueSection({ venueName, onVenueNameChange, venueAddress, onVen
       <Field label="Address" required>
         <input type="text" required value={venueAddress} onChange={(e) => onVenueAddressChange(e.target.value)} placeholder="e.g. 100 Camden High St, London NW1 0LU" className={inputCls} />
       </Field>
-      {onVenueAreaChange && (
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Area" required>
-            <input type="text" required value={venueArea ?? ''} onChange={(e) => onVenueAreaChange(e.target.value)} placeholder="e.g. Camden" className={inputCls} />
-          </Field>
-          <Field label="Nearest tube">
-            <input type="text" value={venueNearestStation ?? ''} onChange={(e) => onVenueNearestStationChange?.(e.target.value || undefined)} placeholder="e.g. Camden Town" className={inputCls} />
-          </Field>
-        </div>
-      )}
       {children}
     </section>
   )

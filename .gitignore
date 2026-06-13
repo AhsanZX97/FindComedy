@@ -34,3 +34,4 @@ dist-ssr
 # Project docs and DB schema (local only)
 docs/
 supabase/
+scripts/

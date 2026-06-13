@@ -87,9 +87,10 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
       <VenueSection
         venueName={night.venue.name} onVenueNameChange={(v) => set('venue', { ...night.venue, name: v })}
         venueAddress={night.venue.address} onVenueAddressChange={(v) => set('venue', { ...night.venue, address: v })}
-        venueArea={night.venue.area} onVenueAreaChange={(v) => set('venue', { ...night.venue, area: v })}
-        venueNearestStation={night.venue.nearestStation} onVenueNearestStationChange={(v) => set('venue', { ...night.venue, nearestStation: v })}
       >
+        <Field label="Area" required>
+          <input type="text" required value={night.venue.area} onChange={(e) => set('venue', { ...night.venue, area: e.target.value })} placeholder="e.g. Camden" className={inputCls} />
+        </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Latitude">
             <input type="number" step="any" value={night.venue.location.lat} onChange={(e) => set('venue', { ...night.venue, location: { ...night.venue.location, lat: Number(e.target.value) } })} className={inputCls} />
@@ -145,7 +146,7 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
               <option value="gone">Gone</option>
             </select>
           </Field>
-          <Field label="Last verified">
+          <Field label="Last updated">
             <input type="date" value={night.lastVerified} onChange={(e) => set('lastVerified', e.target.value)} className={inputCls} />
           </Field>
         </div>

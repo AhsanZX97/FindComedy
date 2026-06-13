@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { filterNights, sortByTime, getUniqueAreas } from '../../utils/filterNights'
 import NightCard from '../../components/NightCard'
@@ -78,10 +78,8 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
 }
 
 export default function BrowsePage() {
-  const [filters, setFilters] = useState<NightFilters>(() => ({
-    ...DEFAULT_FILTERS,
-    weekdays: [todayWeekday()],
-  }))
+  const navigate = useNavigate()
+  const [filters, setFilters] = useState<NightFilters>(DEFAULT_FILTERS)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
 
@@ -210,6 +208,7 @@ export default function BrowsePage() {
                   <div
                     key={night.id}
                     ref={(el) => { cardRefs.current[night.id] = el }}
+                    onDoubleClick={() => navigate(`/night/${night.id}`)}
                     className={`rounded-2xl transition-all ${
                       effectiveSelectedId === night.id
                         ? 'ring-2 ring-amber-400'
