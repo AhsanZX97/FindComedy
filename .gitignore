@@ -30,3 +30,7 @@ dist-ssr
 
 # Local agent/tooling scratch dirs
 .playwright-mcp/
+
+# Project docs and DB schema (local only)
+docs/
+supabase/
