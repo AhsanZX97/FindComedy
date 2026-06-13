@@ -31,7 +31,6 @@ const EMPTY: NightSubmission = {
   startTime: '20:00',
   venueName: '',
   venueAddress: '',
-  entry: 'Free',
 }
 
 export default function SubmitPage() {
@@ -124,16 +123,13 @@ export default function SubmitPage() {
           />
 
           <PricingSection
-            entry={form.entry} onEntryChange={(v) => set('entry', v)}
-            performerPay={form.performerPay} onPerformerPayChange={(v) => set('performerPay', v)}
             bringerRequired={form.bringerRequired} onBringerRequiredChange={(v) => set('bringerRequired', v)}
             bringerCount={form.bringerCount} onBringerCountChange={(v) => set('bringerCount', v)}
             bringerNote={form.bringerNote} onBringerNoteChange={(v) => set('bringerNote', v)}
           />
 
           <BookingSection
-            audienceBooking={form.audienceBooking} onAudienceBookingChange={(v) => set('audienceBooking', v)}
-            performerBooking={form.performerBooking} onPerformerBookingChange={(v) => set('performerBooking', v)}
+            contact={form.contact} onContactChange={(v) => set('contact', v)}
           />
 
           <SocialsSection

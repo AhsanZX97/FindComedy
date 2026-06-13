@@ -35,7 +35,6 @@ export default function NightCard({ night, onCardClick }: NightCardProps) {
   const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
   const scheduleLabel = formatSchedule(night)
-  const isFree = night.pricing.entry.toLowerCase() === 'free'
 
   const bodyContent = (
     <>
@@ -71,7 +70,7 @@ export default function NightCard({ night, onCardClick }: NightCardProps) {
       {/* Schedule */}
       <p className="text-sm font-medium text-gray-900 dark:text-white">{scheduleLabel}</p>
 
-      {/* Footer: bringer + pricing */}
+      {/* Footer: bringer */}
       <div className="flex flex-wrap items-center gap-2 mt-auto pt-1 border-t border-gray-100 dark:border-zinc-800">
         {night.bringer.required ? (
           <span className="text-xs text-amber-600 font-medium">
@@ -80,13 +79,6 @@ export default function NightCard({ night, onCardClick }: NightCardProps) {
         ) : (
           <span className="text-xs text-emerald-600 font-medium">No bringer</span>
         )}
-        <span className="ml-auto text-xs font-semibold">
-          {isFree ? (
-            <span className="text-emerald-600">Free entry</span>
-          ) : (
-            <span className="text-gray-700 dark:text-zinc-300">{night.pricing.entry}</span>
-          )}
-        </span>
       </div>
     </>
   )

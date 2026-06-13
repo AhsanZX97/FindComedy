@@ -23,8 +23,8 @@ function makeNight(overrides: Partial<ComedyNight['schedule']> = {}): ComedyNigh
       area: 'Islington',
       location: { lat: 51.5, lng: -0.1 },
     },
-    pricing: { entry: 'Free' },
-    howToBook: {},
+    howToBook: { contact: '' },
+    wheelchairAccessible: null,
     socials: {},
     status: 'active',
     lastVerified: '2026-01-01',
@@ -38,6 +38,12 @@ describe('formatTime', () => {
   it('formats 7:30pm with minutes', () => expect(formatTime('19:30')).toBe('7:30pm'))
   it('formats 1am on the hour', () => expect(formatTime('01:00')).toBe('1am'))
   it('formats 11:45pm', () => expect(formatTime('23:45')).toBe('11:45pm'))
+  it('passes through already-formatted 12h times without crashing', () => {
+    expect(formatTime('7pm')).toBe('7pm')
+    expect(formatTime('8:30pm')).toBe('8:30pm')
+    expect(formatTime('11am')).toBe('11am')
+  })
+  it('returns empty string for empty input', () => expect(formatTime('')).toBe(''))
 })
 
 describe('formatSchedule', () => {

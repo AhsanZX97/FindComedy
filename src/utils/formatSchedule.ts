@@ -11,7 +11,13 @@ const FREQ_LABELS: Record<string, string> = {
 }
 
 export function formatTime(time: string): string {
-  const [h, m] = time.split(':').map(Number)
+  if (!time) return ''
+  // If already in 12h format (e.g. '7pm', '8:30pm' from Supabase CSV data), pass through as-is.
+  if (/am|pm/i.test(time)) return time.toLowerCase()
+  const [hStr, mStr] = time.split(':')
+  const h = Number(hStr)
+  if (isNaN(h)) return time
+  const m = Number(mStr ?? '0')
   const suffix = h >= 12 ? 'pm' : 'am'
   const hour = h > 12 ? h - 12 : h === 0 ? 12 : h
   return m === 0 ? `${hour}${suffix}` : `${hour}:${m.toString().padStart(2, '0')}${suffix}`

@@ -26,7 +26,6 @@ interface BottomCardProps {
 }
 
 function BottomCard({ night, onClose }: BottomCardProps) {
-  const isFree = night.pricing.entry.toLowerCase() === 'free'
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[1000] bg-zinc-900 border-t border-zinc-800 rounded-t-2xl p-5 flex flex-col gap-3 animate-[slideUp_150ms_ease-out]">
       <div className="flex items-start justify-between gap-3">
@@ -51,10 +50,7 @@ function BottomCard({ night, onClose }: BottomCardProps) {
           ×
         </button>
       </div>
-      <div className="flex items-center justify-between">
-        <span className={`text-sm font-semibold ${isFree ? 'text-emerald-400' : 'text-zinc-300'}`}>
-          {isFree ? 'Free entry' : night.pricing.entry}
-        </span>
+      <div className="flex items-center justify-end">
         <Link
           to={`/night/${night.id}`}
           className="px-4 py-1.5 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors"

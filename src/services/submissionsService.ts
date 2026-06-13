@@ -93,14 +93,10 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
       area: '',
       location: { lat: 0, lng: 0 },
     },
-    pricing: {
-      entry: form.entry,
-      performerPay: form.performerPay,
-    },
     howToBook: {
-      audience: form.audienceBooking,
-      performers: form.performerBooking,
+      contact: form.contact ?? '',
     },
+    wheelchairAccessible: null,
     socials: {
       website: form.website,
       instagram: form.instagram,

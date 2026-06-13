@@ -83,8 +83,7 @@ function hasActiveFilters(filters: NightFilters): boolean {
     filters.area !== null ||
     filters.type !== null ||
     filters.level !== null ||
-    filters.noBringer ||
-    filters.freeEntry
+    filters.noBringer
   )
 }
 
@@ -172,10 +171,6 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
 
         <TogglePill active={filters.noBringer} onClick={() => set('noBringer', !filters.noBringer)}>
           No bringer
-        </TogglePill>
-
-        <TogglePill active={filters.freeEntry} onClick={() => set('freeEntry', !filters.freeEntry)}>
-          Free entry
         </TogglePill>
 
         {hasActiveFilters(filters) && (

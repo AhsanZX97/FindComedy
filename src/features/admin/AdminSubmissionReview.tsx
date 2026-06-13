@@ -106,14 +106,10 @@ function AdminSubmissionReviewInner() {
           area: '',
           location: coords ?? { lat: 0, lng: 0 },
         },
-        pricing: {
-          entry: form.entry,
-          performerPay: form.performerPay,
-        },
         howToBook: {
-          audience: form.audienceBooking,
-          performers: form.performerBooking,
+          contact: form.contact ?? '',
         },
+        wheelchairAccessible: null,
         socials: {
           website: form.website,
           instagram: form.instagram,
@@ -242,16 +238,13 @@ function AdminSubmissionReviewInner() {
         </VenueSection>
 
         <PricingSection
-          entry={form.entry} onEntryChange={(v) => setField('entry', v)}
-          performerPay={form.performerPay} onPerformerPayChange={(v) => setField('performerPay', v)}
           bringerRequired={form.bringerRequired} onBringerRequiredChange={(v) => setField('bringerRequired', v)}
           bringerCount={form.bringerCount} onBringerCountChange={(v) => setField('bringerCount', v)}
           bringerNote={form.bringerNote} onBringerNoteChange={(v) => setField('bringerNote', v)}
         />
 
         <BookingSection
-          audienceBooking={form.audienceBooking} onAudienceBookingChange={(v) => setField('audienceBooking', v)}
-          performerBooking={form.performerBooking} onPerformerBookingChange={(v) => setField('performerBooking', v)}
+          contact={form.contact} onContactChange={(v) => setField('contact', v)}
         />
 
         <SocialsSection

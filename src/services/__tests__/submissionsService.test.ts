@@ -19,7 +19,6 @@ const validSubmission: NightSubmission = {
   startTime: '20:00',
   venueName: 'The Test Pub',
   venueAddress: '1 Test St, London',
-  entry: 'Free',
 }
 
 const validStoredSubmission: StoredSubmission = {

@@ -18,8 +18,8 @@ const makeNight = (overrides: Partial<ComedyNight>): ComedyNight => ({
     area: 'Islington',
     location: { lat: 51.5, lng: -0.1 },
   },
-  pricing: { entry: 'Free' },
-  howToBook: {},
+  howToBook: { contact: '' },
+  wheelchairAccessible: null,
   socials: {},
   status: 'active',
   lastVerified: '2026-01-01',
@@ -114,19 +114,6 @@ describe('filterNights', () => {
     expect(result[0].bringer.required).toBe(false)
   })
 
-  it('freeEntry filter excludes paid nights', () => {
-    const nights = [
-      makeNight({ pricing: { entry: 'Free' } }),
-      makeNight({ id: 'paid', pricing: { entry: '£10' } }),
-    ]
-    expect(filterNights(nights, filters({ freeEntry: true }))).toHaveLength(1)
-  })
-
-  it('freeEntry match is case-insensitive', () => {
-    const nights = [makeNight({ pricing: { entry: 'free' } })]
-    expect(filterNights(nights, filters({ freeEntry: true }))).toHaveLength(1)
-  })
-
   it('returns empty array when no nights match', () => {
     const nights = [makeNight({ name: 'Banana Cabaret' })]
     expect(filterNights(nights, filters({ search: 'zzz-no-match' }))).toHaveLength(0)
@@ -134,11 +121,11 @@ describe('filterNights', () => {
 
   it('combines multiple filters (AND logic)', () => {
     const nights = [
-      makeNight({ type: 'open-mic', pricing: { entry: 'Free' } }),
-      makeNight({ id: 'two', type: 'open-mic', pricing: { entry: '£5' } }),
-      makeNight({ id: 'three', type: 'showcase', pricing: { entry: 'Free' } }),
+      makeNight({ type: 'open-mic', bringer: { required: false } }),
+      makeNight({ id: 'two', type: 'open-mic', bringer: { required: true } }),
+      makeNight({ id: 'three', type: 'showcase', bringer: { required: false } }),
     ]
-    const result = filterNights(nights, filters({ type: 'open-mic', freeEntry: true }))
+    const result = filterNights(nights, filters({ type: 'open-mic', noBringer: true }))
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('test-night')
   })

@@ -10,10 +10,6 @@ function matchesSearch(night: ComedyNight, search: string): boolean {
   )
 }
 
-function isFreeEntry(night: ComedyNight): boolean {
-  return night.pricing.entry.toLowerCase() === 'free'
-}
-
 export function filterNights(nights: ComedyNight[], filters: NightFilters): ComedyNight[] {
   return nights.filter((night) => {
     if (night.status !== 'active') return false
@@ -23,7 +19,6 @@ export function filterNights(nights: ComedyNight[], filters: NightFilters): Come
     if (filters.type !== null && night.type !== filters.type) return false
     if (filters.level !== null && !night.levels.includes(filters.level)) return false
     if (filters.noBringer && night.bringer.required) return false
-    if (filters.freeEntry && !isFreeEntry(night)) return false
     return true
   })
 }

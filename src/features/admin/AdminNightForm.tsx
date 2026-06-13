@@ -115,16 +115,13 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
       </VenueSection>
 
       <PricingSection
-        entry={night.pricing.entry} onEntryChange={(v) => set('pricing', { ...night.pricing, entry: v })}
-        performerPay={night.pricing.performerPay} onPerformerPayChange={(v) => set('pricing', { ...night.pricing, performerPay: v })}
         bringerRequired={night.bringer.required} onBringerRequiredChange={(v) => set('bringer', { ...night.bringer, required: v })}
         bringerCount={night.bringer.count} onBringerCountChange={(v) => set('bringer', { ...night.bringer, count: v })}
         bringerNote={night.bringer.note} onBringerNoteChange={(v) => set('bringer', { ...night.bringer, note: v })}
       />
 
       <BookingSection
-        audienceBooking={night.howToBook.audience} onAudienceBookingChange={(v) => set('howToBook', { ...night.howToBook, audience: v })}
-        performerBooking={night.howToBook.performers} onPerformerBookingChange={(v) => set('howToBook', { ...night.howToBook, performers: v })}
+        contact={night.howToBook.contact} onContactChange={(v) => set('howToBook', { contact: v ?? '' })}
       />
 
       <SocialsSection

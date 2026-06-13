@@ -77,7 +77,6 @@ interface MarkerPopupProps {
 }
 
 function MarkerPopup({ night, pos, onClose, isDark }: MarkerPopupProps) {
-  const isFree = night.pricing.entry.toLowerCase() === 'free'
   const schedule = formatSchedule(night)
 
   const arrowBorderColor = isDark ? '#3f3f46' : '#e5e7eb'
@@ -122,13 +121,8 @@ function MarkerPopup({ night, pos, onClose, isDark }: MarkerPopupProps) {
         {/* Venue */}
         <p className="text-xs text-gray-400 dark:text-zinc-500 leading-snug">{night.venue.name} · {night.venue.area}</p>
 
-        {/* Schedule + price */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-gray-700 dark:text-zinc-300 font-medium">{schedule}</span>
-          <span className={`text-xs font-semibold shrink-0 ${isFree ? 'text-emerald-600' : 'text-gray-700 dark:text-zinc-300'}`}>
-            {isFree ? 'Free' : night.pricing.entry}
-          </span>
-        </div>
+        {/* Schedule */}
+        <span className="text-xs text-gray-700 dark:text-zinc-300 font-medium">{schedule}</span>
 
         {/* CTA */}
         <Link

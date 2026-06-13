@@ -142,28 +142,18 @@ export function VenueSection({ venueName, onVenueNameChange, venueAddress, onVen
   )
 }
 
-// ── Pricing section ────────────────────────────────────────────────────────────
+// ── Pricing section (bringer policy only) ──────────────────────────────────────
 
 interface PricingProps {
-  entry: string; onEntryChange: (v: string) => void
-  performerPay?: string; onPerformerPayChange: (v: string | undefined) => void
   bringerRequired: boolean; onBringerRequiredChange: (v: boolean) => void
   bringerCount?: number; onBringerCountChange: (v: number | undefined) => void
   bringerNote?: string; onBringerNoteChange: (v: string | undefined) => void
 }
 
-export function PricingSection({ entry, onEntryChange, performerPay, onPerformerPayChange, bringerRequired, onBringerRequiredChange, bringerCount, onBringerCountChange, bringerNote, onBringerNoteChange }: PricingProps) {
+export function PricingSection({ bringerRequired, onBringerRequiredChange, bringerCount, onBringerCountChange, bringerNote, onBringerNoteChange }: PricingProps) {
   return (
     <section className={sectionCls}>
-      <h2 className={sectionHeadingCls}>Pricing</h2>
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Entry price" required>
-          <input type="text" required value={entry} onChange={(e) => onEntryChange(e.target.value)} placeholder="e.g. Free, £5, bucket" className={inputCls} />
-        </Field>
-        <Field label="Performer pay">
-          <input type="text" value={performerPay ?? ''} onChange={(e) => onPerformerPayChange(e.target.value || undefined)} placeholder="e.g. £10, expenses" className={inputCls} />
-        </Field>
-      </div>
+      <h2 className={sectionHeadingCls}>Bringer</h2>
       <Field label="Bringer policy">
         <div className="flex flex-col gap-3">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -189,19 +179,15 @@ export function PricingSection({ entry, onEntryChange, performerPay, onPerformer
 // ── Booking section ────────────────────────────────────────────────────────────
 
 interface BookingProps {
-  audienceBooking?: string; onAudienceBookingChange: (v: string | undefined) => void
-  performerBooking?: string; onPerformerBookingChange: (v: string | undefined) => void
+  contact?: string; onContactChange: (v: string | undefined) => void
 }
 
-export function BookingSection({ audienceBooking, onAudienceBookingChange, performerBooking, onPerformerBookingChange }: BookingProps) {
+export function BookingSection({ contact, onContactChange }: BookingProps) {
   return (
     <section className={sectionCls}>
-      <h2 className={sectionHeadingCls}>How to attend</h2>
-      <Field label="Audience booking">
-        <input type="text" value={audienceBooking ?? ''} onChange={(e) => onAudienceBookingChange(e.target.value || undefined)} placeholder="e.g. Free walk-in, or link to tickets" className={inputCls} />
-      </Field>
-      <Field label="Performer sign-up">
-        <input type="text" value={performerBooking ?? ''} onChange={(e) => onPerformerBookingChange(e.target.value || undefined)} placeholder="e.g. Email the host or DM on Instagram" className={inputCls} />
+      <h2 className={sectionHeadingCls}>How to attend / book a spot</h2>
+      <Field label="Contact / booking link">
+        <input type="text" value={contact ?? ''} onChange={(e) => onContactChange(e.target.value || undefined)} placeholder="e.g. https://example.com/book or email@example.com" className={inputCls} />
       </Field>
     </section>
   )

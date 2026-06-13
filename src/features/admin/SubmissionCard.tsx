@@ -38,7 +38,7 @@ export default function SubmissionCard({ sub, className = '' }: SubmissionCardPr
       <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
         <dt className="text-gray-400 dark:text-zinc-500">Type</dt><dd className="text-gray-700 dark:text-zinc-300 capitalize">{d.type}</dd>
         <dt className="text-gray-400 dark:text-zinc-500">Schedule</dt><dd className="text-gray-700 dark:text-zinc-300">{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.weekday]} {d.startTime}</dd>
-        <dt className="text-gray-400 dark:text-zinc-500">Entry</dt><dd className="text-gray-700 dark:text-zinc-300">{d.entry}</dd>
+        <dt className="text-gray-400 dark:text-zinc-500">Bringer</dt><dd className="text-gray-700 dark:text-zinc-300">{d.bringerRequired ? 'Required' : 'No'}</dd>
         <dt className="text-gray-400 dark:text-zinc-500">Address</dt><dd className="text-gray-700 dark:text-zinc-300 truncate">{d.venueAddress}</dd>
       </dl>
 

@@ -45,8 +45,8 @@ export interface ComedyNight {
   bringer: BringerPolicy
   schedule: Schedule
   venue: Venue
-  pricing: { entry: string; performerPay?: string }
-  howToBook: { audience?: string; performers?: string }
+  howToBook: { contact: string }
+  wheelchairAccessible: boolean | null
   socials: SocialLinks
   status: NightStatus
   lastVerified: string // ISO date string
@@ -134,10 +134,7 @@ export interface NightSubmission {
   scheduleNote?: string
   venueName: string
   venueAddress: string
-  entry: string
-  performerPay?: string
-  audienceBooking?: string
-  performerBooking?: string
+  contact?: string
   website?: string
   instagram?: string
   facebook?: string
@@ -159,7 +156,6 @@ export interface NightFilters {
   type: NightType | null
   level: Level | null
   noBringer: boolean
-  freeEntry: boolean
 }
 
 export const DEFAULT_FILTERS: NightFilters = {
@@ -169,7 +165,6 @@ export const DEFAULT_FILTERS: NightFilters = {
   type: null,
   level: null,
   noBringer: false,
-  freeEntry: false,
 }
 
 export interface SiteFeedback {

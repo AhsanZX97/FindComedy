@@ -107,44 +107,33 @@ function FreshnessBadge({ lastVerified }: { lastVerified: string }) {
 }
 
 function BookingTabs({ night }: { night: ComedyNight }) {
-  const hasAudience = Boolean(night.howToBook.audience)
-  const hasPerformers = Boolean(night.howToBook.performers)
+  const contact = night.howToBook.contact
 
-  if (!hasAudience && !hasPerformers) {
+  if (!contact) {
     return <p className="text-sm text-gray-400 dark:text-zinc-500">No booking information listed.</p>
   }
 
+  const isUrl = contact.startsWith('http://') || contact.startsWith('https://')
+
   return (
-    <div className="flex flex-col gap-4">
-      {hasAudience && (
-        <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
-          <span className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
-            Getting a ticket
-          </span>
-          <p className="text-sm text-gray-700 dark:text-zinc-300">{night.howToBook.audience}</p>
-          {night.pricing.entry && (
-            <p className="text-sm font-semibold text-amber-600 mt-1">
-              {night.pricing.entry.toLowerCase() === 'free' ? 'Free entry' : night.pricing.entry}
-            </p>
-          )}
-        </div>
+    <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-2">
+      {isUrl ? (
+        <a
+          href={contact}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-amber-600 dark:text-amber-400 hover:underline break-all"
+        >
+          {contact}
+        </a>
+      ) : (
+        <p className="text-sm text-gray-700 dark:text-zinc-300">{contact}</p>
       )}
-      {hasPerformers && (
-        <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
-          <span className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
-            Getting a spot (comics)
-          </span>
-          <p className="text-sm text-gray-700 dark:text-zinc-300">{night.howToBook.performers}</p>
-          {night.bringer.required && (
-            <p className="text-xs text-amber-600 mt-1">
-              Bringer required{night.bringer.count ? ` — bring ${night.bringer.count} paying guest${night.bringer.count > 1 ? 's' : ''}` : ''}
-              {night.bringer.note ? `. ${night.bringer.note}` : ''}
-            </p>
-          )}
-          {night.pricing.performerPay && night.pricing.performerPay !== 'None' && (
-            <p className="text-xs text-emerald-600 mt-1">Pay: {night.pricing.performerPay}</p>
-          )}
-        </div>
+      {night.bringer.required && (
+        <p className="text-xs text-amber-600 mt-1">
+          Bringer required{night.bringer.count ? ` — bring ${night.bringer.count} paying guest${night.bringer.count > 1 ? 's' : ''}` : ''}
+          {night.bringer.note ? `. ${night.bringer.note}` : ''}
+        </p>
       )}
     </div>
   )
