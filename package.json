@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "seed:gen": "vite-node scripts/generate-seed.ts"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.1",

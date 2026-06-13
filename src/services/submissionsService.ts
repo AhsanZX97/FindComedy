@@ -1,6 +1,24 @@
 import { supabase } from './supabase'
-import type { NightSubmission, StoredSubmission, ComedyNight } from '../types/comedyNight'
+import type { NightSubmission, StoredSubmission, ComedyNight, Schedule, Frequency, Weekday } from '../types/comedyNight'
 import { upsertNight } from './nightsService'
+
+function normalizeSubmissionData(raw: unknown): NightSubmission {
+  const d = raw as Record<string, unknown>
+  if (Array.isArray(d.schedules) && d.schedules.length > 0) {
+    return d as unknown as NightSubmission
+  }
+  // Legacy format: flat frequency / weekday / startTime at the top level
+  const schedules: Schedule[] =
+    d.frequency && d.startTime
+      ? [{
+          frequency: d.frequency as Frequency,
+          weekday: (d.weekday ?? 1) as Weekday,
+          startTime: d.startTime as string,
+          note: d.scheduleNote as string | undefined,
+        }]
+      : [{ frequency: 'weekly', weekday: 1, startTime: '20:00' }]
+  return { ...(d as unknown as NightSubmission), schedules }
+}
 
 export async function submitNight(submission: NightSubmission): Promise<void> {
   if (!supabase) throw new Error('Supabase is not configured')
@@ -22,7 +40,7 @@ interface SubmissionRow {
 function rowToSubmission(row: SubmissionRow): StoredSubmission {
   return {
     id: row.id,
-    data: row.data,
+    data: normalizeSubmissionData(row.data),
     status: row.status as StoredSubmission['status'],
     submitterNote: row.submitter_note ?? undefined,
     createdAt: row.created_at,
@@ -80,12 +98,7 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
       count: form.bringerCount,
       note: form.bringerNote,
     },
-    schedule: {
-      frequency: form.frequency,
-      weekday: form.weekday,
-      startTime: form.startTime,
-      note: form.scheduleNote,
-    },
+    schedules: form.schedules,
     venue: {
       id: slugify(form.venueName) + '-venue',
       name: form.venueName,

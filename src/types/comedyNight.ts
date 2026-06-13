@@ -43,7 +43,7 @@ export interface ComedyNight {
   type: NightType
   levels: Level[]
   bringer: BringerPolicy
-  schedule: Schedule
+  schedules: Schedule[]
   venue: Venue
   howToBook: { contact: string }
   wheelchairAccessible: boolean | null
@@ -128,10 +128,7 @@ export interface NightSubmission {
   bringerRequired: boolean
   bringerCount?: number
   bringerNote?: string
-  frequency: Frequency
-  weekday: Weekday
-  startTime: string
-  scheduleNote?: string
+  schedules: Schedule[]
   venueName: string
   venueAddress: string
   contact?: string
@@ -151,7 +148,7 @@ export interface StoredSubmission {
 
 export interface NightFilters {
   search: string
-  weekday: Weekday | null
+  weekdays: Weekday[]
   area: string | null
   type: NightType | null
   level: Level | null
@@ -160,7 +157,7 @@ export interface NightFilters {
 
 export const DEFAULT_FILTERS: NightFilters = {
   search: '',
-  weekday: null,
+  weekdays: [],
   area: null,
   type: null,
   level: null,

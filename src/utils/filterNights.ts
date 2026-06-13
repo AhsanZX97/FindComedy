@@ -10,11 +10,23 @@ function matchesSearch(night: ComedyNight, search: string): boolean {
   )
 }
 
+export function earliestStartTime(night: ComedyNight): string {
+  if (!night.schedules || night.schedules.length === 0) return '99:99'
+  return night.schedules.reduce(
+    (earliest, s) => (s.startTime < earliest ? s.startTime : earliest),
+    night.schedules[0].startTime,
+  )
+}
+
 export function filterNights(nights: ComedyNight[], filters: NightFilters): ComedyNight[] {
   return nights.filter((night) => {
     if (night.status !== 'active') return false
     if (filters.search.trim() && !matchesSearch(night, filters.search.trim())) return false
-    if (filters.weekday !== null && night.schedule.weekday !== filters.weekday) return false
+    if (
+      filters.weekdays.length > 0 &&
+      !night.schedules.some((s) => filters.weekdays.includes(s.weekday))
+    )
+      return false
     if (filters.area !== null && night.venue.area !== filters.area) return false
     if (filters.type !== null && night.type !== filters.type) return false
     if (filters.level !== null && !night.levels.includes(filters.level)) return false
@@ -24,7 +36,9 @@ export function filterNights(nights: ComedyNight[], filters: NightFilters): Come
 }
 
 export function sortByTime(nights: ComedyNight[]): ComedyNight[] {
-  return [...nights].sort((a, b) => a.schedule.startTime.localeCompare(b.schedule.startTime))
+  return [...nights].sort((a, b) =>
+    earliestStartTime(a).localeCompare(earliestStartTime(b)),
+  )
 }
 
 export function getUniqueAreas(nights: ComedyNight[]): string[] {

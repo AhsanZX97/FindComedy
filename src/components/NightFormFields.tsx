@@ -1,4 +1,4 @@
-import type { NightType, Level, Frequency, Weekday } from '../types/comedyNight'
+import type { NightType, Level, Frequency, Weekday, Schedule } from '../types/comedyNight'
 
 export const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -71,38 +71,118 @@ export function AboutSection({ name, onNameChange, description, onDescriptionCha
 
 // ── Schedule section ───────────────────────────────────────────────────────────
 
-interface ScheduleProps {
-  frequency: Frequency; onFrequencyChange: (v: Frequency) => void
-  weekday: Weekday; onWeekdayChange: (v: Weekday) => void
-  startTime: string; onStartTimeChange: (v: string) => void
-  scheduleNote?: string; onScheduleNoteChange: (v: string | undefined) => void
-}
+const DEFAULT_SCHEDULE_ENTRY: Schedule = { frequency: 'weekly', weekday: 1, startTime: '20:00' }
 
-export function ScheduleSection({ frequency, onFrequencyChange, weekday, onWeekdayChange, startTime, onStartTimeChange, scheduleNote, onScheduleNoteChange }: ScheduleProps) {
+function ScheduleRow({
+  entry,
+  index,
+  canRemove,
+  onChange,
+  onRemove,
+}: {
+  entry: Schedule
+  index: number
+  canRemove: boolean
+  onChange: (v: Schedule) => void
+  onRemove: () => void
+}) {
   return (
-    <section className={sectionCls}>
-      <h2 className={sectionHeadingCls}>Schedule</h2>
+    <div className="flex flex-col gap-3 rounded-xl bg-gray-50 dark:bg-zinc-800/50 p-4 relative">
+      {canRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label={`Remove schedule ${index + 1}`}
+          className="absolute top-3 right-3 text-gray-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 text-lg leading-none"
+        >
+          ×
+        </button>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <Field label="Frequency" required>
-          <select value={frequency} onChange={(e) => onFrequencyChange(e.target.value as Frequency)} className={selectCls}>
+          <select
+            value={entry.frequency}
+            onChange={(e) => onChange({ ...entry, frequency: e.target.value as Frequency })}
+            className={selectCls}
+          >
             <option value="weekly">Weekly</option>
             <option value="biweekly">Every other week</option>
             <option value="monthly">Monthly</option>
             <option value="irregular">Irregular</option>
           </select>
         </Field>
-        <Field label="Day" required>
-          <select value={weekday} onChange={(e) => onWeekdayChange(Number(e.target.value) as Weekday)} className={selectCls}>
+        <Field label="Day" required={entry.frequency !== 'irregular'}>
+          <select
+            value={entry.weekday ?? 1}
+            onChange={(e) => onChange({ ...entry, weekday: Number(e.target.value) as Weekday })}
+            disabled={entry.frequency === 'irregular'}
+            className={`${selectCls} disabled:opacity-50`}
+          >
             {WEEKDAY_LABELS.map((day, i) => (<option key={day} value={i}>{day}</option>))}
           </select>
         </Field>
       </div>
       <Field label="Start time" required>
-        <input type="time" required value={startTime} onChange={(e) => onStartTimeChange(e.target.value)} className={inputCls} />
+        <input
+          type="time"
+          required
+          value={entry.startTime}
+          onChange={(e) => onChange({ ...entry, startTime: e.target.value })}
+          className={inputCls}
+        />
       </Field>
       <Field label="Schedule note">
-        <input type="text" value={scheduleNote ?? ''} onChange={(e) => onScheduleNoteChange(e.target.value || undefined)} placeholder="e.g. doors at 7pm, show at 8pm" className={inputCls} />
+        <input
+          type="text"
+          value={entry.note ?? ''}
+          onChange={(e) => onChange({ ...entry, note: e.target.value || undefined })}
+          placeholder="e.g. doors at 7pm, show at 8pm"
+          className={inputCls}
+        />
       </Field>
+    </div>
+  )
+}
+
+interface ScheduleProps {
+  schedules: Schedule[]
+  onSchedulesChange: (v: Schedule[]) => void
+}
+
+export function ScheduleSection({ schedules, onSchedulesChange }: ScheduleProps) {
+  function updateEntry(index: number, entry: Schedule) {
+    const next = schedules.map((s, i) => (i === index ? entry : s))
+    onSchedulesChange(next)
+  }
+
+  function removeEntry(index: number) {
+    onSchedulesChange(schedules.filter((_, i) => i !== index))
+  }
+
+  function addEntry() {
+    onSchedulesChange([...schedules, { ...DEFAULT_SCHEDULE_ENTRY }])
+  }
+
+  return (
+    <section className={sectionCls}>
+      <h2 className={sectionHeadingCls}>Schedule</h2>
+      {schedules.map((entry, i) => (
+        <ScheduleRow
+          key={i}
+          entry={entry}
+          index={i}
+          canRemove={schedules.length > 1}
+          onChange={(v) => updateEntry(i, v)}
+          onRemove={() => removeEntry(i)}
+        />
+      ))}
+      <button
+        type="button"
+        onClick={addEntry}
+        className="self-start text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium"
+      >
+        + Add another day / time
+      </button>
     </section>
   )
 }

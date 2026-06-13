@@ -15,7 +15,7 @@ const SAMPLE_NIGHT: ComedyNight = {
   type: 'open-mic',
   levels: ['new'],
   bringer: { required: false },
-  schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+  schedules: [{ frequency: 'weekly', weekday: 1, startTime: '20:00' }],
   venue: {
     id: 'venue-1',
     name: 'The Pub',
@@ -47,7 +47,7 @@ describe('getAllNights', () => {
       expect(night.id).toBeTruthy()
       expect(night.name).toBeTruthy()
       expect(night.venue).toBeDefined()
-      expect(night.schedule).toBeDefined()
+      expect(night.schedules).toBeDefined()
       expect(night.bringer).toBeDefined()
     }
   })

@@ -20,7 +20,9 @@ Other scripts: `npm run build`, `npm test`, `npm run typecheck`.
 
 ## Database
 
-SQL lives in [`supabase/`](supabase/). Run `migrations/001_schema.sql` then `seed.sql` in the Supabase SQL editor. `seed.sql` is generated from [`src/data/nights.ts`](src/data/nights.ts) — edit the data there and run `npm run seed:gen`, don't edit the SQL by hand.
+SQL lives in [`supabase/`](supabase/). In the Supabase SQL editor, run the files in [`migrations/`](supabase/migrations/) in numeric order (`001_schema.sql` → `006_csv_import_schema.sql`), then [`seed_from_csv.sql`](supabase/seed_from_csv.sql) to load the nights.
+
+`seed_from_csv.sql` is generated from the source CSV by [`scripts/importNights.ts`](scripts/importNights.ts) (`npx tsx scripts/importNights.ts`) — don't edit the SQL by hand. [`src/data/nights.ts`](src/data/nights.ts) is the in-app fallback dataset used when Supabase isn't configured.
 
 ## License
 

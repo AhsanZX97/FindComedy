@@ -27,3 +27,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local agent/tooling scratch dirs
+.playwright-mcp/

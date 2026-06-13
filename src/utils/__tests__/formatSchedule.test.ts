@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { formatTime, formatSchedule } from '../formatSchedule'
-import type { ComedyNight } from '../../types/comedyNight'
+import { formatTime, formatScheduleEntry, formatSchedule } from '../formatSchedule'
+import type { ComedyNight, Schedule } from '../../types/comedyNight'
 
-function makeNight(overrides: Partial<ComedyNight['schedule']> = {}): ComedyNight {
+function makeNight(schedules: Partial<Schedule>[] = [{}]): ComedyNight {
   return {
     id: 'test',
     name: 'Test Night',
@@ -10,12 +10,12 @@ function makeNight(overrides: Partial<ComedyNight['schedule']> = {}): ComedyNigh
     type: 'open-mic',
     levels: [],
     bringer: { required: false },
-    schedule: {
+    schedules: schedules.map((s) => ({
       frequency: 'weekly',
       weekday: 1,
       startTime: '20:00',
-      ...overrides,
-    },
+      ...s,
+    })) as Schedule[],
     venue: {
       id: 'v1',
       name: 'The Pub',
@@ -46,16 +46,49 @@ describe('formatTime', () => {
   it('returns empty string for empty input', () => expect(formatTime('')).toBe(''))
 })
 
+describe('formatScheduleEntry', () => {
+  it('weekly entry', () =>
+    expect(formatScheduleEntry({ frequency: 'weekly', weekday: 1, startTime: '20:00' })).toBe('Every Mon · 8pm'))
+
+  it('biweekly entry', () =>
+    expect(formatScheduleEntry({ frequency: 'biweekly', weekday: 4, startTime: '19:30' })).toBe('Every other Thu · 7:30pm'))
+
+  it('monthly entry', () =>
+    expect(formatScheduleEntry({ frequency: 'monthly', weekday: 5, startTime: '20:30' })).toBe('Monthly Fri · 8:30pm'))
+
+  it('irregular entry returns only time', () =>
+    expect(formatScheduleEntry({ frequency: 'irregular', weekday: 0, startTime: '18:00' })).toBe('6pm'))
+})
+
 describe('formatSchedule', () => {
-  it('weekly night', () =>
-    expect(formatSchedule(makeNight({ frequency: 'weekly', weekday: 1, startTime: '20:00' }))).toBe('Every Mon · 8pm'))
+  it('single-schedule night (unchanged output)', () =>
+    expect(formatSchedule(makeNight([{ frequency: 'weekly', weekday: 1, startTime: '20:00' }]))).toBe('Every Mon · 8pm'))
 
-  it('biweekly night', () =>
-    expect(formatSchedule(makeNight({ frequency: 'biweekly', weekday: 4, startTime: '19:30' }))).toBe('Every other Thu · 7:30pm'))
+  it('two-schedule night joins with dot separator', () =>
+    expect(
+      formatSchedule(makeNight([
+        { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+        { frequency: 'weekly', weekday: 3, startTime: '20:00' },
+      ]))
+    ).toBe('Every Mon · 8pm · Every Wed · 8pm'))
 
-  it('monthly night', () =>
-    expect(formatSchedule(makeNight({ frequency: 'monthly', weekday: 5, startTime: '20:30' }))).toBe('Monthly Fri · 8:30pm'))
+  it('three-schedule night shows first two and +N more', () =>
+    expect(
+      formatSchedule(makeNight([
+        { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+        { frequency: 'weekly', weekday: 3, startTime: '20:00' },
+        { frequency: 'monthly', weekday: 5, startTime: '19:00' },
+      ]))
+    ).toBe('Every Mon · 8pm · Every Wed · 8pm +1 more'))
 
-  it('irregular returns only time', () =>
-    expect(formatSchedule(makeNight({ frequency: 'irregular', weekday: 0, startTime: '18:00' }))).toBe('6pm'))
+  it('irregular entry in multi-schedule night shows time only for that entry', () =>
+    expect(
+      formatSchedule(makeNight([
+        { frequency: 'irregular', weekday: 0, startTime: '18:00' },
+        { frequency: 'weekly', weekday: 2, startTime: '20:00' },
+      ]))
+    ).toBe('6pm · Every Tue · 8pm'))
+
+  it('empty schedules returns empty string', () =>
+    expect(formatSchedule(makeNight([]))).toBe(''))
 })

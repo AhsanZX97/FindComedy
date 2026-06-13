@@ -79,7 +79,7 @@ function TogglePill({
 function hasActiveFilters(filters: NightFilters): boolean {
   return (
     filters.search.trim() !== '' ||
-    filters.weekday !== null ||
+    filters.weekdays.length > 0 ||
     filters.area !== null ||
     filters.type !== null ||
     filters.level !== null ||
@@ -123,8 +123,13 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
         {DAYS.map(({ label, value }) => (
           <PillButton
             key={value}
-            active={filters.weekday === value}
-            onClick={() => toggle('weekday', value, null)}
+            active={filters.weekdays.includes(value)}
+            onClick={() => {
+              const next = filters.weekdays.includes(value)
+                ? filters.weekdays.filter((d) => d !== value)
+                : [...filters.weekdays, value]
+              onChange({ ...filters, weekdays: next })
+            }}
           >
             {label}
           </PillButton>

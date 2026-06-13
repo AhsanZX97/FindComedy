@@ -1,5 +1,6 @@
 import type { ComedyNight } from '../types/comedyNight'
 import { supabase, isSupabaseConfigured } from './supabase'
+import { normalizeSchedules } from '../utils/normalizeSchedules'
 import seedNights from '../data/nights'
 
 function rowToNight(row: Record<string, unknown>): ComedyNight {
@@ -10,7 +11,7 @@ function rowToNight(row: Record<string, unknown>): ComedyNight {
     type: row.type as ComedyNight['type'],
     levels: row.levels as ComedyNight['levels'],
     bringer: row.bringer as ComedyNight['bringer'],
-    schedule: row.schedule as ComedyNight['schedule'],
+    schedules: normalizeSchedules(row.schedules ?? row.schedule),
     venue: row.venue as ComedyNight['venue'],
     howToBook: row.how_to_book as ComedyNight['howToBook'],
     wheelchairAccessible: row.wheelchair_accessible as boolean | null,
@@ -29,7 +30,7 @@ function nightToRow(night: ComedyNight): Record<string, unknown> {
     type: night.type,
     levels: night.levels,
     bringer: night.bringer,
-    schedule: night.schedule,
+    schedule: night.schedules,
     venue: night.venue,
     how_to_book: night.howToBook,
     wheelchair_accessible: night.wheelchairAccessible,

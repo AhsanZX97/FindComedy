@@ -14,9 +14,7 @@ const validSubmission: NightSubmission = {
   type: 'open-mic',
   levels: ['new'],
   bringerRequired: false,
-  frequency: 'weekly',
-  weekday: 2,
-  startTime: '20:00',
+  schedules: [{ frequency: 'weekly', weekday: 2, startTime: '20:00' }],
   venueName: 'The Test Pub',
   venueAddress: '1 Test St, London',
 }

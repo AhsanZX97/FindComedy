@@ -9,16 +9,10 @@ import FavouriteButton from '../../components/FavouriteButton'
 import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
-import { formatTime, WEEKDAY_LONG_LABELS } from '../../utils/formatSchedule'
+import { formatScheduleEntry } from '../../utils/formatSchedule'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
-const FREQ_LABELS: Record<string, string> = {
-  weekly: 'Every',
-  biweekly: 'Every other',
-  monthly: 'Monthly',
-  irregular: '',
-}
 
 const TYPE_STYLES: Record<NightType, string> = {
   'open-mic': 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
@@ -143,9 +137,6 @@ function NightDetail({ night }: { night: ComedyNight }) {
   const { user, isAdmin } = useAuth()
   const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
-  const scheduleFreq = FREQ_LABELS[night.schedule.frequency]
-  const scheduleDay = WEEKDAY_LONG_LABELS[night.schedule.weekday]
-  const scheduleTime = formatTime(night.schedule.startTime)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white">
@@ -209,15 +200,17 @@ function NightDetail({ night }: { night: ComedyNight }) {
 
         {/* Schedule */}
         <Section title="Schedule">
-          <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
-            <p className="text-base font-semibold text-gray-900 dark:text-white">
-              {night.schedule.frequency === 'irregular'
-                ? scheduleTime
-                : `${scheduleFreq} ${scheduleDay} at ${scheduleTime}`}
-            </p>
-            {night.schedule.note && (
-              <p className="text-sm text-gray-500 dark:text-zinc-400">{night.schedule.note}</p>
-            )}
+          <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-3">
+            {night.schedules.map((s, i) => (
+              <div key={i} className="flex flex-col gap-0.5">
+                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                  {formatScheduleEntry(s)}
+                </p>
+                {s.note && (
+                  <p className="text-sm text-gray-500 dark:text-zinc-400">{s.note}</p>
+                )}
+              </div>
+            ))}
           </div>
         </Section>
 

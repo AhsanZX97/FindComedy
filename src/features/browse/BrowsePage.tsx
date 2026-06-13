@@ -80,7 +80,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
 export default function BrowsePage() {
   const [filters, setFilters] = useState<NightFilters>(() => ({
     ...DEFAULT_FILTERS,
-    weekday: todayWeekday(),
+    weekdays: [todayWeekday()],
   }))
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
@@ -97,13 +97,14 @@ export default function BrowsePage() {
   const filtered = useMemo(() => {
     if (nightsState.status !== 'ready') return []
     const results = filterNights(nightsState.data, filters)
-    return filters.weekday !== null ? sortByTime(results) : results
+    return filters.weekdays.length > 0 ? sortByTime(results) : results
   }, [nightsState, filters])
 
   const selectedNight = filtered.find((n) => n.id === selectedId) ?? null
   const effectiveSelectedId = selectedNight ? selectedId : null
 
-  const isTonight = filters.weekday === todayWeekday()
+  const isTonight =
+    filters.weekdays.length === 1 && filters.weekdays[0] === todayWeekday()
 
   function handleMarkerSelect(id: string) {
     setSelectedId(id)
@@ -113,9 +114,14 @@ export default function BrowsePage() {
     }
   }
 
-  const pageTitle = filters.weekday !== null
-    ? (isTonight ? "What's on tonight" : `${WEEKDAY_LONG[filters.weekday]} nights`)
-    : 'London comedy nights'
+  function pageTitle(): string {
+    const days = filters.weekdays
+    if (days.length === 0) return 'London comedy nights'
+    if (days.length === 1) {
+      return isTonight ? "What's on tonight" : `${WEEKDAY_LONG[days[0]]} nights`
+    }
+    return days.map((d) => WEEKDAY_LONG[d]).join(' & ') + ' nights'
+  }
 
   const countLine = nightsState.status === 'ready'
     ? `${filtered.length} ${filtered.length === 1 ? 'night' : 'nights'}${isTonight ? ` · ${formatTodayDate()}` : ''}`
@@ -171,7 +177,7 @@ export default function BrowsePage() {
           {/* Filters + title */}
           <div className="sticky top-0 z-10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur border-b border-gray-200 dark:border-zinc-800 px-4 pt-4 pb-3 flex flex-col gap-3">
             <div>
-              <h1 className="text-lg font-display font-bold leading-tight text-gray-900 dark:text-white">{pageTitle}</h1>
+              <h1 className="text-lg font-display font-bold leading-tight text-gray-900 dark:text-white">{pageTitle()}</h1>
               {countLine && <p className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">{countLine}</p>}
             </div>
             <FilterBar filters={filters} areas={areas} onChange={(f) => { setFilters(f); setSelectedId(null) }} />

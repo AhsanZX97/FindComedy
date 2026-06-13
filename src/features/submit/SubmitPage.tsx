@@ -4,7 +4,7 @@ import { submitNight } from '../../services/submissionsService'
 import Header from '../../components/Header'
 import { isSupabaseConfigured } from '../../services/supabase'
 import { geocodeVenue, isLondonCoord } from '../../utils/geocode'
-import type { NightSubmission, NightType, Level, Frequency, Weekday } from '../../types/comedyNight'
+import type { NightSubmission, NightType, Level } from '../../types/comedyNight'
 import {
   AboutSection,
   ScheduleSection,
@@ -26,9 +26,7 @@ const EMPTY: NightSubmission = {
   type: 'open-mic',
   levels: [],
   bringerRequired: false,
-  frequency: 'weekly',
-  weekday: 1,
-  startTime: '20:00',
+  schedules: [{ frequency: 'weekly', weekday: 1, startTime: '20:00' }],
   venueName: '',
   venueAddress: '',
 }
@@ -111,10 +109,8 @@ export default function SubmitPage() {
           />
 
           <ScheduleSection
-            frequency={form.frequency as Frequency} onFrequencyChange={(v) => set('frequency', v)}
-            weekday={form.weekday as Weekday} onWeekdayChange={(v) => set('weekday', v)}
-            startTime={form.startTime} onStartTimeChange={(v) => set('startTime', v)}
-            scheduleNote={form.scheduleNote} onScheduleNoteChange={(v) => set('scheduleNote', v)}
+            schedules={form.schedules}
+            onSchedulesChange={(v) => set('schedules', v)}
           />
 
           <VenueSection

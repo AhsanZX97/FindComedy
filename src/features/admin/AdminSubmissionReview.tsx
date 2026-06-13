@@ -9,8 +9,6 @@ import type {
   NightSubmission,
   NightType,
   Level,
-  Frequency,
-  Weekday,
 } from '../../types/comedyNight'
 import {
   AboutSection,
@@ -93,12 +91,7 @@ function AdminSubmissionReviewInner() {
           count: form.bringerCount,
           note: form.bringerNote,
         },
-        schedule: {
-          frequency: form.frequency,
-          weekday: form.weekday,
-          startTime: form.startTime,
-          note: form.scheduleNote,
-        },
+        schedules: form.schedules,
         venue: {
           id: slugify(form.venueName) + '-venue',
           name: form.venueName,
@@ -200,10 +193,8 @@ function AdminSubmissionReviewInner() {
         />
 
         <ScheduleSection
-          frequency={form.frequency as Frequency} onFrequencyChange={(v) => setField('frequency', v)}
-          weekday={form.weekday as Weekday} onWeekdayChange={(v) => setField('weekday', v)}
-          startTime={form.startTime} onStartTimeChange={(v) => setField('startTime', v)}
-          scheduleNote={form.scheduleNote} onScheduleNoteChange={(v) => setField('scheduleNote', v)}
+          schedules={form.schedules}
+          onSchedulesChange={(v) => setField('schedules', v)}
         />
 
         <VenueSection

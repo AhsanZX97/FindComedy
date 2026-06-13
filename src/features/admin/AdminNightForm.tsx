@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import type { ComedyNight, NightType, Level, Frequency, Weekday, NightStatus } from '../../types/comedyNight'
+import type { ComedyNight, NightType, Level, NightStatus } from '../../types/comedyNight'
 import { upsertNight } from '../../services/nightsService'
 import { geocodeVenue } from '../../utils/geocode'
 import {
@@ -80,14 +80,8 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
       />
 
       <ScheduleSection
-        frequency={night.schedule.frequency as Frequency}
-        onFrequencyChange={(v) => set('schedule', { ...night.schedule, frequency: v })}
-        weekday={night.schedule.weekday as Weekday}
-        onWeekdayChange={(v) => set('schedule', { ...night.schedule, weekday: v })}
-        startTime={night.schedule.startTime}
-        onStartTimeChange={(v) => set('schedule', { ...night.schedule, startTime: v })}
-        scheduleNote={night.schedule.note}
-        onScheduleNoteChange={(v) => set('schedule', { ...night.schedule, note: v })}
+        schedules={night.schedules}
+        onSchedulesChange={(v) => set('schedules', v)}
       />
 
       <VenueSection

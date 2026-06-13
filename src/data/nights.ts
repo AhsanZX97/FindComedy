@@ -1,4 +1,4 @@
-import type { ComedyNight } from '../types/comedyNight'
+﻿import type { ComedyNight } from '../types/comedyNight'
 
 const nights: ComedyNight[] = [
   {
@@ -9,7 +9,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '20:00' }],
     venue: {
       id: 'bill-murray',
       name: 'The Bill Murray',
@@ -36,7 +36,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: true, count: 2, note: 'Bring 2 paying audience members' },
-    schedule: { frequency: 'weekly', weekday: 4, startTime: '19:30' },
+    schedules: [{frequency: 'weekly', weekday: 4, startTime: '19:30' }],
     venue: {
       id: 'kings-head-crouch-end',
       name: 'The King\'s Head',
@@ -59,7 +59,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 0, startTime: '19:00' },
+    schedules: [{frequency: 'weekly', weekday: 0, startTime: '19:00' }],
     venue: {
       id: 'cavendish-arms',
       name: 'The Cavendish Arms',
@@ -84,7 +84,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 6, startTime: '20:30' },
+    schedules: [{frequency: 'weekly', weekday: 6, startTime: '20:30' }],
     venue: {
       id: 'bedford-balham',
       name: 'The Bedford',
@@ -106,11 +106,11 @@ const nights: ComedyNight[] = [
     id: 'backyard-comedy-bethnal-green',
     name: 'Backyard Comedy Club',
     description:
-      'East London institution in a purpose-built comedy club. Weekly Saturday show with a proper bill — MC, two supports, headliner. Good bar, good crowd.',
+      'East London institution in a purpose-built comedy club. Weekly Saturday show with a proper bill â€” MC, two supports, headliner. Good bar, good crowd.',
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 6, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 6, startTime: '20:00' }],
     venue: {
       id: 'backyard-bethnal-green',
       name: 'Backyard Comedy Club',
@@ -136,7 +136,7 @@ const nights: ComedyNight[] = [
     type: 'pro',
     levels: ['pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 2, startTime: '20:00', note: 'Also Fri & Sat — check website' },
+    schedules: [{frequency: 'weekly', weekday: 2, startTime: '20:00', note: 'Also Fri & Sat â€” check website' }],
     venue: {
       id: 'comedy-store-london',
       name: 'The Comedy Store',
@@ -162,7 +162,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 3, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 3, startTime: '20:00' }],
     venue: {
       id: 'the-venue-leicester-sq',
       name: 'The Venue',
@@ -187,7 +187,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '19:30' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '19:30' }],
     venue: {
       id: 'prince-of-wales-brixton',
       name: 'Prince of Wales',
@@ -213,7 +213,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '20:00' }],
     venue: {
       id: 'hen-chickens',
       name: 'Hen & Chickens Theatre',
@@ -234,11 +234,11 @@ const nights: ComedyNight[] = [
     id: 'up-the-creek-greenwich',
     name: 'Up The Creek',
     description:
-      'South-east London\'s most famous comedy club. Notoriously rowdy crowd on Fridays — acts who can handle Up The Creek can handle anything. Headliners you\'ve seen on telly.',
+      'South-east London\'s most famous comedy club. Notoriously rowdy crowd on Fridays â€” acts who can handle Up The Creek can handle anything. Headliners you\'ve seen on telly.',
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 5, startTime: '20:00', note: 'Also Saturday shows — check website' },
+    schedules: [{frequency: 'weekly', weekday: 5, startTime: '20:00', note: 'Also Saturday shows â€” check website' }],
     venue: {
       id: 'up-the-creek',
       name: 'Up The Creek',
@@ -264,7 +264,7 @@ const nights: ComedyNight[] = [
     type: 'mixed',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'biweekly', weekday: 3, startTime: '20:00' },
+    schedules: [{frequency: 'biweekly', weekday: 3, startTime: '20:00' }],
     venue: {
       id: 'prince-of-wales-hackney',
       name: 'Prince of Wales',
@@ -289,7 +289,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 2, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 2, startTime: '20:00' }],
     venue: {
       id: 'two-brewers-clapham',
       name: 'Two Brewers',
@@ -312,7 +312,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 6, startTime: '19:30' },
+    schedules: [{frequency: 'monthly', weekday: 6, startTime: '19:30' }],
     venue: {
       id: 'florence-herne-hill',
       name: 'The Florence',
@@ -338,7 +338,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: true, count: 3, note: 'Bring 3 paying guests' },
-    schedule: { frequency: 'weekly', weekday: 3, startTime: '19:30' },
+    schedules: [{frequency: 'weekly', weekday: 3, startTime: '19:30' }],
     venue: {
       id: 'black-heart-camden',
       name: 'The Black Heart',
@@ -357,11 +357,11 @@ const nights: ComedyNight[] = [
     id: 'laugh-out-london-brixton',
     name: 'Laugh Out London',
     description:
-      'A Thursday night showcase in Brixton with a focus on diverse lineups. Fast-moving, well-MC\'d, great atmosphere. Always sells out — book early.',
+      'A Thursday night showcase in Brixton with a focus on diverse lineups. Fast-moving, well-MC\'d, great atmosphere. Always sells out â€” book early.',
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 4, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 4, startTime: '20:00' }],
     venue: {
       id: 'dogstar-brixton',
       name: 'The Dogstar',
@@ -387,7 +387,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 2, startTime: '19:30' },
+    schedules: [{frequency: 'weekly', weekday: 2, startTime: '19:30' }],
     venue: {
       id: 'balham-bowls-club',
       name: 'Balham Bowls Club',
@@ -409,11 +409,11 @@ const nights: ComedyNight[] = [
     id: 'free-comedy-the-hob',
     name: 'Free Comedy at The Hob',
     description:
-      'Monday open-mic in Forest Hill with no bringer and no entry fee. Small but enthusiastic crowd. Run with care — acts get proper feedback after the show.',
+      'Monday open-mic in Forest Hill with no bringer and no entry fee. Small but enthusiastic crowd. Run with care â€” acts get proper feedback after the show.',
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '20:00' }],
     venue: {
       id: 'the-hob-forest-hill',
       name: 'The Hob',
@@ -436,7 +436,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 5, startTime: '20:00' },
+    schedules: [{frequency: 'monthly', weekday: 5, startTime: '20:00' }],
     venue: {
       id: 'bush-theatre',
       name: 'The Defector\'s Weld',
@@ -461,7 +461,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['pro'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 4, startTime: '20:00' },
+    schedules: [{frequency: 'monthly', weekday: 4, startTime: '20:00' }],
     venue: {
       id: 'oslo-hackney',
       name: 'Oslo',
@@ -487,7 +487,7 @@ const nights: ComedyNight[] = [
     type: 'mixed',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 6, startTime: '20:00' },
+    schedules: [{frequency: 'monthly', weekday: 6, startTime: '20:00' }],
     venue: {
       id: 'bussey-building-peckham',
       name: 'The Bussey Building',
@@ -512,7 +512,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['pro'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 5, startTime: '20:00', note: 'Check website for exact dates' },
+    schedules: [{frequency: 'monthly', weekday: 5, startTime: '20:00', note: 'Check website for exact dates' }],
     venue: {
       id: 'soho-theatre',
       name: 'Soho Theatre',
@@ -537,7 +537,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 2, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 2, startTime: '20:00' }],
     venue: {
       id: 'sekforde-arms',
       name: 'The Sekforde Arms',
@@ -560,7 +560,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '20:00' }],
     venue: {
       id: 'phoenix-artist-club',
       name: 'Phoenix Artist Club',
@@ -579,11 +579,11 @@ const nights: ComedyNight[] = [
     id: 'comedy-grosvenor-stockwell',
     name: 'Comedy at The Grosvenor',
     description:
-      'Wednesday night bringer open-mic in Stockwell. Intimate room, no frills, direct feedback. A classic bringer setup — bring your mates, die in front of them, repeat.',
+      'Wednesday night bringer open-mic in Stockwell. Intimate room, no frills, direct feedback. A classic bringer setup â€” bring your mates, die in front of them, repeat.',
     type: 'open-mic',
     levels: ['new', 'experienced'],
-    bringer: { required: true, count: 2, note: 'Bring 2 paying guests (£3 each)' },
-    schedule: { frequency: 'weekly', weekday: 3, startTime: '20:00' },
+    bringer: { required: true, count: 2, note: 'Bring 2 paying guests (Â£3 each)' },
+    schedules: [{frequency: 'weekly', weekday: 3, startTime: '20:00' }],
     venue: {
       id: 'grosvenor-stockwell',
       name: 'The Grosvenor',
@@ -606,7 +606,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 5, startTime: '20:30' },
+    schedules: [{frequency: 'weekly', weekday: 5, startTime: '20:30' }],
     venue: {
       id: 'museum-tavern-covent-garden',
       name: 'The Museum Tavern',
@@ -631,7 +631,7 @@ const nights: ComedyNight[] = [
     type: 'mixed',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 1, startTime: '19:30' },
+    schedules: [{frequency: 'weekly', weekday: 1, startTime: '19:30' }],
     venue: {
       id: 'hoxton-bar-kitchen',
       name: 'Hoxton Bar & Kitchen',
@@ -654,7 +654,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
-    schedule: { frequency: 'monthly', weekday: 6, startTime: '20:00' },
+    schedules: [{frequency: 'monthly', weekday: 6, startTime: '20:00' }],
     venue: {
       id: 'hideaway-streatham',
       name: 'The Hideaway',
@@ -676,11 +676,11 @@ const nights: ComedyNight[] = [
     id: 'noodle-comedy-shoreditch',
     name: 'Noodle Comedy',
     description:
-      'A quirky mid-week showcase in Shoreditch with a leaning toward alternative and character comedy. Not your standard club night — expect the unexpected.',
+      'A quirky mid-week showcase in Shoreditch with a leaning toward alternative and character comedy. Not your standard club night â€” expect the unexpected.',
     type: 'mixed',
     levels: ['experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'biweekly', weekday: 3, startTime: '20:00' },
+    schedules: [{frequency: 'biweekly', weekday: 3, startTime: '20:00' }],
     venue: {
       id: 'noodle-bar-shoreditch',
       name: 'Rich Mix',
@@ -705,7 +705,7 @@ const nights: ComedyNight[] = [
     type: 'showcase',
     levels: ['experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 0, startTime: '19:00' },
+    schedules: [{frequency: 'weekly', weekday: 0, startTime: '19:00' }],
     venue: {
       id: 'sebright-arms-hackney',
       name: 'Sebright Arms',
@@ -730,7 +730,7 @@ const nights: ComedyNight[] = [
     type: 'pro',
     levels: ['pro'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 5, startTime: '20:30' },
+    schedules: [{frequency: 'weekly', weekday: 5, startTime: '20:30' }],
     venue: {
       id: 'roundhouse-camden',
       name: 'The Jazz Cafe',
@@ -756,7 +756,7 @@ const nights: ComedyNight[] = [
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 3, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 3, startTime: '20:00' }],
     venue: {
       id: 'victoria-dalston',
       name: 'The Victoria',
@@ -775,11 +775,11 @@ const nights: ComedyNight[] = [
     id: 'the-little-comedy-room-wandsworth',
     name: 'The Little Comedy Room',
     description:
-      'Exactly what it says. A small room, a handful of acts, and an audience of maybe 40 people. The intimacy makes it either brilliant or brutal — usually brilliant.',
+      'Exactly what it says. A small room, a handful of acts, and an audience of maybe 40 people. The intimacy makes it either brilliant or brutal â€” usually brilliant.',
     type: 'open-mic',
     levels: ['new', 'experienced'],
     bringer: { required: false },
-    schedule: { frequency: 'weekly', weekday: 4, startTime: '20:00' },
+    schedules: [{frequency: 'weekly', weekday: 4, startTime: '20:00' }],
     venue: {
       id: 'county-arms-wandsworth',
       name: 'The County Arms',
@@ -797,3 +797,4 @@ const nights: ComedyNight[] = [
 ]
 
 export default nights
+

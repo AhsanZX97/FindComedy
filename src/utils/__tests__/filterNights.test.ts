@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { filterNights, sortByTime, getUniqueAreas } from '../filterNights'
-import type { ComedyNight, NightFilters } from '../../types/comedyNight'
+import type { ComedyNight, NightFilters, Schedule } from '../../types/comedyNight'
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
 
 const makeNight = (overrides: Partial<ComedyNight>): ComedyNight => ({
@@ -10,7 +10,7 @@ const makeNight = (overrides: Partial<ComedyNight>): ComedyNight => ({
   type: 'open-mic',
   levels: ['new', 'experienced'],
   bringer: { required: false },
-  schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' },
+  schedules: [{ frequency: 'weekly', weekday: 1, startTime: '20:00' }],
   venue: {
     id: 'test-venue',
     name: 'The Test Pub',
@@ -25,6 +25,9 @@ const makeNight = (overrides: Partial<ComedyNight>): ComedyNight => ({
   lastVerified: '2026-01-01',
   ...overrides,
 })
+
+const schedules = (...entries: Partial<Schedule>[]): Schedule[] =>
+  entries.map((s) => ({ frequency: 'weekly', weekday: 1, startTime: '20:00', ...s }) as Schedule)
 
 const filters = (overrides: Partial<NightFilters>): NightFilters => ({
   ...DEFAULT_FILTERS,
@@ -49,7 +52,7 @@ describe('filterNights', () => {
   })
 
   it('filters by search matching name', () => {
-    const nights = [makeNight({ name: 'Angel Comedy' }), makeNight({ name: 'Banana Cabaret' })]
+    const nights = [makeNight({ name: 'Angel Comedy' }), makeNight({ id: 'b', name: 'Banana Cabaret' })]
     expect(filterNights(nights, filters({ search: 'angel' }))).toHaveLength(1)
     expect(filterNights(nights, filters({ search: 'angel' }))[0].name).toBe('Angel Comedy')
   })
@@ -67,14 +70,41 @@ describe('filterNights', () => {
     expect(filterNights(nights, filters({ search: 'ANGEL' }))).toHaveLength(1)
   })
 
-  it('filters by weekday', () => {
+  it('filters by weekday — night with that weekday in schedules is included', () => {
     const nights = [
-      makeNight({ id: 'mon', schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' } }),
-      makeNight({ id: 'wed', schedule: { frequency: 'weekly', weekday: 3, startTime: '20:00' } }),
+      makeNight({ id: 'mon', schedules: schedules({ weekday: 1 }) }),
+      makeNight({ id: 'wed', schedules: schedules({ weekday: 3 }) }),
     ]
-    const result = filterNights(nights, filters({ weekday: 1 }))
+    const result = filterNights(nights, filters({ weekdays: [1] }))
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('mon')
+  })
+
+  it('empty weekdays returns all active nights', () => {
+    const nights = [
+      makeNight({ id: 'mon', schedules: schedules({ weekday: 1 }) }),
+      makeNight({ id: 'wed', schedules: schedules({ weekday: 3 }) }),
+    ]
+    expect(filterNights(nights, filters({ weekdays: [] }))).toHaveLength(2)
+  })
+
+  it('multi-select weekdays matches night on any selected day', () => {
+    const nights = [
+      makeNight({ id: 'mon', schedules: schedules({ weekday: 1 }) }),
+      makeNight({ id: 'wed', schedules: schedules({ weekday: 3 }) }),
+      makeNight({ id: 'sat', schedules: schedules({ weekday: 6 }) }),
+    ]
+    const result = filterNights(nights, filters({ weekdays: [1, 3] }))
+    expect(result.map((n) => n.id)).toEqual(['mon', 'wed'])
+  })
+
+  it('multi-schedule night matches when any schedule falls on a selected day', () => {
+    const night = makeNight({
+      id: 'multi',
+      schedules: schedules({ weekday: 1 }, { weekday: 3 }),
+    })
+    expect(filterNights([night], filters({ weekdays: [3] }))).toHaveLength(1)
+    expect(filterNights([night], filters({ weekdays: [5] }))).toHaveLength(0)
   })
 
   it('filters by area', () => {
@@ -132,20 +162,29 @@ describe('filterNights', () => {
 })
 
 describe('sortByTime', () => {
-  it('sorts nights by start time ascending', () => {
+  it('sorts nights by earliest start time ascending', () => {
     const nights = [
-      makeNight({ id: 'late', schedule: { frequency: 'weekly', weekday: 1, startTime: '21:30' } }),
-      makeNight({ id: 'early', schedule: { frequency: 'weekly', weekday: 1, startTime: '19:00' } }),
-      makeNight({ id: 'mid', schedule: { frequency: 'weekly', weekday: 1, startTime: '20:00' } }),
+      makeNight({ id: 'late', schedules: schedules({ startTime: '21:30' }) }),
+      makeNight({ id: 'early', schedules: schedules({ startTime: '19:00' }) }),
+      makeNight({ id: 'mid', schedules: schedules({ startTime: '20:00' }) }),
     ]
     const result = sortByTime(nights)
     expect(result.map((n) => n.id)).toEqual(['early', 'mid', 'late'])
   })
 
+  it('uses earliest schedule for nights with multiple schedules', () => {
+    const nights = [
+      makeNight({ id: 'a', schedules: schedules({ startTime: '21:00' }, { startTime: '18:00' }) }),
+      makeNight({ id: 'b', schedules: schedules({ startTime: '20:00' }) }),
+    ]
+    const result = sortByTime(nights)
+    expect(result.map((n) => n.id)).toEqual(['a', 'b'])
+  })
+
   it('does not mutate the input array', () => {
     const nights = [
-      makeNight({ id: 'b', schedule: { frequency: 'weekly', weekday: 1, startTime: '21:00' } }),
-      makeNight({ id: 'a', schedule: { frequency: 'weekly', weekday: 1, startTime: '19:00' } }),
+      makeNight({ id: 'b', schedules: schedules({ startTime: '21:00' }) }),
+      makeNight({ id: 'a', schedules: schedules({ startTime: '19:00' }) }),
     ]
     const original = [...nights]
     sortByTime(nights)
