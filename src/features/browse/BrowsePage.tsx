@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { filterNights, sortByTime, getUniqueAreas } from '../../utils/filterNights'
 import NightCard from '../../components/NightCard'
@@ -78,7 +78,6 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
 }
 
 export default function BrowsePage() {
-  const navigate = useNavigate()
   const [filters, setFilters] = useState<NightFilters>(DEFAULT_FILTERS)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
@@ -208,7 +207,6 @@ export default function BrowsePage() {
                   <div
                     key={night.id}
                     ref={(el) => { cardRefs.current[night.id] = el }}
-                    onDoubleClick={() => navigate(`/night/${night.id}`)}
                     className={`rounded-2xl transition-all ${
                       effectiveSelectedId === night.id
                         ? 'ring-2 ring-amber-400'
@@ -218,6 +216,14 @@ export default function BrowsePage() {
                     <NightCard
                       night={night}
                       onCardClick={() => handleMarkerSelect(night.id)}
+                      footerAction={
+                        <Link
+                          to={`/night/${night.id}`}
+                          className="text-xs font-medium text-amber-600 hover:text-amber-700 hover:underline transition-colors"
+                        >
+                          View full night →
+                        </Link>
+                      }
                     />
                   </div>
                 ))}

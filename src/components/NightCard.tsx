@@ -28,9 +28,10 @@ const LEVEL_LABELS: Record<Level, string> = {
 interface NightCardProps {
   night: ComedyNight
   onCardClick?: () => void
+  footerAction?: React.ReactNode
 }
 
-export default function NightCard({ night, onCardClick }: NightCardProps) {
+export default function NightCard({ night, onCardClick, footerAction }: NightCardProps) {
   const { user } = useAuth()
   const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
@@ -70,7 +71,7 @@ export default function NightCard({ night, onCardClick }: NightCardProps) {
       {/* Schedule */}
       <p className="text-sm font-medium text-gray-900 dark:text-white">{scheduleLabel}</p>
 
-      {/* Footer: bringer */}
+      {/* Footer: bringer + optional action */}
       <div className="flex flex-wrap items-center gap-2 mt-auto pt-1 border-t border-gray-100 dark:border-zinc-800">
         {night.bringer.required ? (
           <span className="text-xs text-amber-600 font-medium">
@@ -79,6 +80,7 @@ export default function NightCard({ night, onCardClick }: NightCardProps) {
         ) : (
           <span className="text-xs text-emerald-600 font-medium">No bringer</span>
         )}
+        {footerAction && <div className="ml-auto">{footerAction}</div>}
       </div>
     </>
   )

@@ -51,10 +51,10 @@ export default function Header() {
           FindComedy
         </Link>
 
-        <nav className="flex gap-1 ml-auto text-sm items-center">
+        <nav className="flex gap-1 ml-auto text-sm items-center overflow-x-auto scrollbar-none min-w-0">
           <Link
             to="/"
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            className={`shrink-0 px-3 py-1.5 rounded-lg font-medium transition-colors ${
               !isSubmit && !isAuth
                 ? 'bg-gray-900 text-white dark:bg-zinc-200 dark:text-zinc-900'
                 : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -65,7 +65,7 @@ export default function Header() {
 
           <Link
             to="/submit"
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            className={`shrink-0 px-3 py-1.5 rounded-lg font-medium transition-colors ${
               isSubmit
                 ? 'bg-gray-900 text-white dark:bg-zinc-200 dark:text-zinc-900'
                 : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -77,7 +77,7 @@ export default function Header() {
           {user ? (
             <Link
               to="/my"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-lg font-medium transition-colors ${
                 pathname === '/my'
                   ? 'bg-amber-500 text-white'
                   : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -88,7 +88,7 @@ export default function Header() {
           ) : (
             <Link
               to="/auth"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-lg font-medium transition-colors ${
                 pathname === '/auth'
                   ? 'bg-gray-900 text-white dark:bg-zinc-200 dark:text-zinc-900'
                   : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -101,7 +101,7 @@ export default function Header() {
           {isAdmin && (
             <Link
               to="/admin"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-lg font-medium transition-colors ${
                 isAdminRoute
                   ? 'bg-amber-500 text-white'
                   : 'text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -114,7 +114,7 @@ export default function Header() {
           {user && (
             <button
               onClick={() => void handleSignOut()}
-              className="ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+              className="shrink-0 ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
             >
               Sign out
             </button>
@@ -122,7 +122,7 @@ export default function Header() {
 
           <button
             onClick={() => setFeedbackOpen(true)}
-            className="ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+            className="shrink-0 ml-1 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
           >
             Feedback
           </button>
@@ -131,7 +131,7 @@ export default function Header() {
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="ml-1 p-2 rounded-lg text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+            className="shrink-0 ml-1 p-2 rounded-lg text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>

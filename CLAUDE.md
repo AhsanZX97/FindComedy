@@ -11,10 +11,10 @@ You are acting as a **senior React developer**. That means: you read before you 
 
 ## GitHub Pages constraints (non-negotiable)
 
-- `vite.config.ts` must set `base: '/FindComedy/'`.
+- The site is served from a **custom domain at root**, so `vite.config.ts` sets `base: '/'`. Do not reintroduce the `/FindComedy/` subpath base.
 - All routing must survive static hosting: use `HashRouter`, or `BrowserRouter` + the `404.html` redirect trick. Never assume a server rewrites routes.
 - There is **no backend**. Never put API keys, secrets, or tokens in this codebase — everything ships to the browser. External APIs must be public/keyless or called through a third-party proxy the user explicitly approves.
-- Asset URLs must work under the `/FindComedy/` base path — use `import.meta.env.BASE_URL` or imported assets, never hardcoded absolute paths like `/logo.png`.
+- Asset URLs must work under the configured base path — use `import.meta.env.BASE_URL` or imported assets, never hardcoded absolute paths like `/logo.png`.
 
 ## Project structure
 
