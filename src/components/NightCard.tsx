@@ -4,6 +4,7 @@ import { useAuth } from '../features/auth/AuthContext'
 import { useSocial } from '../features/social/SocialContext'
 import FavouriteButton from './FavouriteButton'
 import { formatSchedule } from '../utils/formatSchedule'
+import { nightSlug } from '../utils/slug'
 
 const TYPE_STYLES: Record<NightType, string> = {
   'open-mic': 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
@@ -96,7 +97,7 @@ export default function NightCard({ night, onCardClick, footerAction }: NightCar
           {bodyContent}
         </button>
       ) : (
-        <Link to={`/night/${night.id}`} className="flex flex-col gap-3 p-5 pr-12">
+        <Link to={`/night/${nightSlug(night)}`} className="flex flex-col gap-3 p-5 pr-12">
           {bodyContent}
         </Link>
       )}

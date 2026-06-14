@@ -24,10 +24,7 @@ import {
 } from '../../components/NightFormFields'
 import Header from '../../components/Header'
 import RequireAdmin from './RequireAdmin'
-
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60)
-}
+import { slugify } from '../../utils/slug'
 
 type GeoStatus = 'idle' | 'loading' | 'london' | 'outside' | 'not-found'
 type ActionState = 'idle' | 'approving' | 'rejecting' | 'error'

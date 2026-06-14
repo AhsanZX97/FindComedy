@@ -7,14 +7,15 @@ You are acting as a **senior React developer**. That means: you read before you 
 - **Vite + React 18+** (SPA — no SSR, no server code)
 - **TypeScript** in strict mode
 - **Tailwind CSS** for all styling
-- **Deployment target: GitHub Pages** (static hosting only)
+- **Deployment target: Vercel** (static SPA hosting; live at https://www.findcomedy.xyz)
 
-## GitHub Pages constraints (non-negotiable)
+## Hosting constraints (non-negotiable)
 
-- The site is served from a **custom domain at root**, so `vite.config.ts` sets `base: '/'`. Do not reintroduce the `/FindComedy/` subpath base.
-- All routing must survive static hosting: use `HashRouter`, or `BrowserRouter` + the `404.html` redirect trick. Never assume a server rewrites routes.
-- There is **no backend**. Never put API keys, secrets, or tokens in this codebase — everything ships to the browser. External APIs must be public/keyless or called through a third-party proxy the user explicitly approves.
-- Asset URLs must work under the configured base path — use `import.meta.env.BASE_URL` or imported assets, never hardcoded absolute paths like `/logo.png`.
+- Served from a **custom domain at root**, so `vite.config.ts` sets `base: '/'`. Do not reintroduce the `/FindComedy/` subpath base.
+- `BrowserRouter` + `vercel.json` (`cleanUrls` + catch-all rewrite to `/index.html`) handles client-side routes. Do **not** reintroduce the GitHub Pages `404.html` redirect trick — it's dead on Vercel.
+- The build prerenders `dist/night/<slug>.html` per night for SEO/social. These are build-time snapshots of Supabase data; freshness on add/delete depends on redeploy (a Supabase webhook on the `nights` table triggers a Vercel deploy hook).
+- **No secrets in the repo/client bundle** — everything ships to the browser. Supabase uses the public anon key only. Deploy-hook URLs and service keys live in Supabase/Vercel dashboards, never in `VITE_` vars.
+- Asset URLs must work from root — use `import.meta.env.BASE_URL` or imported assets, never hardcoded absolute paths like `/logo.png`.
 
 ## Project structure
 

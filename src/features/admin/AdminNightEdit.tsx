@@ -5,6 +5,7 @@ import type { ComedyNight } from '../../types/comedyNight'
 import Header from '../../components/Header'
 import AdminNightForm from './AdminNightForm'
 import RequireAdmin from './RequireAdmin'
+import { nightSlug } from '../../utils/slug'
 
 function AdminNightEditInner() {
   const { id } = useParams<{ id: string }>()
@@ -83,7 +84,7 @@ function AdminNightEditInner() {
           <AdminNightForm
             initial={night}
             onSaved={(saved) => {
-              setNight(saved)
+              navigate(`/night/${nightSlug(saved)}`)
             }}
           />
         )}

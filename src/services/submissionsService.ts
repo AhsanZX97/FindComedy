@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import type { NightSubmission, StoredSubmission, ComedyNight, Schedule, Frequency, Weekday } from '../types/comedyNight'
 import { upsertNight } from './nightsService'
+import { slugify } from '../utils/slug'
 
 function normalizeSubmissionData(raw: unknown): NightSubmission {
   const d = raw as Record<string, unknown>
@@ -75,20 +76,13 @@ export async function setSubmissionStatus(
   if (error) throw new Error(error.message)
 }
 
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-}
-
-export async function approveSubmission(sub: StoredSubmission): Promise<void> {
-  if (!supabase) return
-  const form = sub.data
-
-  const night: ComedyNight = {
-    id: slugify(form.name) + '-' + sub.id.slice(0, 8),
+function buildNight(
+  form: NightSubmission,
+  idSuffix: string,
+  location: { lat: number; lng: number },
+): ComedyNight {
+  return {
+    id: slugify(form.name) + '-' + idSuffix,
     name: form.name,
     description: form.description,
     type: form.type,
@@ -104,7 +98,7 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
       name: form.venueName,
       address: form.venueAddress,
       area: '',
-      location: { lat: 0, lng: 0 },
+      location,
     },
     howToBook: {
       contact: form.contact ?? '',
@@ -118,7 +112,22 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
     status: 'active',
     lastVerified: new Date().toISOString().slice(0, 10),
   }
+}
 
+export async function approveSubmission(sub: StoredSubmission): Promise<void> {
+  if (!supabase) return
+  const night = buildNight(sub.data, sub.id.slice(0, 8), { lat: 0, lng: 0 })
   await upsertNight(night)
   await setSubmissionStatus(sub.id, 'approved')
+}
+
+// Publishes a submitted night straight to the live listings, skipping the review
+// queue. Used when an admin fills in the submit form themselves.
+export async function publishSubmission(
+  submission: NightSubmission,
+  location?: { lat: number; lng: number } | null,
+): Promise<void> {
+  if (!supabase) return
+  const night = buildNight(submission, crypto.randomUUID().slice(0, 8), location ?? { lat: 0, lng: 0 })
+  await upsertNight(night)
 }

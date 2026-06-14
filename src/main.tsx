@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import 'leaflet/dist/leaflet.css'
 import './index.css'
@@ -14,7 +14,7 @@ if (!rootEl) throw new Error('Root element not found')
 
 createRoot(rootEl).render(
   <StrictMode>
-    <HashRouter>
+    <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
           <SocialProvider>
@@ -23,6 +23,6 @@ createRoot(rootEl).render(
         </AuthProvider>
       </ThemeProvider>
       <Analytics />
-    </HashRouter>
+    </BrowserRouter>
   </StrictMode>,
 )

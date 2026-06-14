@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /my
+
+Sitemap: https://www.findcomedy.xyz/sitemap.xml

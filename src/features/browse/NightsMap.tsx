@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, CircleMarker, useMap, useMapEvents } from 'rea
 import type { Map as LeafletMap } from 'leaflet'
 import type { ComedyNight, NightType } from '../../types/comedyNight'
 import { formatSchedule } from '../../utils/formatSchedule'
+import { nightSlug } from '../../utils/slug'
 import { useTheme } from '../../context/ThemeContext'
 
 export const TYPE_COLORS: Record<NightType, string> = {
@@ -126,7 +127,7 @@ function MarkerPopup({ night, pos, onClose, isDark }: MarkerPopupProps) {
 
         {/* CTA */}
         <Link
-          to={`/night/${night.id}`}
+          to={`/night/${nightSlug(night)}`}
           className="mt-0.5 block text-center text-xs font-semibold py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-colors"
         >
           View full night →

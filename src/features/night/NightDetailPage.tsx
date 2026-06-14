@@ -10,6 +10,10 @@ import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
 import { formatScheduleEntry } from '../../utils/formatSchedule'
+import { nightSlug } from '../../utils/slug'
+import { buildEventJsonLd } from '../../utils/eventJsonLd'
+import { nightSeo } from '../../utils/nightSeo'
+import { useSeo, SITE_URL } from '../../hooks/useSeo'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
@@ -137,6 +141,16 @@ function NightDetail({ night }: { night: ComedyNight }) {
   const { user, isAdmin } = useAuth()
   const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
+
+  const { title, description } = nightSeo(night)
+  useSeo({
+    title,
+    description,
+    path: `/night/${nightSlug(night)}`,
+    type: 'article',
+    image: night.images?.[0],
+    jsonLd: buildEventJsonLd(night, SITE_URL),
+  })
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white">
@@ -293,7 +307,7 @@ export default function NightDetailPage() {
     )
   }
 
-  const night = nightsState.data.find((n) => n.id === id)
+  const night = nightsState.data.find((n) => nightSlug(n) === id || n.id === id)
 
   if (!night) return <Navigate to="/" replace />
 

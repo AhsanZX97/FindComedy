@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { submitNight } from '../../services/submissionsService'
+import { submitNight, publishSubmission } from '../../services/submissionsService'
+import { useAuth } from '../auth/AuthContext'
 import Header from '../../components/Header'
 import { isSupabaseConfigured } from '../../services/supabase'
 import { geocodeVenue, isLondonCoord } from '../../utils/geocode'
@@ -32,6 +33,7 @@ const EMPTY: NightSubmission = {
 }
 
 export default function SubmitPage() {
+  const { isAdmin } = useAuth()
   const [form, setForm] = useState<NightSubmission>(EMPTY)
   const [state, setState] = useState<SubmitState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -45,8 +47,9 @@ export default function SubmitPage() {
     if (!isSupabaseConfigured) return
     setState('checking')
     setErrorMsg('')
+    let coords: { lat: number; lng: number } | null = null
     try {
-      const coords = await geocodeVenue(form.venueName, form.venueAddress)
+      coords = await geocodeVenue(form.venueName, form.venueAddress)
       if (coords && !isLondonCoord(coords.lat, coords.lng)) {
         setErrorMsg('This location doesn\'t appear to be in London. FindComedy only lists London comedy nights.')
         setState('error')
@@ -57,7 +60,11 @@ export default function SubmitPage() {
     }
     setState('submitting')
     try {
-      await submitNight(form)
+      if (isAdmin) {
+        await publishSubmission(form, coords)
+      } else {
+        await submitNight(form)
+      }
       setState('done')
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Something went wrong')
@@ -69,9 +76,11 @@ export default function SubmitPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white flex flex-col items-center justify-center gap-6 px-4">
         <div className="text-4xl">🎤</div>
-        <h1 className="text-2xl font-display font-bold">Night submitted!</h1>
+        <h1 className="text-2xl font-display font-bold">{isAdmin ? 'Night published!' : 'Night submitted!'}</h1>
         <p className="text-gray-500 dark:text-zinc-400 text-center max-w-sm">
-          Thanks! We'll review your submission and add it to the listings if everything checks out.
+          {isAdmin
+            ? 'The night is now live in the listings.'
+            : "Thanks! We'll review your submission and add it to the listings if everything checks out."}
         </p>
         <Link to="/" className="px-5 py-2.5 rounded-xl bg-amber-500 text-white font-semibold text-sm hover:bg-amber-600 transition-colors">
           Back to browse
@@ -150,7 +159,7 @@ export default function SubmitPage() {
             disabled={!isSupabaseConfigured || state === 'checking' || state === 'submitting'}
             className="w-full py-3 rounded-xl bg-amber-500 text-white font-semibold text-sm hover:bg-amber-600 transition-colors disabled:opacity-50"
           >
-            {state === 'checking' ? 'Checking location…' : state === 'submitting' ? 'Submitting…' : 'Submit night for review'}
+            {state === 'checking' ? 'Checking location…' : state === 'submitting' ? 'Submitting…' : isAdmin ? 'Publish night' : 'Submit night for review'}
           </button>
         </form>
       </main>

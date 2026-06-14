@@ -5,7 +5,7 @@ vi.mock('../supabase', () => ({
   isSupabaseConfigured: false,
 }))
 
-import { submitNight, getSubmissions, setSubmissionStatus, approveSubmission } from '../submissionsService'
+import { submitNight, getSubmissions, setSubmissionStatus, approveSubmission, publishSubmission } from '../submissionsService'
 import type { NightSubmission, StoredSubmission } from '../../types/comedyNight'
 
 const validSubmission: NightSubmission = {
@@ -48,5 +48,12 @@ describe('setSubmissionStatus', () => {
 describe('approveSubmission', () => {
   it('is a no-op when Supabase is not configured', async () => {
     await expect(approveSubmission(validStoredSubmission)).resolves.toBeUndefined()
+  })
+})
+
+describe('publishSubmission', () => {
+  it('is a no-op when Supabase is not configured', async () => {
+    await expect(publishSubmission(validSubmission)).resolves.toBeUndefined()
+    await expect(publishSubmission(validSubmission, { lat: 51.5, lng: -0.1 })).resolves.toBeUndefined()
   })
 })

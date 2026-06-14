@@ -8,6 +8,8 @@ import Header from '../../components/Header'
 import NightsMap, { TYPE_COLORS, TYPE_LABELS } from './NightsMap'
 import type { ComedyNight, NightFilters, Weekday } from '../../types/comedyNight'
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
+import { nightSlug } from '../../utils/slug'
+import { useSeo } from '../../hooks/useSeo'
 
 function todayWeekday(): Weekday {
   return new Date().getDay() as Weekday
@@ -67,7 +69,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
       </div>
       <div className="flex items-center justify-end">
         <Link
-          to={`/night/${night.id}`}
+          to={`/night/${nightSlug(night)}`}
           className="px-4 py-1.5 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors"
         >
           View night →
@@ -103,6 +105,13 @@ export default function BrowsePage() {
   const isTonight =
     filters.weekdays.length === 1 && filters.weekdays[0] === todayWeekday()
 
+  useSeo({
+    title: 'Open Mic Comedy in London | FindComedy',
+    description:
+      'Find open mic comedy nights, showcases and pro nights across London. Browse by day, area and type — every listing kept fresh by the people who actually go.',
+    path: '/',
+  })
+
   function handleMarkerSelect(id: string) {
     setSelectedId(id)
     const el = cardRefs.current[id]
@@ -113,7 +122,7 @@ export default function BrowsePage() {
 
   function pageTitle(): string {
     const days = filters.weekdays
-    if (days.length === 0) return 'London comedy nights'
+    if (days.length === 0) return 'Open mic & live comedy nights in London'
     if (days.length === 1) {
       return isTonight ? "What's on tonight" : `${WEEKDAY_LONG[days[0]]} nights`
     }
@@ -218,7 +227,7 @@ export default function BrowsePage() {
                       onCardClick={() => handleMarkerSelect(night.id)}
                       footerAction={
                         <Link
-                          to={`/night/${night.id}`}
+                          to={`/night/${nightSlug(night)}`}
                           className="text-xs font-medium text-amber-600 hover:text-amber-700 hover:underline transition-colors"
                         >
                           View full night →

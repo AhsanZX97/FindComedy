@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import { useNights } from '../../hooks/useNights'
 import type { ComedyNight, NightType } from '../../types/comedyNight'
 import { formatSchedule } from '../../utils/formatSchedule'
+import { nightSlug } from '../../utils/slug'
 import Header from '../../components/Header'
 
 const TYPE_COLORS: Record<NightType, string> = {
@@ -52,7 +53,7 @@ function BottomCard({ night, onClose }: BottomCardProps) {
       </div>
       <div className="flex items-center justify-end">
         <Link
-          to={`/night/${night.id}`}
+          to={`/night/${nightSlug(night)}`}
           className="px-4 py-1.5 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors"
         >
           View night →
