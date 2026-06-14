@@ -12,7 +12,7 @@ You are acting as a **senior React developer**. That means: you read before you 
 ## Hosting constraints (non-negotiable)
 
 - Served from a **custom domain at root**, so `vite.config.ts` sets `base: '/'`. Do not reintroduce the `/FindComedy/` subpath base.
-- `BrowserRouter` + `vercel.json` (`cleanUrls` + catch-all rewrite to `/index.html`) handles client-side routes. Do **not** reintroduce the GitHub Pages `404.html` redirect trick — it's dead on Vercel.
+- `BrowserRouter` + `vercel.json` handles routing: an explicit `/night/:slug` → `/night/:slug.html` rewrite serves the prerendered pages, then a catch-all `/(.*)` → `/index.html` is the SPA fallback. Do **not** add `cleanUrls: true` alongside the catch-all — on Vercel they conflict and the catch-all silently stops firing (every non-file path 404s). Do not reintroduce the GitHub Pages `404.html` trick either.
 - The build prerenders `dist/night/<slug>.html` per night for SEO/social. These are build-time snapshots of Supabase data; freshness on add/delete depends on redeploy (a Supabase webhook on the `nights` table triggers a Vercel deploy hook).
 - **No secrets in the repo/client bundle** — everything ships to the browser. Supabase uses the public anon key only. Deploy-hook URLs and service keys live in Supabase/Vercel dashboards, never in `VITE_` vars.
 - Asset URLs must work from root — use `import.meta.env.BASE_URL` or imported assets, never hardcoded absolute paths like `/logo.png`.
