@@ -31,6 +31,9 @@ dist-ssr
 # Local agent/tooling scratch dirs
 .playwright-mcp/
 
+# Supabase table snapshots (local rollback for ingest — data, not source)
+backups/
+
 # Project docs and DB schema (local only)
 docs/archive
 supabase/
