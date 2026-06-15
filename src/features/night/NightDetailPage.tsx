@@ -6,6 +6,7 @@ import type { ComedyNight, NightType, Level, SocialLinks } from '../../types/com
 import { useAuth } from '../auth/AuthContext'
 import { useSocial } from '../social/SocialContext'
 import FavouriteButton from '../../components/FavouriteButton'
+import CalendarIcon from '../../components/CalendarIcon'
 import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
@@ -41,7 +42,7 @@ const LEVEL_LABELS: Record<Level, string> = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{title}</h2>
+      <h2 className="text-sm font-semibold text-gray-900 dark:text-zinc-100">{title}</h2>
       {children}
     </section>
   )
@@ -65,7 +66,7 @@ function SocialRow({ socials }: { socials: SocialLinks }) {
   if (socials.tiktok && isSafeUrl(socials.tiktok)) links.push({ label: 'TikTok', href: socials.tiktok, icon: '🎵' })
   if (socials.youtube && isSafeUrl(socials.youtube)) links.push({ label: 'YouTube', href: socials.youtube, icon: '▶️' })
 
-  if (links.length === 0) return <p className="text-sm text-gray-400 dark:text-zinc-500">No social links listed.</p>
+  if (links.length === 0) return <p className="text-sm text-gray-500 dark:text-zinc-400">No social links listed.</p>
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -90,9 +91,9 @@ function FreshnessBadge({ lastVerified }: { lastVerified: string }) {
   const label = getFreshnessLabel(lastVerified)
 
   const styles = {
-    fresh: 'text-emerald-600 dark:text-emerald-400',
-    stale: 'text-amber-600 dark:text-amber-400',
-    unknown: 'text-red-500 dark:text-red-400',
+    fresh: 'text-emerald-700 dark:text-emerald-400',
+    stale: 'text-amber-700 dark:text-amber-400',
+    unknown: 'text-red-600 dark:text-red-400',
   }
 
   const suffix = status === 'unknown' ? ' ⚠️' : ''
@@ -108,7 +109,7 @@ function BookingTabs({ night }: { night: ComedyNight }) {
   const contact = night.howToBook.contact
 
   if (!contact) {
-    return <p className="text-sm text-gray-400 dark:text-zinc-500">No booking information listed.</p>
+    return <p className="text-sm text-gray-500 dark:text-zinc-400">No booking information listed.</p>
   }
 
   const isUrl = contact.startsWith('http://') || contact.startsWith('https://')
@@ -120,7 +121,7 @@ function BookingTabs({ night }: { night: ComedyNight }) {
           href={contact}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-amber-600 dark:text-amber-400 hover:underline break-all"
+          className="text-sm text-amber-700 dark:text-amber-400 hover:underline break-all"
         >
           {contact}
         </a>
@@ -128,7 +129,7 @@ function BookingTabs({ night }: { night: ComedyNight }) {
         <p className="text-sm text-gray-700 dark:text-zinc-300">{contact}</p>
       )}
       {night.bringer.required && (
-        <p className="text-xs text-amber-600 mt-1">
+        <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
           Bringer required{night.bringer.count ? ` — bring ${night.bringer.count} paying guest${night.bringer.count > 1 ? 's' : ''}` : ''}
           {night.bringer.note ? `. ${night.bringer.note}` : ''}
         </p>
@@ -160,7 +161,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
         {/* Hero */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors">
+            <Link to="/" className="text-xs text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors">
               ← Back to browse
             </Link>
             {isAdmin && (
@@ -193,10 +194,22 @@ function NightDetail({ night }: { night: ComedyNight }) {
             )}
           </div>
 
-          <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white leading-tight">{night.name}</h1>
+          <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white leading-tight text-balance">{night.name}</h1>
           <p className="text-gray-600 dark:text-zinc-300 leading-relaxed">{night.description}</p>
 
-          <FreshnessBadge lastVerified={night.lastVerified} />
+          {/* At a glance: bringer policy is a top decision factor for performers */}
+          <div className="flex flex-wrap items-center gap-2">
+            {night.bringer.required ? (
+              <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800 border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800">
+                Bringer{night.bringer.count ? ` · ${night.bringer.count}` : ''}
+              </span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800">
+                No bringer
+              </span>
+            )}
+            <FreshnessBadge lastVerified={night.lastVerified} />
+          </div>
 
           {/* Action row */}
           <div className="flex items-center gap-3 flex-wrap pt-1">
@@ -217,11 +230,12 @@ function NightDetail({ night }: { night: ComedyNight }) {
           <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-3">
             {night.schedules.map((s, i) => (
               <div key={i} className="flex flex-col gap-0.5">
-                <p className="text-base font-semibold text-gray-900 dark:text-white">
-                  {formatScheduleEntry(s)}
+                <p className="flex items-center gap-2 text-base font-semibold text-amber-700 dark:text-amber-400">
+                  <CalendarIcon className="h-4 w-4 shrink-0" />
+                  <span>{formatScheduleEntry(s)}</span>
                 </p>
                 {s.note && (
-                  <p className="text-sm text-gray-500 dark:text-zinc-400">{s.note}</p>
+                  <p className="text-sm text-gray-500 dark:text-zinc-400 pl-6">{s.note}</p>
                 )}
               </div>
             ))}
@@ -233,7 +247,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
           <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
             <p className="font-semibold text-gray-900 dark:text-white">{night.venue.name}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400">{night.venue.address}</p>
-            <p className="text-sm text-gray-400 dark:text-zinc-500">
+            <p className="text-sm text-gray-500 dark:text-zinc-400">
               {night.venue.area}
               {night.venue.nearestStation ? ` · Nearest: ${night.venue.nearestStation}` : ''}
             </p>
@@ -267,8 +281,8 @@ function NightDetail({ night }: { night: ComedyNight }) {
         {/* Share */}
         <Section title="Share this night">
           <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-2">
-            <p className="text-xs text-gray-400 dark:text-zinc-500">Copy this link to share:</p>
-            <code className="text-sm text-amber-600 dark:text-amber-400 break-all">{window.location.href}</code>
+            <p className="text-xs text-gray-500 dark:text-zinc-400">Copy this link to share:</p>
+            <code className="text-sm text-amber-700 dark:text-amber-400 break-all">{window.location.href}</code>
           </div>
         </Section>
 
@@ -302,7 +316,7 @@ export default function NightDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white flex flex-col items-center justify-center gap-4 px-4">
         <p className="text-gray-500 dark:text-zinc-400">{nightsState.message}</p>
-        <Link to="/" className="text-amber-500 text-sm hover:underline">Back to browse</Link>
+        <Link to="/" className="text-amber-700 dark:text-amber-400 text-sm hover:underline">Back to browse</Link>
       </div>
     )
   }

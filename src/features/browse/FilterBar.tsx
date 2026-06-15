@@ -41,8 +41,10 @@ function PillButton({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`shrink-0 text-sm px-3 py-1.5 rounded-full font-medium transition-colors ${
+      aria-pressed={active}
+      className={`shrink-0 text-sm px-3.5 py-2 rounded-full font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 ${
         active
           ? 'bg-gray-900 text-white dark:bg-amber-400 dark:text-zinc-950'
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white'
@@ -64,8 +66,10 @@ function TogglePill({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`shrink-0 text-sm px-3 py-1.5 rounded-full font-medium border transition-colors ${
+      aria-pressed={active}
+      className={`shrink-0 text-sm px-3.5 py-2 rounded-full font-medium border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 ${
         active
           ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900 dark:border-emerald-600 dark:text-emerald-300'
           : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-white'

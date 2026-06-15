@@ -6,6 +6,7 @@ import type { ComedyNight, NightType } from '../../types/comedyNight'
 import { formatSchedule } from '../../utils/formatSchedule'
 import { nightSlug } from '../../utils/slug'
 import { useTheme } from '../../context/ThemeContext'
+import CalendarIcon from '../../components/CalendarIcon'
 
 export const TYPE_COLORS: Record<NightType, string> = {
   'open-mic': '#3b82f6',
@@ -110,25 +111,30 @@ function MarkerPopup({ night, pos, onClose, isDark }: MarkerPopupProps) {
           <button
             onClick={onClose}
             aria-label="Close popup"
-            className="text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-200 text-lg leading-none shrink-0 -mt-0.5 transition-colors"
+            className="text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 text-lg leading-none shrink-0 -mt-0.5 transition-colors"
           >
             ×
           </button>
         </div>
 
-        {/* Name */}
-        <p className="text-sm font-display font-bold text-amber-500 leading-tight">{night.name}</p>
+        {/* Name — readable ink, matching the listing cards */}
+        <p className="text-sm font-display font-bold text-gray-900 dark:text-zinc-50 leading-tight">{night.name}</p>
+
+        {/* Schedule — the scarce amber "when", matching the listing cards */}
+        {schedule && (
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
+            <CalendarIcon className="h-3 w-3 shrink-0" />
+            <span>{schedule}</span>
+          </p>
+        )}
 
         {/* Venue */}
-        <p className="text-xs text-gray-400 dark:text-zinc-500 leading-snug">{night.venue.name} · {night.venue.area}</p>
-
-        {/* Schedule */}
-        <span className="text-xs text-gray-700 dark:text-zinc-300 font-medium">{schedule}</span>
+        <p className="text-xs text-gray-500 dark:text-zinc-400 leading-snug">{night.venue.name} · {night.venue.area}</p>
 
         {/* CTA */}
         <Link
           to={`/night/${nightSlug(night)}`}
-          className="mt-0.5 block text-center text-xs font-semibold py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-colors"
+          className="mt-0.5 block text-center text-xs font-semibold py-1.5 rounded-lg bg-amber-500 text-zinc-950 hover:bg-amber-400 transition-colors"
         >
           View full night →
         </Link>

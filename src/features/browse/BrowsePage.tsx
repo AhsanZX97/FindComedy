@@ -62,7 +62,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
           >
             {TYPE_LABELS[night.type]}
           </span>
-          <h2 className="text-lg font-display font-bold text-amber-500 leading-tight">{night.name}</h2>
+          <h2 className="text-lg font-display font-bold text-gray-900 dark:text-zinc-50 leading-tight">{night.name}</h2>
           <p className="text-sm text-gray-500 dark:text-zinc-400">{night.venue.name} · {night.venue.area}</p>
         </div>
         <button onClick={onClose} aria-label="Close" className="text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-200 text-xl shrink-0 leading-none mt-1">×</button>
@@ -70,7 +70,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
       <div className="flex items-center justify-end">
         <Link
           to={`/night/${nightSlug(night)}`}
-          className="px-4 py-1.5 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors"
+          className="px-4 py-1.5 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors"
         >
           View night →
         </Link>
@@ -184,7 +184,7 @@ export default function BrowsePage() {
           <div className="sticky top-0 z-10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur border-b border-gray-200 dark:border-zinc-800 px-4 pt-4 pb-3 flex flex-col gap-3">
             <div>
               <h1 className="text-lg font-display font-bold leading-tight text-gray-900 dark:text-white">{pageTitle()}</h1>
-              {countLine && <p className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">{countLine}</p>}
+              {countLine && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">{countLine}</p>}
             </div>
             <FilterBar filters={filters} areas={areas} onChange={(f) => { setFilters(f); setSelectedId(null) }} />
           </div>
@@ -228,7 +228,7 @@ export default function BrowsePage() {
                       footerAction={
                         <Link
                           to={`/night/${nightSlug(night)}`}
-                          className="text-xs font-medium text-amber-600 hover:text-amber-700 hover:underline transition-colors"
+                          className="text-xs font-medium text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 hover:underline transition-colors"
                         >
                           View full night →
                         </Link>
