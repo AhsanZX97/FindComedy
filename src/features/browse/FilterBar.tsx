@@ -26,7 +26,6 @@ const LEVELS: { label: string; value: Level }[] = [
 
 interface FilterBarProps {
   filters: NightFilters
-  areas: string[]
   onChange: (filters: NightFilters) => void
 }
 
@@ -84,14 +83,13 @@ function hasActiveFilters(filters: NightFilters): boolean {
   return (
     filters.search.trim() !== '' ||
     filters.weekdays.length > 0 ||
-    filters.area !== null ||
     filters.type !== null ||
     filters.level !== null ||
     filters.noBringer
   )
 }
 
-export default function FilterBar({ filters, areas, onChange }: FilterBarProps) {
+export default function FilterBar({ filters, onChange }: FilterBarProps) {
   function set<K extends keyof NightFilters>(key: K, value: NightFilters[K]) {
     onChange({ ...filters, [key]: value })
   }
@@ -163,21 +161,8 @@ export default function FilterBar({ filters, areas, onChange }: FilterBarProps) 
         ))}
       </div>
 
-      {/* Area select + Toggles */}
+      {/* Toggles */}
       <div className="flex flex-wrap gap-2 items-center">
-        <select
-          value={filters.area ?? ''}
-          onChange={(e) => set('area', e.target.value || null)}
-          className="text-sm rounded-xl bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 px-3 py-1.5 text-gray-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 cursor-pointer"
-        >
-          <option value="">All areas</option>
-          {areas.map((area) => (
-            <option key={area} value={area}>
-              {area}
-            </option>
-          ))}
-        </select>
-
         <TogglePill active={filters.noBringer} onClick={() => set('noBringer', !filters.noBringer)}>
           No bringer
         </TogglePill>

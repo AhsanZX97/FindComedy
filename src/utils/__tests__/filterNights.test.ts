@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { filterNights, sortByTime, getUniqueAreas } from '../filterNights'
+import { filterNights, sortByTime } from '../filterNights'
 import type { ComedyNight, NightFilters, Schedule } from '../../types/comedyNight'
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
 
@@ -107,15 +107,6 @@ describe('filterNights', () => {
     expect(filterNights([night], filters({ weekdays: [5] }))).toHaveLength(0)
   })
 
-  it('filters by area', () => {
-    const nights = [
-      makeNight({ venue: { id: 'v1', name: 'A', address: '', area: 'Camden', location: { lat: 0, lng: 0 } } }),
-      makeNight({ id: 'two', venue: { id: 'v2', name: 'B', address: '', area: 'Islington', location: { lat: 0, lng: 0 } } }),
-    ]
-    expect(filterNights(nights, filters({ area: 'Camden' }))).toHaveLength(1)
-    expect(filterNights(nights, filters({ area: 'Camden' }))[0].venue.area).toBe('Camden')
-  })
-
   it('filters by type', () => {
     const nights = [
       makeNight({ type: 'open-mic' }),
@@ -189,16 +180,5 @@ describe('sortByTime', () => {
     const original = [...nights]
     sortByTime(nights)
     expect(nights.map((n) => n.id)).toEqual(original.map((n) => n.id))
-  })
-})
-
-describe('getUniqueAreas', () => {
-  it('returns sorted unique areas', () => {
-    const nights = [
-      makeNight({ venue: { id: 'v1', name: '', address: '', area: 'Camden', location: { lat: 0, lng: 0 } } }),
-      makeNight({ id: 'two', venue: { id: 'v2', name: '', address: '', area: 'Islington', location: { lat: 0, lng: 0 } } }),
-      makeNight({ id: 'three', venue: { id: 'v3', name: '', address: '', area: 'Camden', location: { lat: 0, lng: 0 } } }),
-    ]
-    expect(getUniqueAreas(nights)).toEqual(['Camden', 'Islington'])
   })
 })

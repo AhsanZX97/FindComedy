@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
-import { filterNights, sortByTime, getUniqueAreas } from '../../utils/filterNights'
+import { filterNights, sortByTime } from '../../utils/filterNights'
 import NightCard from '../../components/NightCard'
 import FilterBar from './FilterBar'
 import Header from '../../components/Header'
@@ -87,11 +87,6 @@ export default function BrowsePage() {
   const nightsState = useNights()
   const listRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
-
-  const areas = useMemo(
-    () => (nightsState.status === 'ready' ? getUniqueAreas(nightsState.data) : []),
-    [nightsState],
-  )
 
   const filtered = useMemo(() => {
     if (nightsState.status !== 'ready') return []
@@ -186,7 +181,7 @@ export default function BrowsePage() {
               <h1 className="text-lg font-display font-bold leading-tight text-gray-900 dark:text-white">{pageTitle()}</h1>
               {countLine && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">{countLine}</p>}
             </div>
-            <FilterBar filters={filters} areas={areas} onChange={(f) => { setFilters(f); setSelectedId(null) }} />
+            <FilterBar filters={filters} onChange={(f) => { setFilters(f); setSelectedId(null) }} />
           </div>
 
           {/* Cards */}

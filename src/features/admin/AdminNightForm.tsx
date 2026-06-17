@@ -88,9 +88,6 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
         venueName={night.venue.name} onVenueNameChange={(v) => set('venue', { ...night.venue, name: v })}
         venueAddress={night.venue.address} onVenueAddressChange={(v) => set('venue', { ...night.venue, address: v })}
       >
-        <Field label="Area" required>
-          <input type="text" required value={night.venue.area} onChange={(e) => set('venue', { ...night.venue, area: e.target.value })} placeholder="e.g. Camden" className={inputCls} />
-        </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Latitude">
             <input type="number" step="any" value={night.venue.location.lat} onChange={(e) => set('venue', { ...night.venue, location: { ...night.venue.location, lat: Number(e.target.value) } })} className={inputCls} />

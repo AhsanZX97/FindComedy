@@ -27,7 +27,6 @@ export function filterNights(nights: ComedyNight[], filters: NightFilters): Come
       !night.schedules.some((s) => filters.weekdays.includes(s.weekday))
     )
       return false
-    if (filters.area !== null && night.venue.area !== filters.area) return false
     if (filters.type !== null && night.type !== filters.type) return false
     if (filters.level !== null && !night.levels.includes(filters.level)) return false
     if (filters.noBringer && night.bringer.required) return false
@@ -39,8 +38,4 @@ export function sortByTime(nights: ComedyNight[]): ComedyNight[] {
   return [...nights].sort((a, b) =>
     earliestStartTime(a).localeCompare(earliestStartTime(b)),
   )
-}
-
-export function getUniqueAreas(nights: ComedyNight[]): string[] {
-  return [...new Set(nights.map((n) => n.venue.area))].sort()
 }

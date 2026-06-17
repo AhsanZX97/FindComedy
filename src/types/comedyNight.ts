@@ -149,7 +149,6 @@ export interface StoredSubmission {
 export interface NightFilters {
   search: string
   weekdays: Weekday[]
-  area: string | null
   type: NightType | null
   level: Level | null
   noBringer: boolean
@@ -158,7 +157,6 @@ export interface NightFilters {
 export const DEFAULT_FILTERS: NightFilters = {
   search: '',
   weekdays: [],
-  area: null,
   type: null,
   level: null,
   noBringer: false,
