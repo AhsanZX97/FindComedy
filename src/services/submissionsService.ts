@@ -21,11 +21,12 @@ function normalizeSubmissionData(raw: unknown): NightSubmission {
   return { ...(d as unknown as NightSubmission), schedules }
 }
 
-export async function submitNight(submission: NightSubmission): Promise<void> {
+export async function submitNight(submission: NightSubmission, submitterId?: string): Promise<void> {
   if (!supabase) throw new Error('Supabase is not configured')
   const { submitterNote, ...data } = submission
   const payload: Record<string, unknown> = { data }
   if (submitterNote?.trim()) payload.submitter_note = submitterNote.trim()
+  if (submitterId) payload.submitter_id = submitterId
   const { error } = await supabase.from('submissions').insert(payload)
   if (error) throw new Error(error.message)
 }
@@ -35,6 +36,7 @@ interface SubmissionRow {
   data: NightSubmission
   status: string
   submitter_note: string | null
+  submitter_id: string | null
   created_at: string
 }
 
@@ -44,6 +46,7 @@ function rowToSubmission(row: SubmissionRow): StoredSubmission {
     data: normalizeSubmissionData(row.data),
     status: row.status as StoredSubmission['status'],
     submitterNote: row.submitter_note ?? undefined,
+    submitterId: row.submitter_id ?? undefined,
     createdAt: row.created_at,
   }
 }
@@ -117,6 +120,7 @@ function buildNight(
 export async function approveSubmission(sub: StoredSubmission): Promise<void> {
   if (!supabase) return
   const night = buildNight(sub.data, sub.id.slice(0, 8), { lat: 0, lng: 0 })
+  if (sub.submitterId) night.ownerId = sub.submitterId
   await upsertNight(night)
   await setSubmissionStatus(sub.id, 'approved')
 }

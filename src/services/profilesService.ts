@@ -32,6 +32,16 @@ export async function getIsAdmin(userId: string): Promise<boolean> {
   return Boolean(data)
 }
 
+export async function getAllProfiles(): Promise<Profile[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((row) => rowToProfile(row as Record<string, unknown>))
+}
+
 export async function updateProfile(
   userId: string,
   updates: Partial<Pick<Profile, 'displayName' | 'role'>>,

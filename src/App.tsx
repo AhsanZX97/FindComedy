@@ -9,6 +9,7 @@ import AdminNightEdit from './features/admin/AdminNightEdit'
 import AdminSubmissions from './features/admin/AdminSubmissions'
 import AdminFeedback from './features/admin/AdminFeedback'
 import AdminSubmissionReview from './features/admin/AdminSubmissionReview'
+import AdminUsers from './features/admin/AdminUsers'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/admin/queue" element={<AdminSubmissions />} />
       <Route path="/admin/queue/:id" element={<AdminSubmissionReview />} />
       <Route path="/admin/feedback" element={<AdminFeedback />} />
+      <Route path="/admin/users" element={<AdminUsers />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

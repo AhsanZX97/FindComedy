@@ -62,20 +62,20 @@ export default function ReportModal({
     <>
       <button
         onClick={open}
-        className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors underline underline-offset-2"
+        className="text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 ring-1 ring-gray-200 dark:ring-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors font-medium"
       >
-        Report a problem
+        Request update
       </button>
 
       {state !== 'closed' && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 dark:bg-black/70"
+          className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center p-4 bg-black/40 dark:bg-black/70"
           onClick={(e) => { if (e.target === e.currentTarget) close() }}
         >
           <div className="w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 shadow-xl p-6 flex flex-col gap-5">
             {state === 'done' ? (
               <>
-                <p className="text-sm text-gray-800 dark:text-zinc-200 font-medium">Thanks for the report!</p>
+                <p className="text-sm text-gray-800 dark:text-zinc-200 font-medium">Thanks for your request!</p>
                 <p className="text-sm text-gray-500 dark:text-zinc-400">We'll review it and update the listing if needed.</p>
                 <button
                   onClick={close}
@@ -87,7 +87,7 @@ export default function ReportModal({
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Report a problem</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Request update</h3>
                   <button
                     type="button"
                     onClick={close}
@@ -147,7 +147,7 @@ export default function ReportModal({
                     disabled={state === 'submitting'}
                     className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
                   >
-                    {state === 'submitting' ? 'Sending…' : 'Send report'}
+                    {state === 'submitting' ? 'Sending…' : 'Send request'}
                   </button>
                 </div>
               </form>

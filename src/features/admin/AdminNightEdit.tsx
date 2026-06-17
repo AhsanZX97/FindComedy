@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom'
 import { getNightById, deleteNight } from '../../services/nightsService'
 import type { ComedyNight } from '../../types/comedyNight'
 import Header from '../../components/Header'
 import AdminNightForm from './AdminNightForm'
-import RequireAdmin from './RequireAdmin'
+import { useAuth } from '../auth/AuthContext'
 import { nightSlug } from '../../utils/slug'
 
-function AdminNightEditInner() {
+export default function AdminNightEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user, isAdmin, isLoading: authLoading } = useAuth()
   const [night, setNight] = useState<ComedyNight | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'not-found'>('loading')
   const [deleteConfirm, setDeleteConfirm] = useState(false)
@@ -25,11 +26,29 @@ function AdminNightEditInner() {
       .catch(() => setStatus('error'))
   }, [id])
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  const isOwner = night ? night.ownerId === user?.id : false
+  if (!authLoading && status === 'ready' && !isAdmin && !isOwner) {
+    return <Navigate to="/" replace />
+  }
+  if (!authLoading && !isAdmin && !user) {
+    return <Navigate to="/auth" replace />
+  }
+
   async function handleDelete() {
     if (!id) return
     await deleteNight(id)
     navigate('/admin')
   }
+
+  const backHref = isAdmin ? '/admin' : night ? `/night/${nightSlug(night)}` : '/'
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white">
@@ -37,12 +56,12 @@ function AdminNightEditInner() {
       <main className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <div>
-            <Link to="/admin" className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors">
-              ← Admin
+            <Link to={backHref} className="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors">
+              {isAdmin ? '← Admin' : '← Back to night'}
             </Link>
             <h1 className="text-2xl font-display font-bold mt-1">Edit night</h1>
           </div>
-          {night && (
+          {night && isAdmin && (
             <div>
               {!deleteConfirm ? (
                 <button
@@ -90,13 +109,5 @@ function AdminNightEditInner() {
         )}
       </main>
     </div>
-  )
-}
-
-export default function AdminNightEdit() {
-  return (
-    <RequireAdmin>
-      <AdminNightEditInner />
-    </RequireAdmin>
   )
 }

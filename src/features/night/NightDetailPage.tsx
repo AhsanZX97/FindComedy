@@ -164,14 +164,22 @@ function NightDetail({ night }: { night: ComedyNight }) {
             <Link to="/" className="text-xs text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors">
               ← Back to browse
             </Link>
-            {isAdmin && (
-              <Link
-                to={`/admin/nights/${night.id}`}
-                className="text-xs px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 ring-1 ring-amber-200 dark:ring-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors font-medium"
-              >
-                Edit night
-              </Link>
-            )}
+            <div className="flex items-center gap-2">
+              <ReportModal
+                nightId={night.id}
+                userId={user?.id ?? ''}
+                isLoggedIn={Boolean(user)}
+                onAuthRequired={() => navigate('/auth')}
+              />
+              {(isAdmin || (user && night.ownerId === user.id)) && (
+                <Link
+                  to={`/admin/nights/${night.id}`}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 ring-1 ring-amber-200 dark:ring-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors font-medium"
+                >
+                  Edit night
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Badges */}
@@ -286,15 +294,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
           </div>
         </Section>
 
-        {/* Report */}
-        <div className="flex justify-end pb-4">
-          <ReportModal
-            nightId={night.id}
-            userId={user?.id ?? ''}
-            isLoggedIn={Boolean(user)}
-            onAuthRequired={() => navigate('/auth')}
-          />
-        </div>
+
       </main>
     </div>
   )

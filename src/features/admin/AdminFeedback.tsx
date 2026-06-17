@@ -6,6 +6,7 @@ import { getAllNights } from '../../services/nightsService'
 import { getAllFeedback, deleteFeedbackById } from '../../services/feedbackService'
 import type { Report, Review, ComedyNight, SiteFeedback } from '../../types/comedyNight'
 import { REPORT_TYPE_LABELS, VIBE_TAG_LABELS } from '../../types/comedyNight'
+import { nightSlug } from '../../utils/slug'
 import Header from '../../components/Header'
 import RequireAdmin from './RequireAdmin'
 
@@ -16,8 +17,9 @@ interface NightReports {
   reports: Report[]
 }
 
-function ReportRow({ report, onResolve, onDelete, busy }: {
+function ReportRow({ report, nightPath, onResolve, onDelete, busy }: {
   report: Report
+  nightPath: string
   onResolve: () => void
   onDelete: () => void
   busy: boolean
@@ -33,6 +35,14 @@ function ReportRow({ report, onResolve, onDelete, busy }: {
           {REPORT_TYPE_LABELS[report.type]}
         </span>
         <div className="flex gap-1 shrink-0">
+          <Link
+            to={nightPath}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs px-2 py-1 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-700 ring-1 ring-gray-200 dark:ring-zinc-700 transition-colors"
+          >
+            View ↗
+          </Link>
           {!report.resolvedAt && (
             <button
               onClick={onResolve}
@@ -129,6 +139,7 @@ function ReportsTab() {
                 <ReportRow
                   key={r.id}
                   report={r}
+                  nightPath={`/night/${nightSlug(night)}`}
                   onResolve={() => void handleResolve(r.id)}
                   onDelete={() => void handleDelete(r.id)}
                   busy={busyId === r.id}

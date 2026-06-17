@@ -51,6 +51,7 @@ export interface ComedyNight {
   status: NightStatus
   lastVerified: string // ISO date string
   images?: string[]
+  ownerId?: string
 }
 
 export type ReportType =
@@ -143,6 +144,7 @@ export interface StoredSubmission {
   data: NightSubmission
   status: 'pending' | 'approved' | 'rejected'
   submitterNote?: string
+  submitterId?: string
   createdAt: string
 }
 

@@ -18,6 +18,7 @@ export function rowToNight(row: Record<string, unknown>): ComedyNight {
     status: row.status as ComedyNight['status'],
     lastVerified: row.last_verified as string,
     images: row.images as string[] | undefined,
+    ownerId: (row.owner_id as string | null) ?? undefined,
   }
 }
 
@@ -38,6 +39,7 @@ export function nightToRow(night: ComedyNight): Record<string, unknown> {
     status: night.status,
     last_verified: night.lastVerified,
     images: night.images ?? null,
+    owner_id: night.ownerId ?? null,
     updated_at: new Date().toISOString(),
   }
 }

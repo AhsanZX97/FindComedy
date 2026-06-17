@@ -33,7 +33,7 @@ const EMPTY: NightSubmission = {
 }
 
 export default function SubmitPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, user } = useAuth()
   const [form, setForm] = useState<NightSubmission>(EMPTY)
   const [state, setState] = useState<SubmitState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -63,7 +63,7 @@ export default function SubmitPage() {
       if (isAdmin) {
         await publishSubmission(form, coords)
       } else {
-        await submitNight(form)
+        await submitNight(form, user?.id)
       }
       setState('done')
     } catch (err) {

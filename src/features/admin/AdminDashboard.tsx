@@ -4,6 +4,7 @@ import { getSubmissions } from '../../services/submissionsService'
 import { getAllReports } from '../../services/reportsService'
 import { getAllNights } from '../../services/nightsService'
 import { getAllFeedback } from '../../services/feedbackService'
+import { getAllProfiles } from '../../services/profilesService'
 import Header from '../../components/Header'
 import RequireAdmin from './RequireAdmin'
 
@@ -12,6 +13,7 @@ interface Stats {
   openReports: number
   totalNights: number
   unreadFeedback: number
+  totalUsers: number
 }
 
 function StatCard({ label, value, to }: { label: string; value: number; to: string }) {
@@ -35,14 +37,16 @@ function AdminDashboardInner() {
       getAllReports(),
       getAllNights(),
       getAllFeedback(),
-    ]).then(([subs, reports, nights, feedback]) => {
+      getAllProfiles(),
+    ]).then(([subs, reports, nights, feedback, users]) => {
       setStats({
         pendingSubmissions: subs.length,
         openReports: reports.filter((r) => !r.resolvedAt).length,
         totalNights: nights.length,
         unreadFeedback: feedback.length,
+        totalUsers: users.length,
       })
-    }).catch(() => { /* stats stay null, display dashes */ })
+    }).catch(() => { /* stats stay null, display zeroes */ })
   }, [])
 
   return (
@@ -54,11 +58,12 @@ function AdminDashboardInner() {
           <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">Manage nights, submissions, and moderation.</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <StatCard label="Pending submissions" value={stats?.pendingSubmissions ?? 0} to="/admin/queue" />
           <StatCard label="Open reports" value={stats?.openReports ?? 0} to="/admin/feedback" />
           <StatCard label="Total nights" value={stats?.totalNights ?? 0} to="/" />
           <StatCard label="Feedback" value={stats?.unreadFeedback ?? 0} to="/admin/feedback" />
+          <StatCard label="Users" value={stats?.totalUsers ?? 0} to="/admin/users" />
         </div>
 
         <nav className="flex flex-col gap-3">
@@ -80,6 +85,17 @@ function AdminDashboardInner() {
             <div>
               <p className="font-semibold text-gray-900 dark:text-white">Reports, reviews &amp; feedback</p>
               <p className="text-sm text-gray-500 dark:text-zinc-400 mt-0.5">Resolve reports, moderate reviews, read site feedback</p>
+            </div>
+            <span className="text-gray-400 dark:text-zinc-500">→</span>
+          </Link>
+
+          <Link
+            to="/admin/users"
+            className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 px-5 py-4 flex items-center justify-between hover:ring-amber-400 transition-colors"
+          >
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white">Users</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-400 mt-0.5">View registered users and manage their roles</p>
             </div>
             <span className="text-gray-400 dark:text-zinc-500">→</span>
           </Link>

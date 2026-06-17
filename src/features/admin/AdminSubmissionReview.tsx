@@ -107,6 +107,7 @@ function AdminSubmissionReviewInner() {
         },
         status: 'active',
         lastVerified: new Date().toISOString().slice(0, 10),
+        ownerId: sub.submitterId,
       }
       await upsertNight(night)
       await setSubmissionStatus(sub.id, 'approved')
