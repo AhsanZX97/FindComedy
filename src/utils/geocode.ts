@@ -1,14 +1,49 @@
-async function nominatimSearch(q: string): Promise<{ lat: number; lng: number } | null> {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`
+import { parseBoroughFromNominatim, normalizeToBorough } from './londonBoroughs'
+import type { LondonBorough } from './londonBoroughs'
+
+export interface GeoResult {
+  lat: number
+  lng: number
+  area: LondonBorough | null
+}
+
+interface NominatimResult {
+  lat: string
+  lon: string
+  address?: {
+    borough?: string
+    suburb?: string
+    neighbourhood?: string
+  }
+}
+
+async function nominatimSearch(q: string): Promise<GeoResult | null> {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=${encodeURIComponent(q)}`
   try {
     const res = await fetch(url, { headers: { 'Accept-Language': 'en' } })
     if (!res.ok) return null
-    const results = (await res.json()) as { lat: string; lon: string }[]
+    const results = (await res.json()) as NominatimResult[]
     if (!results.length) return null
-    return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) }
+    const r = results[0]
+    const lat = parseFloat(r.lat)
+    const lng = parseFloat(r.lon)
+    const area = extractBorough(r.address)
+    return { lat, lng, area }
   } catch {
     return null
   }
+}
+
+function extractBorough(address: NominatimResult['address']): LondonBorough | null {
+  if (!address) return null
+  if (address.borough) {
+    const b = parseBoroughFromNominatim(address.borough)
+    if (b) return b
+  }
+  // Fall back to suburb / neighbourhood → mapping table
+  const fallback = address.suburb ?? address.neighbourhood
+  if (fallback) return normalizeToBorough(fallback)
+  return null
 }
 
 function extractUkPostcode(address: string): string | null {
@@ -23,7 +58,7 @@ export function isLondonCoord(lat: number, lng: number): boolean {
 export async function geocodeVenue(
   name: string,
   address: string,
-): Promise<{ lat: number; lng: number } | null> {
+): Promise<GeoResult | null> {
   // 1. Full address
   const r1 = await nominatimSearch(address)
   if (r1) return r1
@@ -33,7 +68,7 @@ export async function geocodeVenue(
     const r2 = await nominatimSearch(stripped)
     if (r2) return r2
   }
-  // 3. Postcode only — resolves to the correct street/area
+  // 3. Postcode only
   const postcode = extractUkPostcode(address)
   if (postcode) {
     const r3 = await nominatimSearch(postcode)

@@ -55,4 +55,60 @@ describe('buildEventJsonLd', () => {
     const data = buildEventJsonLd(makeNight({ status: 'gone' }), 'https://findcomedy.xyz')
     expect(data.eventStatus).toBe('https://schema.org/EventCancelled')
   })
+
+  it('estimates endDate two hours after the start', () => {
+    const data = buildEventJsonLd(makeNight(), 'https://findcomedy.xyz', new Date('2026-06-14T12:00:00'))
+    expect(data.endDate).toBe('2026-06-15T22:00')
+  })
+
+  it('rolls endDate past midnight for late shows', () => {
+    const data = buildEventJsonLd(
+      makeNight({ schedules: [{ frequency: 'weekly', weekday: 1, startTime: '23:30' }] }),
+      'https://findcomedy.xyz',
+      new Date('2026-06-14T12:00:00'),
+    )
+    expect(data.endDate).toBe('2026-06-16T01:30')
+  })
+
+  it('includes a generic performer', () => {
+    const data = buildEventJsonLd(makeNight(), 'https://findcomedy.xyz')
+    expect((data.performer as Record<string, unknown>)['@type']).toBe('PerformingGroup')
+  })
+
+  it('always gives the organizer a url, falling back to the night page', () => {
+    const withSite = buildEventJsonLd(makeNight(), 'https://findcomedy.xyz')
+    expect((withSite.organizer as Record<string, unknown>).url).toBe('https://angelcomedy.co.uk')
+
+    const noSite = buildEventJsonLd(makeNight({ socials: {} }), 'https://findcomedy.xyz')
+    expect((noSite.organizer as Record<string, unknown>).url).toBe(
+      'https://findcomedy.xyz/night/angel-comedy-islington',
+    )
+  })
+
+  it('falls back to the site mic image when the night has none', () => {
+    const data = buildEventJsonLd(makeNight({ images: [] }), 'https://findcomedy.xyz')
+    expect(data.image).toBe('https://findcomedy.xyz/mic.svg')
+  })
+
+  it('uses the night image when present', () => {
+    const data = buildEventJsonLd(makeNight({ images: ['https://cdn.test/a.jpg'] }), 'https://findcomedy.xyz')
+    expect(data.image).toBe('https://cdn.test/a.jpg')
+  })
+
+  it('offers a free entry for open-mic nights with a booking url', () => {
+    const data = buildEventJsonLd(makeNight({ type: 'open-mic' }), 'https://findcomedy.xyz')
+    const offers = data.offers as Record<string, unknown>
+    expect(offers['@type']).toBe('Offer')
+    expect(offers.availability).toBe('https://schema.org/InStock')
+    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-islington')
+    expect(offers.price).toBe('0')
+    expect(offers.priceCurrency).toBe('GBP')
+  })
+
+  it('omits a price for paid night types but still links an offer', () => {
+    const data = buildEventJsonLd(makeNight({ type: 'pro' }), 'https://findcomedy.xyz')
+    const offers = data.offers as Record<string, unknown>
+    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-islington')
+    expect(offers.price).toBeUndefined()
+  })
 })

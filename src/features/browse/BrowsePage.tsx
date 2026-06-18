@@ -10,6 +10,7 @@ import type { ComedyNight, NightFilters, Weekday } from '../../types/comedyNight
 import { DEFAULT_FILTERS } from '../../types/comedyNight'
 import { nightSlug } from '../../utils/slug'
 import { useSeo } from '../../hooks/useSeo'
+import { normalizeToBorough } from '../../utils/londonBoroughs'
 
 function todayWeekday(): Weekday {
   return new Date().getDay() as Weekday
@@ -70,7 +71,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
       <div className="flex items-center justify-end">
         <Link
           to={`/night/${nightSlug(night)}`}
-          className="px-4 py-1.5 rounded-lg bg-amber-500 text-zinc-950 text-sm font-semibold hover:bg-amber-400 transition-colors"
+          className="px-4 py-1.5 rounded-lg bg-amber-500 text-black text-sm font-semibold hover:bg-amber-400 transition-colors"
         >
           View night →
         </Link>
@@ -87,6 +88,17 @@ export default function BrowsePage() {
   const nightsState = useNights()
   const listRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  const availableAreas = useMemo(() => {
+    if (nightsState.status !== 'ready') return []
+    const boroughs = new Set<string>()
+    for (const night of nightsState.data) {
+      if (night.status === 'active') {
+        boroughs.add(normalizeToBorough(night.venue.area) ?? night.venue.area)
+      }
+    }
+    return [...boroughs].sort()
+  }, [nightsState])
 
   const filtered = useMemo(() => {
     if (nightsState.status !== 'ready') return []
@@ -181,7 +193,7 @@ export default function BrowsePage() {
               <h1 className="text-lg font-display font-bold leading-tight text-gray-900 dark:text-white">{pageTitle()}</h1>
               {countLine && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">{countLine}</p>}
             </div>
-            <FilterBar filters={filters} onChange={(f) => { setFilters(f); setSelectedId(null) }} />
+            <FilterBar filters={filters} onChange={(f) => { setFilters(f); setSelectedId(null) }} availableAreas={availableAreas} />
           </div>
 
           {/* Cards */}

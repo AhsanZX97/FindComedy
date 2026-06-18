@@ -27,6 +27,7 @@ const LEVELS: { label: string; value: Level }[] = [
 interface FilterBarProps {
   filters: NightFilters
   onChange: (filters: NightFilters) => void
+  availableAreas?: string[]
 }
 
 function PillButton({
@@ -45,8 +46,8 @@ function PillButton({
       aria-pressed={active}
       className={`shrink-0 text-sm px-3.5 py-2 rounded-full font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 ${
         active
-          ? 'bg-gray-900 text-white dark:bg-amber-400 dark:text-zinc-950'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white'
+          ? 'bg-gray-900 text-white dark:bg-amber-400 dark:text-black'
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white'
       }`}
     >
       {children}
@@ -85,11 +86,12 @@ function hasActiveFilters(filters: NightFilters): boolean {
     filters.weekdays.length > 0 ||
     filters.type !== null ||
     filters.level !== null ||
-    filters.noBringer
+    filters.noBringer ||
+    filters.area !== null
   )
 }
 
-export default function FilterBar({ filters, onChange }: FilterBarProps) {
+export default function FilterBar({ filters, onChange, availableAreas = [] }: FilterBarProps) {
   function set<K extends keyof NightFilters>(key: K, value: NightFilters[K]) {
     onChange({ ...filters, [key]: value })
   }
@@ -160,6 +162,23 @@ export default function FilterBar({ filters, onChange }: FilterBarProps) {
           </PillButton>
         ))}
       </div>
+
+      {/* Area */}
+      {availableAreas.length > 0 && (
+        <div className="relative">
+          <select
+            value={filters.area ?? ''}
+            onChange={(e) => set('area', e.target.value || null)}
+            className="w-full appearance-none rounded-xl bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 px-4 py-2.5 pr-9 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50"
+          >
+            <option value="">All areas</option>
+            {availableAreas.map((area) => (
+              <option key={area} value={area}>{area}</option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-xs">▾</span>
+        </div>
+      )}
 
       {/* Toggles */}
       <div className="flex flex-wrap gap-2 items-center">

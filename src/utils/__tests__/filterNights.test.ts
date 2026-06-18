@@ -140,6 +140,35 @@ describe('filterNights', () => {
     expect(filterNights(nights, filters({ search: 'zzz-no-match' }))).toHaveLength(0)
   })
 
+  it('area filter matches nights whose venue area normalises to the selected borough', () => {
+    const nights = [
+      makeNight({ id: 'angel', venue: { id: 'v1', name: 'Pub A', address: '', area: 'Angel', location: { lat: 0, lng: 0 } } }),
+      makeNight({ id: 'islington', venue: { id: 'v2', name: 'Pub B', address: '', area: 'Islington', location: { lat: 0, lng: 0 } } }),
+      makeNight({ id: 'soho', venue: { id: 'v3', name: 'Pub C', address: '', area: 'Soho', location: { lat: 0, lng: 0 } } }),
+    ]
+    const result = filterNights(nights, filters({ area: 'Islington' }))
+    expect(result.map((n) => n.id)).toEqual(expect.arrayContaining(['angel', 'islington']))
+    expect(result.find((n) => n.id === 'soho')).toBeUndefined()
+  })
+
+  it('area filter null returns all active nights', () => {
+    const nights = [
+      makeNight({ id: 'a', venue: { id: 'v1', name: 'A', address: '', area: 'Camden', location: { lat: 0, lng: 0 } } }),
+      makeNight({ id: 'b', venue: { id: 'v2', name: 'B', address: '', area: 'Hackney', location: { lat: 0, lng: 0 } } }),
+    ]
+    expect(filterNights(nights, filters({ area: null }))).toHaveLength(2)
+  })
+
+  it('area filter falls back to direct area match when area is not in borough map', () => {
+    const nights = [
+      makeNight({ id: 'match', venue: { id: 'v1', name: 'A', address: '', area: 'Unknownville', location: { lat: 0, lng: 0 } } }),
+      makeNight({ id: 'no-match', venue: { id: 'v2', name: 'B', address: '', area: 'Othertown', location: { lat: 0, lng: 0 } } }),
+    ]
+    const result = filterNights(nights, filters({ area: 'Unknownville' }))
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('match')
+  })
+
   it('combines multiple filters (AND logic)', () => {
     const nights = [
       makeNight({ type: 'open-mic', bringer: { required: false } }),

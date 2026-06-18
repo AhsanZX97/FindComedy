@@ -154,6 +154,7 @@ export interface NightFilters {
   type: NightType | null
   level: Level | null
   noBringer: boolean
+  area: string | null
 }
 
 export const DEFAULT_FILTERS: NightFilters = {
@@ -162,6 +163,7 @@ export const DEFAULT_FILTERS: NightFilters = {
   type: null,
   level: null,
   noBringer: false,
+  area: null,
 }
 
 export interface SiteFeedback {

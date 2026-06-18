@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, CircleMarker, useMap, useMapEvents } from 'react-leaflet'
-import type { Map as LeafletMap } from 'leaflet'
 import type { ComedyNight, NightType } from '../../types/comedyNight'
 import { formatSchedule } from '../../utils/formatSchedule'
 import { nightSlug } from '../../utils/slug'
@@ -29,6 +28,21 @@ function isLondonCoord(lat: number, lng: number): boolean {
 function InvalidateSize({ trigger }: { trigger: unknown }) {
   const map = useMap()
   useEffect(() => { map.invalidateSize() }, [map, trigger])
+  return null
+}
+
+function FitBounds({ nights }: { nights: ComedyNight[] }) {
+  const map = useMap()
+  const key = useMemo(() => nights.map((n) => n.id).sort().join(','), [nights])
+  useEffect(() => {
+    if (nights.length === 0) return
+    const lats = nights.map((n) => n.venue.location.lat)
+    const lngs = nights.map((n) => n.venue.location.lng)
+    map.fitBounds(
+      [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]],
+      { padding: [40, 40], maxZoom: 14 },
+    )
+  }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
   return null
 }
 
@@ -178,8 +192,6 @@ interface NightsMapProps {
 export default function NightsMap({ nights, selectedId, onSelect, onDeselect, invalidateTrigger }: NightsMapProps) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
-  const mapRef = useRef<LeafletMap | null>(null)
-  const fittedRef = useRef(false)
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null)
 
   const validNights = nights.filter((n) =>
@@ -187,18 +199,6 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
   )
 
   const selectedNight = validNights.find((n) => n.id === selectedId) ?? null
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || fittedRef.current || validNights.length === 0) return
-    fittedRef.current = true
-    const lats = validNights.map((n) => n.venue.location.lat)
-    const lngs = validNights.map((n) => n.venue.location.lng)
-    map.fitBounds([
-      [Math.min(...lats), Math.min(...lngs)],
-      [Math.max(...lats), Math.max(...lngs)],
-    ], { padding: [40, 40] })
-  }, [validNights])
 
   useEffect(() => {
     if (!selectedNight) setPopupPos(null)
@@ -219,7 +219,6 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
         zoom={12}
         style={{ height: '100%', width: '100%' }}
         attributionControl={false}
-        ref={mapRef}
       >
         <TileLayer url={tileUrl} attribution={tileAttribution} />
 
@@ -248,6 +247,7 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
         />
         <PanToSelected night={selectedNight} />
         <InvalidateSize trigger={invalidateTrigger} />
+        <FitBounds nights={validNights} />
       </MapContainer>
 
       {/* Legend */}

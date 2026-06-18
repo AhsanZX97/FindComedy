@@ -11,7 +11,8 @@ import ReportModal from '../../components/ReportModal'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
 import { formatScheduleEntry } from '../../utils/formatSchedule'
-import { nightSlug } from '../../utils/slug'
+import { nightSlug, slugify } from '../../utils/slug'
+import { normalizeToBorough } from '../../utils/londonBoroughs'
 import { buildEventJsonLd } from '../../utils/eventJsonLd'
 import { nightSeo } from '../../utils/nightSeo'
 import { useSeo, SITE_URL } from '../../hooks/useSeo'
@@ -160,10 +161,24 @@ function NightDetail({ night }: { night: ComedyNight }) {
       <main className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Hero */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="text-xs text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors">
-              ← Back to browse
-            </Link>
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-1.5">
+              <Link to="/" className="text-xs text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors">
+                ← Browse
+              </Link>
+              {(() => {
+                const borough = normalizeToBorough(night.venue.area) ?? (night.venue.area || null)
+                if (!borough) return null
+                return (
+                  <Link
+                    to={`/comedy/${slugify(borough)}`}
+                    className="text-xs text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors"
+                  >
+                    {borough} nights →
+                  </Link>
+                )
+              })()}
+            </div>
             <div className="flex items-center gap-2">
               <ReportModal
                 nightId={night.id}
@@ -256,7 +271,18 @@ function NightDetail({ night }: { night: ComedyNight }) {
             <p className="font-semibold text-gray-900 dark:text-white">{night.venue.name}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400">{night.venue.address}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400">
-              {night.venue.area}
+              {(() => {
+                const borough = normalizeToBorough(night.venue.area)
+                const areaLabel = night.venue.area || borough || null
+                return borough && areaLabel ? (
+                  <Link
+                    to={`/comedy/${slugify(borough)}`}
+                    className="hover:text-amber-600 dark:hover:text-amber-400 hover:underline transition-colors"
+                  >
+                    {areaLabel}
+                  </Link>
+                ) : (areaLabel ?? null)
+              })()}
               {night.venue.nearestStation ? ` · Nearest: ${night.venue.nearestStation}` : ''}
             </p>
           </div>

@@ -83,6 +83,7 @@ function buildNight(
   form: NightSubmission,
   idSuffix: string,
   location: { lat: number; lng: number },
+  area = '',
 ): ComedyNight {
   return {
     id: slugify(form.name) + '-' + idSuffix,
@@ -100,7 +101,7 @@ function buildNight(
       id: slugify(form.venueName) + '-venue',
       name: form.venueName,
       address: form.venueAddress,
-      area: '',
+      area,
       location,
     },
     howToBook: {
@@ -130,8 +131,14 @@ export async function approveSubmission(sub: StoredSubmission): Promise<void> {
 export async function publishSubmission(
   submission: NightSubmission,
   location?: { lat: number; lng: number } | null,
+  area?: string | null,
 ): Promise<void> {
   if (!supabase) return
-  const night = buildNight(submission, crypto.randomUUID().slice(0, 8), location ?? { lat: 0, lng: 0 })
+  const night = buildNight(
+    submission,
+    crypto.randomUUID().slice(0, 8),
+    location ?? { lat: 0, lng: 0 },
+    area ?? '',
+  )
   await upsertNight(night)
 }

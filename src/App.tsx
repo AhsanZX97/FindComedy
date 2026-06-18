@@ -10,11 +10,15 @@ import AdminSubmissions from './features/admin/AdminSubmissions'
 import AdminFeedback from './features/admin/AdminFeedback'
 import AdminSubmissionReview from './features/admin/AdminSubmissionReview'
 import AdminUsers from './features/admin/AdminUsers'
+import AreaPage from './features/area/AreaPage'
+import AreasIndexPage from './features/area/AreasIndexPage'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<BrowsePage />} />
+      <Route path="/comedy" element={<AreasIndexPage />} />
+      <Route path="/comedy/:areaSlug" element={<AreaPage />} />
       <Route path="/tonight" element={<Navigate to="/" replace />} />
       <Route path="/map" element={<Navigate to="/" replace />} />
       <Route path="/night/:id" element={<NightDetailPage />} />

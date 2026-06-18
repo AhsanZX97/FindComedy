@@ -48,12 +48,17 @@ export default function SubmitPage() {
     setState('checking')
     setErrorMsg('')
     let coords: { lat: number; lng: number } | null = null
+    let detectedArea: string | null = null
     try {
-      coords = await geocodeVenue(form.venueName, form.venueAddress)
-      if (coords && !isLondonCoord(coords.lat, coords.lng)) {
-        setErrorMsg('This location doesn\'t appear to be in London. FindComedy only lists London comedy nights.')
-        setState('error')
-        return
+      const result = await geocodeVenue(form.venueName, form.venueAddress)
+      if (result) {
+        if (!isLondonCoord(result.lat, result.lng)) {
+          setErrorMsg('This location doesn\'t appear to be in London. FindComedy only lists London comedy nights.')
+          setState('error')
+          return
+        }
+        coords = { lat: result.lat, lng: result.lng }
+        detectedArea = result.area
       }
     } catch {
       // If geocoding fails entirely, allow the submission through
@@ -61,7 +66,7 @@ export default function SubmitPage() {
     setState('submitting')
     try {
       if (isAdmin) {
-        await publishSubmission(form, coords)
+        await publishSubmission(form, coords, detectedArea)
       } else {
         await submitNight(form, user?.id)
       }

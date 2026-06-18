@@ -1,4 +1,5 @@
 import type { ComedyNight, NightFilters } from '../types/comedyNight'
+import { normalizeToBorough } from './londonBoroughs'
 
 function matchesSearch(night: ComedyNight, search: string): boolean {
   const q = search.toLowerCase()
@@ -30,6 +31,10 @@ export function filterNights(nights: ComedyNight[], filters: NightFilters): Come
     if (filters.type !== null && night.type !== filters.type) return false
     if (filters.level !== null && !night.levels.includes(filters.level)) return false
     if (filters.noBringer && night.bringer.required) return false
+    if (filters.area !== null) {
+      const nightBorough = normalizeToBorough(night.venue.area) ?? night.venue.area
+      if (nightBorough !== filters.area) return false
+    }
     return true
   })
 }
