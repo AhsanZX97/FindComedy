@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import gmapsIcon from '../../assets/gmaps.png'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { getFreshnessLabel, getFreshnessStatus } from '../../utils/freshness'
@@ -267,7 +268,18 @@ function NightDetail({ night }: { night: ComedyNight }) {
 
         {/* Venue */}
         <Section title="Venue">
-          <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
+          <div className="relative rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-1">
+            {night.venue.address && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([night.venue.name, night.venue.address].filter(Boolean).join(', '))}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-3 right-3 flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors"
+              >
+                <img src={gmapsIcon} alt="" className="w-6 h-6" />
+                <span>Get me there</span>
+              </a>
+            )}
             <p className="font-semibold text-gray-900 dark:text-white">{night.venue.name}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400">{night.venue.address}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400">
