@@ -16,6 +16,14 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# .env.e2e holds fake, non-secret Supabase creds so E2E runs reproducibly (incl. CI)
+!.env.e2e
+
+# Playwright / playwright-bdd
+test-results/
+playwright-report/
+blob-report/
+.features-gen/
 
 # Editor directories and files
 .vscode/*
@@ -38,3 +46,5 @@ backups/
 docs/archive
 supabase/
 scripts/
+.vercel
+.env*

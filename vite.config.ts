@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, configDefaults } from 'vitest/config'
 import { loadEnv, type Plugin } from 'vite'
 import { writeFileSync, readFileSync, mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -199,6 +199,9 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: ['./src/test/setup.ts'],
       globals: true,
+      // E2E lives under e2e/ and runs via Playwright, not Vitest. The generated
+      // .features-gen/ specs use Playwright's test runner and must be excluded here.
+      exclude: [...configDefaults.exclude, 'e2e/**', '.features-gen/**'],
     },
   }
 })

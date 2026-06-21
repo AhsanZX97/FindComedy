@@ -1,0 +1,24 @@
+1. Get the 3 Vercel values — run locally:
+
+
+npx vercel link
+Then open .vercel/project.json → copy orgId and projectId.
+
+2. Get the token: Vercel → Account Settings → Tokens → Create → copy it.
+
+3. Add 3 GitHub secrets — repo → Settings → Secrets and variables → Actions → New repository secret:
+
+VERCEL_TOKEN = the token
+VERCEL_ORG_ID = orgId
+VERCEL_PROJECT_ID = projectId
+4. Push everything to main:
+
+
+git add .
+git commit -m "Add BDD E2E and CI deploy gate"
+git push
+5. Watch it: GitHub repo → Actions tab → click the running job. test must pass before deploy runs.
+
+6. Verify Supabase freshness still works: add/delete a test night in Supabase → confirm the site redeploys. If it doesn't, tell me and I'll switch it to a repository_dispatch trigger.
+
+Done. After this, pushes to main only deploy if tests pass.
