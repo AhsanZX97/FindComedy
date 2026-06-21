@@ -48,23 +48,35 @@ e2e/
       areas.feature
     admin/
       submission-queue.feature        # @admin
+  pages/                              # Page Object Models (§6)
+    BasePage.ts                       # shared nav + waits, extended by all
+    HeaderComponent.ts                # site header (shared component object)
+    BrowsePage.ts
+    FilterBar.ts                      # component object, owned by BrowsePage
+    NightDetailPage.ts
+    SubmitPage.ts                     # exists logic — locators move here
+    SignInPage.ts
+    MyNightsPage.ts
+    ReviewsSection.ts                 # component object on NightDetailPage
+    AreaPage.ts
+    admin/
+      SubmissionQueuePage.ts
   steps/
     browse.steps.ts
     night.steps.ts
-    submit.steps.ts                   # exists
+    submit.steps.ts                   # exists — refactored to call POMs
     auth.steps.ts
     favourites.steps.ts
     reviews.steps.ts
     common.steps.ts                   # navigation + shared assertions
   support/
-    fixtures.ts                       # exists — extended (see §4)
+    fixtures.ts                       # exists — extended: mock + seed + POM fixtures (§4, §6)
     supabase-mock.ts                  # extracted route-handler builder
     factories.ts                      # test-data builders (§5)
-    selectors.ts                      # screen helpers / locators (§6)
   TEST-AUTOMATION-PLAN.md             # this file
 ```
 
-**Rationale:** group `.feature` files by domain (the skill's "group related scenarios"); keep step files thin and reusable; isolate the mock + factory plumbing in `support/` so feature authors never touch it.
+**Rationale:** group `.feature` files by domain (the skill's "group related scenarios"); keep step files thin — they orchestrate **Page Objects**, never touch raw locators; isolate the mock + factory plumbing in `support/` so feature authors never touch it. Locators and page interactions live exclusively in `pages/` (§6).
 
 ---
 
@@ -101,13 +113,20 @@ We generalise the current `supabaseMock` into a **seedable** mock so scenarios c
 - **Reports / submissions / feedback** — capture payloads (as today) and return created rows.
 - **Geocoding** — Nominatim returns a fixed London coord by default; a scenario can request a non-London coord to exercise the "London only" guard.
 
-Fixture shape (extends existing `captured`):
+Fixture shape (extends existing `captured`, and adds the POM fixtures from §6):
 
 ```ts
 test.extend<{
+  // data / mock plumbing
   seed: SeedApi          // seed.nights([...]), seed.signedInAs(user), seed.reviews(nightId, [...])
   captured: Captured     // submissions, reports, reviews, feedback payloads
   supabaseMock: void     // auto: true — installs all routes
+  // page objects (§6) — lazily constructed per test, injected into steps
+  browsePage: BrowsePage
+  nightDetailPage: NightDetailPage
+  submitPage: SubmitPage
+  signInPage: SignInPage
+  myNightsPage: MyNightsPage
 }>
 ```
 
@@ -129,19 +148,67 @@ Defaults produce a valid London night, verified recently, active, no bringer. Sc
 
 ---
 
-## 6. Step-definition design
+## 6. Page Object Models & step design
 
-- **Declarative, reusable steps** keyed off domain nouns. Field→placeholder maps and role-based locators live in `support/selectors.ts`, not in `.feature` files.
-- Balance generic vs specific: `When I filter to {string} nights` (reusable across day/type) but `When I sign in with email {string}` (readable, specific).
-- Background per feature for the common precondition only (e.g. "Given the listings include …"); never an over-loaded Background.
+This is the backbone of the framework. **Three layers, strictly separated** — the discipline that keeps an automation suite maintainable at scale:
 
-Example reusable step (illustrative):
+```
+.feature  →  step definition  →  Page Object  →  Playwright locators
+(business)   (orchestration)     (interactions)   (the only place selectors live)
+```
+
+A step **never** contains a CSS selector, placeholder, or role query. It calls a method on a Page Object. If a selector changes, exactly one file changes.
+
+### 6.1 Page Object design rules
+
+- **One class per page/route**, plus **component objects** for reusable widgets that appear across pages (`HeaderComponent`, `FilterBar`, `ReviewsSection`). Component objects are owned by the page that hosts them (e.g. `browsePage.filters`).
+- Each POM takes the Playwright `page` in its constructor and exposes:
+  - **named locators** as `readonly` getters (private to the class where possible),
+  - **action methods** in domain language (`search(term)`, `filterToDay('Friday')`, `submit()`),
+  - **query methods** that return data/state for assertions (`isBringerRequired()`, `visibleNightNames()`) — POMs expose state; **assertions stay in steps** so failures read in business terms.
+- `BasePage` holds shared concerns: `goto(path)`, common waits, and the `HeaderComponent`. Every page extends it.
+- POMs are **pure interaction** — no test data, no mocking. Seeding is the fixture's job (§4/§5).
+
+Example POM (illustrative):
 
 ```ts
-When('I search for {string}', async ({ page }, term) => {
-  await page.getByPlaceholder('Search nights, venues, areas...').fill(term)
+// pages/BrowsePage.ts
+export class BrowsePage extends BasePage {
+  readonly filters = new FilterBar(this.page)
+  private readonly searchBox = this.page.getByPlaceholder('Search nights, venues, areas...')
+
+  async open() { await this.goto('/') }
+  async search(term: string) { await this.searchBox.fill(term) }
+  async openNight(name: string) { await this.page.getByRole('link', { name }).click() }
+  visibleNightNames() { return this.page.getByRole('heading', { level: 3 }).allInnerTexts() }
+}
+```
+
+### 6.2 Binding POMs into steps (the `playwright-bdd` way)
+
+Page Objects are exposed as **fixtures** (§4) and destructured straight into steps — the same dependency-injection model the existing `submit.steps.ts` already uses for `page`/`captured`. No manual `new BrowsePage(page)` in each step.
+
+```ts
+// support/fixtures.ts (excerpt)
+browsePage: async ({ page }, use) => { await use(new BrowsePage(page)) },
+
+// steps/browse.steps.ts — thin orchestration, zero selectors
+When('I search for {string}', async ({ browsePage }, term) => {
+  await browsePage.search(term)
+})
+
+Then('I should see {string}', async ({ browsePage }, name) => {
+  expect(await browsePage.visibleNightNames()).toContain(name)
 })
 ```
+
+> Optional upgrade path: `playwright-bdd` also supports **decorator-based POMs** (`@Fixture`, with `@Given/@When/@Then` as class methods bound via `createBdd(test, { worldFixture })`). That co-locates steps with the page they drive. We start with the fixture-injection model above (simpler, fewer moving parts) and can adopt decorators later if a page accumulates many bespoke steps — noted as a deliberate evolution, not day-one complexity.
+
+### 6.3 Step conventions
+
+- **Declarative, reusable** steps keyed off domain nouns. Balance generic vs specific: `When I filter to {string} nights` (reusable across day/type) but `When I sign in with email {string}` (readable, specific).
+- Background per feature for the common precondition only (e.g. "Given the listings include …"); never an over-loaded Background.
+- Shared navigation/assertion steps live in `steps/common.steps.ts`.
 
 ---
 
@@ -508,8 +575,12 @@ Following the repo's atomic-planning rule, build the plumbing before the feature
 1. Extract `support/supabase-mock.ts` from `fixtures.ts` (behaviour-preserving; existing submit test still green).
 2. Add `support/factories.ts` (`nightFactory`, `reviewFactory`, `userFactory`).
 3. Extend the fixture with a `seed` API (nights, signed-in user, reviews) — default state = today's behaviour.
-4. Add `support/selectors.ts` and `steps/common.steps.ts` (navigation + shared assertions).
-5. Add tag scripts to `package.json`; confirm `@wip`-exclusion in CI.
+4. Add `pages/BasePage.ts` + `pages/HeaderComponent.ts` (shared nav scaffold every POM extends).
+5. Register POM fixtures in `support/fixtures.ts` and add `steps/common.steps.ts` (navigation + shared assertions).
+6. **Refactor the existing `submit.steps.ts` onto `pages/SubmitPage.ts`** — proves the POM pattern end-to-end against a green test before adding new features.
+7. Add tag scripts to `package.json`; confirm `@wip`-exclusion in CI.
+
+> Each Phase 1–3 feature adds its own POM(s) alongside the feature file (e.g. task 6 ships `BrowsePage.ts` + `FilterBar.ts`).
 
 **Phase 1 — smoke (`@smoke`)**
 6. Browse → filter by search/day (8.1 smoke).
@@ -550,15 +621,53 @@ Each numbered task = one feature file (or one fixture/support module), independe
 - [ ] `npm test` (Vitest) green — no unit regressions.
 - [ ] `npm run test:e2e` green locally and in CI.
 - [ ] No real network calls escape the mock (assert via `captured` + dead host in `.env.e2e`).
-- [ ] Feature files contain **zero** selectors/URLs/payloads — all in steps/support.
+- [ ] Feature files contain **zero** selectors/URLs/payloads.
+- [ ] Step definitions contain **zero** raw locators — every interaction goes through a Page Object.
+- [ ] Each new page/route has a corresponding POM; reusable widgets are component objects.
 - [ ] New scenarios are independent and parallel-safe.
 
 ---
 
-## 12. Open questions for review
+## 12. Additional industry-standard capabilities
+
+POMs + BDD + hermetic mocks get us most of the way. The following close the gap to a mature suite. Tiered so we add value, not speculative complexity.
+
+### Recommended — add as part of the build
+
+1. **Failure artifacts & living-docs reporting.** Set `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'` (keep `trace: 'on-first-retry'`). Publish the **Playwright HTML report** *and* the **Cucumber HTML report** as CI artifacts — `@cucumber/html-formatter` is already a dependency, so the Gherkin doubles as living documentation for stakeholders. Wire via `reporter: [['html'], ['github']]` + the BDD Cucumber reporter.
+
+2. **Cross-browser & mobile projects.** Today only `chromium` runs. This app has a *real* mobile/desktop divergence (`BrowsePage` map toggle, mobile bottom-card, `md:` split view) — so mobile coverage is genuinely load-bearing, not box-ticking. Add `firefox`, `webkit`, and `Mobile Chrome`/`Mobile Safari` projects; tag the handful of viewport-specific scenarios `@mobile` and run the rest browser-agnostic.
+
+3. **Accessibility smoke checks.** Add `@axe-core/playwright`; assert no serious/critical violations on the key public pages (browse, night detail, submit, sign-in). Cheap, automated, and appropriate for a public-facing site. Tag `@a11y`.
+
+4. **Authenticated session reuse.** A Playwright **setup project** that seeds a signed-in `storageState` against the mocked `auth/v1`, so favourites / reviews / report / admin specs skip the OTP flow each run. Faster and less flaky; the OTP journey itself stays explicitly tested once in `sign-in.feature`.
+
+5. **Enforced test-code discipline (ESLint).** An `e2e/`-scoped ESLint config that **forbids raw `page.`/locator calls inside `steps/`** (`no-restricted-syntax`) so the POM boundary can't erode, and **bans hard waits** (`page.waitForTimeout`). Add `husky` + `lint-staged` pre-commit to typecheck + lint the `e2e/` dir. This is what keeps the framework "standard" six months in.
+
+6. **Onboarding docs — `e2e/README.md`.** How to run (`smoke` vs full), how to add a scenario, the three-layer rule (§6), and the `seed` API. Lowers the cost of the next contributor doing it right.
+
+### Optional — scale & coverage levers (adopt when earned)
+
+7. **CI sharding** (`--shard=i/n`) across runners once wall-time grows past the PR budget.
+8. **Visual regression** via `toHaveScreenshot()` on a few *stable* pages, with `mask` for dynamic content (dates, Leaflet tiles). Opt-in and quarantined — powerful but flaky; not day one.
+9. **`@flaky` quarantine lane** — a separate non-blocking CI job for known-unstable specs so flake never blocks a merge while staying visible.
+10. **Post-deploy production smoke.** A read-only `@smoke @prod` subset run against `https://www.findcomedy.xyz` *after* the Vercel deploy — no writes, no mocks. Catches prerender/routing/env regressions (the `/night/:slug.html` rewrite, `base: '/'`, missing env vars) that the mocked suite structurally cannot. Fits the existing Supabase→Vercel deploy-hook flow.
+
+### Deliberately deferred (not adding)
+
+- **Allure / 3rd-party reporters** — the built-in HTML + Cucumber reports are sufficient at this scale.
+- **Lighthouse / performance budgets** — a separate discipline; revisit only if SEO/Core-Web-Vitals regressions appear.
+- **Cloud device grids (BrowserStack/Sauce)** — unnecessary; local Playwright browsers cover the matrix we need.
+
+---
+
+## 13. Open questions for review
 
 1. **Validation/London-guard copy** (8.4) — should I assert against the live `SubmitPage` messages, or do you want specific copy defined first?
 2. **Admin auth** (8.10) — confirm we can seed an admin session purely via the mocked `auth/v1` + profile role, with no real Supabase. (I believe yes — `RequireAdmin` reads from `AuthContext`.)
 3. **Scope cut** — are area pages (8.9) and admin queue (8.10) wanted in the first pass, or should the first delivery stop at Phase 2 (smoke + critical)?
 4. **Smoke vs full on PRs** — gate PRs on `@smoke` only (faster) or the full non-`@wip` set?
+5. **Browser matrix** (§12.2) — which projects do you want in CI: Chromium-only, +mobile viewports, or the full `firefox`/`webkit`/mobile matrix?
+6. **Recommended add-ons** (§12.1) — all six in the first build, or land POM+scenarios first and layer a11y / cross-browser / session-reuse / lint-gates in a follow-up?
+7. **Post-deploy production smoke** (§12.10) — in scope? It's the one suite that needs the *real* site + no mocks, so it's a distinct CI job from everything else here.
 ```

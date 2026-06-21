@@ -1,41 +1,47 @@
-import { DataTable } from 'playwright-bdd'
-import { Given, When, Then, expect } from './fixtures'
+import type { DataTable } from 'playwright-bdd'
+import { Given, When, Then, expect } from '../support/fixtures'
 
-// Field name (from the feature's data table) → the input's placeholder text.
-// The form's <label>s aren't wired to inputs via htmlFor, so we target by placeholder.
-const PLACEHOLDERS: Record<string, string> = {
-  name: 'e.g. Knock2Bag',
-  about: 'What makes this night special?',
-  venue: 'e.g. The Camden Head',
-  address: 'e.g. 100 Camden High St, London NW1 0LU',
-}
-
-Given('I am on the submit page', async ({ page }) => {
-  await page.goto('/submit')
-  await expect(page.getByRole('heading', { name: 'Submit a comedy night' })).toBeVisible()
+Given('I am on the submit page', async ({ submitPage }) => {
+  await submitPage.open()
 })
 
-When('I fill in the night details', async ({ page }, table: DataTable) => {
-  for (const { field, value } of table.hashes()) {
-    const placeholder = PLACEHOLDERS[field]
-    if (!placeholder) throw new Error(`Unknown field "${field}" in scenario data table`)
-    await page.getByPlaceholder(placeholder).fill(value)
-  }
+Given('the venue address resolves outside London', async ({ seed }) => {
+  seed.geocodeOutsideLondon()
 })
 
-When('I submit the night', async ({ page }) => {
-  await page.getByRole('button', { name: 'Submit night for review' }).click()
+When('I fill in the night details:', async ({ submitPage }, table: DataTable) => {
+  await submitPage.fill(table.hashes())
 })
 
-Then('I see the submission confirmation', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'Night submitted!' })).toBeVisible()
+When('I submit the night', async ({ submitPage }) => {
+  await submitPage.submit()
+})
+
+When('I submit the night without filling required details', async ({ submitPage }) => {
+  await submitPage.submit()
+})
+
+Then('I see the submission confirmation', async ({ submitPage }) => {
+  await expect(submitPage.confirmation()).toBeVisible()
 })
 
 Then(
-  'the submission sent to the backend has the name {string}',
+  'the submission received by the team is named {string}',
   async ({ captured }, expectedName: string) => {
     expect(captured.submissions).toHaveLength(1)
     const data = captured.submissions[0].data as { name?: string }
     expect(data.name).toBe(expectedName)
   },
 )
+
+Then('I should be told which details are required', async ({ submitPage }) => {
+  expect(await submitPage.nameFieldIsInvalid()).toBe(true)
+})
+
+Then('no submission is sent to the team', async ({ captured }) => {
+  expect(captured.submissions).toHaveLength(0)
+})
+
+Then('I should be told the night must be in London', async ({ submitPage }) => {
+  await expect(submitPage.londonError()).toBeVisible()
+})

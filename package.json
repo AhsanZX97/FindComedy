@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "bddgen && playwright test",
-    "test:e2e:ui": "bddgen && playwright test --ui"
+    "test:e2e:ui": "bddgen && playwright test --ui",
+    "test:e2e:smoke": "bddgen && playwright test --grep @smoke",
+    "test:e2e:ci": "bddgen && playwright test --grep-invert @wip"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.1",

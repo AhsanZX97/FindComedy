@@ -4,7 +4,8 @@ import { defineBddConfig } from 'playwright-bdd'
 // Generates Playwright spec files from .feature + step definitions into .features-gen/.
 const testDir = defineBddConfig({
   features: 'e2e/features/**/*.feature',
-  steps: 'e2e/steps/**/*.ts',
+  // Includes support/ so playwright-bdd can find the custom `test` (fixtures.ts).
+  steps: ['e2e/steps/**/*.ts', 'e2e/support/fixtures.ts'],
 })
 
 const PORT = 4173
@@ -15,14 +16,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? 'github' : 'list',
+  // HTML report doubles as living documentation; github annotations on CI.
+  reporter: process.env.CI ? [['html'], ['github']] : 'list',
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
-  projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  ],
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   // Serve the SPA in e2e mode so it loads .env.e2e (fake Supabase creds → form enabled).
   webServer: {
     command: `npx vite --mode e2e --port ${PORT} --strictPort`,
