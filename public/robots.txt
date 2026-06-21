@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /my
 
-Sitemap: https://www.findcomedy.xyz/sitemap.xml
+Sitemap: https://www.findcomedy.xyz/sitemap_index.xml
