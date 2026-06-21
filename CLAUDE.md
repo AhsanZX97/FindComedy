@@ -73,6 +73,12 @@ src/
 - Verify UI changes by actually running the dev server and looking, not by reasoning about the code.
 - Commit messages: short imperative subject line ("Add venue filter to event list"), no fluff.
 
+## Communication style
+
+- Be concise. Lead with the answer or the action, not preamble. No "Great question", no restating the request back, no summarizing what you just did unless asked.
+- Skip option surveys and trade-off essays — give the recommendation and proceed. Surface alternatives only when the choice is genuinely the user's to make.
+- Match response length to the task: a one-line answer for a one-line question. Prose over bullet lists for short replies.
+
 ## Token discipline
 
 - **Default to inline tools, not subagents.** Subagents start cold and re-derive context that already exists in the main thread, so they're the expensive path. Only spawn one when the user explicitly asks, or when a task needs a wide read-only sweep whose file contents should stay *out* of the main context (you want the conclusion, not the dumps). "Multi-step" or "thorough" is not a reason to fan out — handle it inline.
