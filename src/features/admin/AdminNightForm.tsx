@@ -59,11 +59,13 @@ export default function AdminNightForm({ initial, onSaved }: AdminNightFormProps
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFormState('saving')
+    const today = new Date().toISOString().slice(0, 10)
+    const nightToSave = { ...night, lastVerified: today }
     try {
-      await upsertNight(night)
+      await upsertNight(nightToSave)
       setFormState('idle')
       setErrorMsg('')
-      onSaved(night)
+      onSaved(nightToSave)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Save failed')
       setFormState('error')
