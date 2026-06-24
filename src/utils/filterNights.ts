@@ -25,7 +25,7 @@ export function filterNights(nights: ComedyNight[], filters: NightFilters): Come
     if (filters.search.trim() && !matchesSearch(night, filters.search.trim())) return false
     if (
       filters.weekdays.length > 0 &&
-      !night.schedules.some((s) => filters.weekdays.includes(s.weekday))
+      !night.schedules.some((s) => s.frequency !== 'irregular' && filters.weekdays.includes(s.weekday))
     )
       return false
     if (filters.type !== null && night.type !== filters.type) return false

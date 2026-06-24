@@ -80,6 +80,11 @@ describe('filterNights', () => {
     expect(result[0].id).toBe('mon')
   })
 
+  it('does not match an irregular schedule against a weekday filter even if weekday field is set', () => {
+    const night = makeNight({ schedules: schedules({ frequency: 'irregular', weekday: 3 }) })
+    expect(filterNights([night], filters({ weekdays: [3] }))).toHaveLength(0)
+  })
+
   it('empty weekdays returns all active nights', () => {
     const nights = [
       makeNight({ id: 'mon', schedules: schedules({ weekday: 1 }) }),
