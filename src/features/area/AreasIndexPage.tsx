@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
 import { useSeo, SITE_URL } from '../../hooks/useSeo'
 import { slugify } from '../../utils/slug'
+import { buildAreasItemList } from '../../utils/areasJsonLd'
 import { normalizeToBorough, LONDON_BOROUGHS } from '../../utils/londonBoroughs'
 import Header from '../../components/Header'
 
@@ -28,19 +29,10 @@ export default function AreasIndexPage() {
   const withNights = LONDON_BOROUGHS.filter((b) => (boroughCounts.get(b) ?? 0) > 0)
     .sort((a, b) => (boroughCounts.get(b) ?? 0) - (boroughCounts.get(a) ?? 0))
 
-  const jsonLd = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'Open Mic Comedy Nights in London by Borough',
-    description: DESCRIPTION,
-    url: `${SITE_URL}/comedy`,
-    itemListElement: withNights.map((borough, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: `Open Mic Comedy in ${borough}`,
-      url: `${SITE_URL}/comedy/${slugify(borough)}`,
-    })),
-  }), [withNights])
+  const jsonLd = useMemo(
+    () => buildAreasItemList(withNights.map((b) => ({ name: b, slug: slugify(b) })), SITE_URL),
+    [withNights],
+  )
 
   useSeo({
     title: TITLE,

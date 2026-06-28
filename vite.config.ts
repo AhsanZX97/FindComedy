@@ -10,7 +10,8 @@ import { nightSlug } from './src/utils/slug'
 import { nightSeo } from './src/utils/nightSeo'
 import { buildSeoTags } from './src/utils/seoTags'
 import { buildEventJsonLd } from './src/utils/eventJsonLd'
-import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION, HOME_IMAGE } from './src/utils/homeSeo'
+import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION } from './src/utils/homeSeo'
+import { buildAreasItemList } from './src/utils/areasJsonLd'
 import type { ComedyNight } from './src/types/comedyNight'
 import { slugify } from './src/utils/slug'
 import { normalizeToBorough } from './src/utils/londonBoroughs'
@@ -98,7 +99,10 @@ function prerenderNights(dist: string, siteUrl: string, nights: ComedyNight[]): 
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
       .replace(/\s*<meta name="description"[^>]*>/, '')
       .replace('</head>', `${head}\n  </head>`)
-    writeFileSync(resolve(dist, 'night', `${slug}.html`), html)
+    const sched = night.schedules[0]
+    const when = sched ? `${WEEKDAYS[sched.weekday]}s at ${escHtml(sched.startTime)}` : ''
+    const body = `<main><h1>${escHtml(night.name)}</h1>${night.description ? `<p>${escHtml(night.description)}</p>` : ''}<p>${escHtml(night.venue.name)}${night.venue.area ? `, ${escHtml(night.venue.area)}` : ''}, London${when ? ` · ${when}` : ''}</p><p><a href="/comedy">More open mic comedy nights in London</a></p></main>`
+    writeFileSync(resolve(dist, 'night', `${slug}.html`), injectBody(html, body))
   }
   console.log(`[seo] prerendered ${nights.length} night pages`)
 }
@@ -127,11 +131,13 @@ function prerenderAreasIndex(dist: string, siteUrl: string, boroughMap: Map<stri
   const title = 'Open Mic Comedy Nights in London by Borough | FindComedy'
   const description = 'Find open mic comedy nights, showcases and pro nights across every London borough — Camden, Hackney, Islington, Lambeth, Southwark and more. Every listing kept fresh by comedians and audiences who actually go.'
   const { canonical, metas } = buildSeoTags({ title, description, baseUrl: siteUrl, path: '/comedy', type: 'website' })
+  const sorted = [...boroughMap.entries()].sort((a, b) => b[1].nights.length - a[1].nights.length)
+  const jsonLd = buildAreasItemList(sorted.map(([slug, { name }]) => ({ name, slug })), siteUrl)
   const head = [
     `    <link rel="canonical" href="${escAttr(canonical)}" />`,
     ...metas.map((m) => `    <meta ${m.attr}="${m.key}" content="${escAttr(m.content)}" />`),
+    `    <script type="application/ld+json" id="seo-jsonld">${escJsonLd(jsonLd)}</script>`,
   ].join('\n')
-  const sorted = [...boroughMap.entries()].sort((a, b) => b[1].nights.length - a[1].nights.length)
   const listItems = sorted
     .map(([slug, { name, nights }]) =>
       `<li><a href="/comedy/${slug}">Open Mic Comedy in ${escHtml(name)} (${nights.length} ${nights.length === 1 ? 'night' : 'nights'})</a></li>`,
@@ -178,14 +184,13 @@ function prerenderAreaPages(dist: string, siteUrl: string, boroughMap: Map<strin
 // for the most important page. Must run AFTER the night/area prerenders, which read
 // dist/index.html as their clean template. The JSON-LD <script> reuses the runtime's
 // "seo-jsonld" id so hydration updates it in place instead of emitting a duplicate.
-function prerenderHome(dist: string, siteUrl: string): void {
+function prerenderHome(dist: string, siteUrl: string, nights: ComedyNight[]): void {
   const template = readFileSync(resolve(dist, 'index.html'), 'utf8')
   const { canonical, metas, jsonLd } = buildSeoTags({
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     baseUrl: siteUrl,
     path: '/',
-    image: HOME_IMAGE,
     type: 'website',
     jsonLd: buildHomeJsonLd(siteUrl),
   })
@@ -200,8 +205,17 @@ function prerenderHome(dist: string, siteUrl: string): void {
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(HOME_TITLE)}</title>`)
     .replace(/\s*<meta name="description"[^>]*>/, '')
     .replace('</head>', `${head}\n  </head>`)
-  writeFileSync(resolve(dist, 'index.html'), html)
-  console.log('[seo] prerendered homepage head')
+  const items = nights
+    .filter((n) => n.status === 'active')
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((n) => {
+      const day = n.schedules[0] ? WEEKDAYS[n.schedules[0].weekday] : ''
+      return `<li><a href="/night/${nightSlug(n)}">${escHtml(n.name)}</a> — ${escHtml(n.venue.name)}${n.venue.area ? `, ${escHtml(n.venue.area)}` : ''}${day ? ` · ${day}` : ''}</li>`
+    })
+    .join('')
+  const body = `<main><h1>Open Mic Comedy Nights in London</h1><p>${escHtml(HOME_DESCRIPTION)}</p><ul>${items}</ul></main>`
+  writeFileSync(resolve(dist, 'index.html'), injectBody(html, body))
+  console.log('[seo] prerendered homepage head + body')
 }
 
 // Writes dist/404.html: a real, self-contained "page not found" served by Vercel
@@ -267,7 +281,7 @@ function seoArtifacts(siteUrl: string, env: Env): Plugin {
       prerenderAreaPages(dist, siteUrl, boroughMap)
       // Last: overwrites dist/index.html, so it must follow the prerenders above
       // that read it as their template.
-      prerenderHome(dist, siteUrl)
+      prerenderHome(dist, siteUrl, nights)
       write404Page(dist)
     },
   }

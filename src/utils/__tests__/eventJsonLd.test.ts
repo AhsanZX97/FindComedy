@@ -85,9 +85,9 @@ describe('buildEventJsonLd', () => {
     )
   })
 
-  it('falls back to the site mic image when the night has none', () => {
+  it('falls back to the default share image when the night has none', () => {
     const data = buildEventJsonLd(makeNight({ images: [] }), 'https://findcomedy.xyz')
-    expect(data.image).toBe('https://findcomedy.xyz/mic.svg')
+    expect(data.image).toBe('https://findcomedy.xyz/og-image.png')
   })
 
   it('uses the night image when present', () => {

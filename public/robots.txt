@@ -1,3 +1,6 @@
+# AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, etc.) are
+# intentionally allowed via the wildcard below: FindComedy is a discovery directory and
+# benefits from being surfaced in AI answers. Add per-bot blocks here only to opt one out.
 User-agent: *
 Allow: /
 Disallow: /admin

@@ -1,4 +1,6 @@
 const SITE_NAME = 'FindComedy'
+/** Default 1200×630 social share image, used when a page supplies none. */
+const DEFAULT_OG_IMAGE = '/og-image.png'
 
 export interface MetaTag {
   attr: 'name' | 'property'
@@ -34,7 +36,8 @@ export interface BuildSeoOptions {
 export function buildSeoTags(opts: BuildSeoOptions): SeoTagData {
   const { title, description, baseUrl, path, image, type = 'website', jsonLd } = opts
   const canonical = baseUrl + path
-  const absImage = image ? (image.startsWith('http') ? image : baseUrl + image) : undefined
+  const img = image ?? DEFAULT_OG_IMAGE
+  const absImage = img.startsWith('http') ? img : baseUrl + img
 
   const metas: MetaTag[] = []
   if (description) metas.push({ attr: 'name', key: 'description', content: description })

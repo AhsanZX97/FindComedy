@@ -5,5 +5,8 @@
       "PowerShell(npx tsx \"scripts/ingest-new-nights.ts\" --commit)",
       "PowerShell(npx tsx \"scripts/ingest-new-nights.ts\" --commit 2>&1)"
     ]
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true
   }
 }

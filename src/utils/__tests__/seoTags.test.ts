@@ -12,11 +12,11 @@ describe('buildSeoTags', () => {
     expect(content(metas, 'og:url')).toBe('https://www.findcomedy.xyz/night/x')
   })
 
-  it('uses summary card and omits image tags when no image is given', () => {
+  it('falls back to the default share image and large card when none is given', () => {
     const { metas } = buildSeoTags({ title: 'T', baseUrl: 'https://x.test', path: '/' })
-    expect(content(metas, 'twitter:card')).toBe('summary')
-    expect(content(metas, 'og:image')).toBeUndefined()
-    expect(content(metas, 'twitter:image')).toBeUndefined()
+    expect(content(metas, 'twitter:card')).toBe('summary_large_image')
+    expect(content(metas, 'og:image')).toBe('https://x.test/og-image.png')
+    expect(content(metas, 'twitter:image')).toBe('https://x.test/og-image.png')
   })
 
   it('resolves a root-relative image against baseUrl and switches to large card', () => {

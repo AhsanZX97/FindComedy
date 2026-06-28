@@ -1,0 +1,15 @@
+# FindComedy
+
+> A community-curated directory of open mic comedy, showcases and pro nights across London. Every listing is kept fresh by the comedians and audiences who actually go.
+
+## What this is
+FindComedy lists live comedy nights in London — searchable by day, area (London borough) and type (open mic, showcase, pro). Each night has its venue, schedule, and booking details.
+
+## Key pages
+- [All comedy nights](https://www.findcomedy.xyz/): browse every active night in London
+- [Comedy by borough](https://www.findcomedy.xyz/comedy): nights grouped by London borough
+- [Submit a night](https://www.findcomedy.xyz/submit): add an open mic or comedy night
+
+## Notes
+- Listings are maintained by the community; freshness is a core focus.
+- Per-night pages (`/night/<slug>`) include structured Event data (venue, geo, schedule, offers).

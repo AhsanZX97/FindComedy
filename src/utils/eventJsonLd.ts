@@ -64,7 +64,7 @@ export function buildEventJsonLd(night: ComedyNight, siteUrl: string, now: Date 
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     eventStatus: EVENT_STATUS[night.status],
     url: pageUrl,
-    image: night.images?.[0] ?? `${siteUrl}/mic.svg`,
+    image: night.images?.[0] ?? `${siteUrl}/og-image.png`,
     location: {
       '@type': 'Place',
       name: night.venue.name,

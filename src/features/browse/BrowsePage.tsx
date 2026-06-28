@@ -10,7 +10,7 @@ import type { ComedyNight, Weekday } from '../../types/comedyNight'
 import { useBrowseFilters } from './useBrowseFilters'
 import { nightSlug } from '../../utils/slug'
 import { useSeo, SITE_URL } from '../../hooks/useSeo'
-import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION, HOME_IMAGE } from '../../utils/homeSeo'
+import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION } from '../../utils/homeSeo'
 import { normalizeToBorough } from '../../utils/londonBoroughs'
 
 function todayWeekday(): Weekday {
@@ -117,7 +117,6 @@ export default function BrowsePage() {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     path: '/',
-    image: HOME_IMAGE,
     jsonLd: buildHomeJsonLd(SITE_URL),
   })
 

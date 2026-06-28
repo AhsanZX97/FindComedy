@@ -3,9 +3,6 @@ const SITE_NAME = 'FindComedy'
 export const HOME_TITLE = 'Open Mic Comedy in London | FindComedy'
 export const HOME_DESCRIPTION =
   'Find open mic comedy nights, showcases and pro nights across London. Browse by day, area and type — every listing kept fresh by the people who actually go.'
-/** Default homepage social share image. Replace with a 1200×630 raster (SEO checklist #4). */
-export const HOME_IMAGE = '/mic.svg'
-
 /**
  * Brand-level structured data for the homepage: a `WebSite` entity and the
  * `Organization` that maintains it. Strengthens entity/brand recognition for
