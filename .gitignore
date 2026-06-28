@@ -50,3 +50,5 @@ scripts/
 .env*
 # Re-allow the fake E2E env (added after Vercel's .env* rule so it wins)
 !.env.e2e
+
+ceo-plan/
