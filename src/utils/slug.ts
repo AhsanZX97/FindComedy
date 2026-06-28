@@ -13,16 +13,18 @@ export function slugify(text: string): string {
 /** Minimal shape needed to build a night's slug (satisfied by ComedyNight and raw DB rows). */
 export interface SluggableNight {
   name: string
-  venue: { area: string }
+  venue: { name: string; area: string }
 }
 
 /**
- * SEO-friendly slug for a night's URL: the night name plus its venue area,
- * so the path itself carries keywords (e.g. "comedy-virgins-stockwell").
- * Deterministic and collision-resistant without needing a stored slug field.
+ * SEO-friendly slug for a night's URL: night name + venue name + area.
+ * Including venue name prevents collisions when two nights share a name and area
+ * (e.g. two "Compulsive Comedy" nights both in Westminster).
  */
 export function nightSlug(night: SluggableNight): string {
   const base = slugify(night.name)
+  const venue = slugify(night.venue.name)
   const area = slugify(night.venue.area)
-  return area ? `${base}-${area}` : base
+  const suffix = [venue, area].filter(Boolean).join('-')
+  return suffix ? `${base}-${suffix}` : base
 }

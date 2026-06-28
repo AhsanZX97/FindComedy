@@ -80,7 +80,7 @@ export function nightFactory(opts: NightOptions = {}): NightRow {
   const area = opts.area ?? 'Camden'
   const venueName = opts.venueName ?? 'The Camden Head'
   return {
-    id: opts.id ?? nightSlug({ name, venue: { area } }),
+    id: opts.id ?? nightSlug({ name, venue: { name: venueName, area } }),
     name,
     description: opts.description ?? 'A friendly night of comedy.',
     type: opts.type ?? 'open-mic',
