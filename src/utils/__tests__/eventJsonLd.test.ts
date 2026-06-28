@@ -46,7 +46,7 @@ describe('buildEventJsonLd', () => {
     const data = buildEventJsonLd(makeNight(), 'https://findcomedy.xyz', new Date('2026-06-14T12:00:00'))
     expect(data['@type']).toBe('Event')
     expect(data.name).toBe('Angel Comedy')
-    expect(data.url).toBe('https://findcomedy.xyz/night/angel-comedy-islington')
+    expect(data.url).toBe('https://findcomedy.xyz/night/angel-comedy-the-bill-murray-islington')
     expect(data.startDate).toBe('2026-06-15T20:00')
     expect((data.location as Record<string, unknown>)['@type']).toBe('Place')
   })
@@ -81,7 +81,7 @@ describe('buildEventJsonLd', () => {
 
     const noSite = buildEventJsonLd(makeNight({ socials: {} }), 'https://findcomedy.xyz')
     expect((noSite.organizer as Record<string, unknown>).url).toBe(
-      'https://findcomedy.xyz/night/angel-comedy-islington',
+      'https://findcomedy.xyz/night/angel-comedy-the-bill-murray-islington',
     )
   })
 
@@ -100,7 +100,7 @@ describe('buildEventJsonLd', () => {
     const offers = data.offers as Record<string, unknown>
     expect(offers['@type']).toBe('Offer')
     expect(offers.availability).toBe('https://schema.org/InStock')
-    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-islington')
+    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-the-bill-murray-islington')
     expect(offers.price).toBe('0')
     expect(offers.priceCurrency).toBe('GBP')
   })
@@ -108,7 +108,7 @@ describe('buildEventJsonLd', () => {
   it('omits a price for paid night types but still links an offer', () => {
     const data = buildEventJsonLd(makeNight({ type: 'pro' }), 'https://findcomedy.xyz')
     const offers = data.offers as Record<string, unknown>
-    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-islington')
+    expect(offers.url).toBe('https://findcomedy.xyz/night/angel-comedy-the-bill-murray-islington')
     expect(offers.price).toBeUndefined()
   })
 })

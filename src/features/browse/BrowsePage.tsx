@@ -6,8 +6,8 @@ import NightCard from '../../components/NightCard'
 import FilterBar from './FilterBar'
 import Header from '../../components/Header'
 import NightsMap, { TYPE_COLORS, TYPE_LABELS } from './NightsMap'
-import type { ComedyNight, NightFilters, Weekday } from '../../types/comedyNight'
-import { DEFAULT_FILTERS } from '../../types/comedyNight'
+import type { ComedyNight, Weekday } from '../../types/comedyNight'
+import { useBrowseFilters } from './useBrowseFilters'
 import { nightSlug } from '../../utils/slug'
 import { useSeo } from '../../hooks/useSeo'
 import { normalizeToBorough } from '../../utils/londonBoroughs'
@@ -81,7 +81,7 @@ function BottomCard({ nightId, nights, onClose }: BottomCardProps) {
 }
 
 export default function BrowsePage() {
-  const [filters, setFilters] = useState<NightFilters>(DEFAULT_FILTERS)
+  const [filters, setFilters] = useBrowseFilters()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
 
