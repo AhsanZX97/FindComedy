@@ -5,10 +5,18 @@
       "main": false
     }
   },
+  "redirects": [
+    { "source": "/tonight", "destination": "/", "permanent": true },
+    { "source": "/map", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/night/:slug", "destination": "/night/:slug.html" },
     { "source": "/comedy/:area", "destination": "/comedy/:area.html" },
     { "source": "/comedy", "destination": "/comedy.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/auth", "destination": "/index.html" },
+    { "source": "/my", "destination": "/index.html" },
+    { "source": "/submit", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" }
   ]
 }

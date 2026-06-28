@@ -9,7 +9,8 @@ import NightsMap, { TYPE_COLORS, TYPE_LABELS } from './NightsMap'
 import type { ComedyNight, Weekday } from '../../types/comedyNight'
 import { useBrowseFilters } from './useBrowseFilters'
 import { nightSlug } from '../../utils/slug'
-import { useSeo } from '../../hooks/useSeo'
+import { useSeo, SITE_URL } from '../../hooks/useSeo'
+import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION, HOME_IMAGE } from '../../utils/homeSeo'
 import { normalizeToBorough } from '../../utils/londonBoroughs'
 
 function todayWeekday(): Weekday {
@@ -113,10 +114,11 @@ export default function BrowsePage() {
     filters.weekdays.length === 1 && filters.weekdays[0] === todayWeekday()
 
   useSeo({
-    title: 'Open Mic Comedy in London | FindComedy',
-    description:
-      'Find open mic comedy nights, showcases and pro nights across London. Browse by day, area and type — every listing kept fresh by the people who actually go.',
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     path: '/',
+    image: HOME_IMAGE,
+    jsonLd: buildHomeJsonLd(SITE_URL),
   })
 
   function handleMarkerSelect(id: string) {

@@ -10,6 +10,7 @@ import { nightSlug } from './src/utils/slug'
 import { nightSeo } from './src/utils/nightSeo'
 import { buildSeoTags } from './src/utils/seoTags'
 import { buildEventJsonLd } from './src/utils/eventJsonLd'
+import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION, HOME_IMAGE } from './src/utils/homeSeo'
 import type { ComedyNight } from './src/types/comedyNight'
 import { slugify } from './src/utils/slug'
 import { normalizeToBorough } from './src/utils/londonBoroughs'
@@ -172,6 +173,85 @@ function prerenderAreaPages(dist: string, siteUrl: string, boroughMap: Map<strin
   console.log(`[seo] prerendered ${boroughMap.size} borough pages`)
 }
 
+// Bakes the homepage's <head> (canonical, Open Graph/Twitter, WebSite + Organization
+// JSON-LD) into dist/index.html so non-JS crawlers and social scrapers see full metadata
+// for the most important page. Must run AFTER the night/area prerenders, which read
+// dist/index.html as their clean template. The JSON-LD <script> reuses the runtime's
+// "seo-jsonld" id so hydration updates it in place instead of emitting a duplicate.
+function prerenderHome(dist: string, siteUrl: string): void {
+  const template = readFileSync(resolve(dist, 'index.html'), 'utf8')
+  const { canonical, metas, jsonLd } = buildSeoTags({
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    baseUrl: siteUrl,
+    path: '/',
+    image: HOME_IMAGE,
+    type: 'website',
+    jsonLd: buildHomeJsonLd(siteUrl),
+  })
+  const head = [
+    `    <link rel="canonical" href="${escAttr(canonical)}" />`,
+    ...metas.map((m) => `    <meta ${m.attr}="${m.key}" content="${escAttr(m.content)}" />`),
+    jsonLd ? `    <script type="application/ld+json" id="seo-jsonld">${escJsonLd(jsonLd)}</script>` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+  const html = template
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(HOME_TITLE)}</title>`)
+    .replace(/\s*<meta name="description"[^>]*>/, '')
+    .replace('</head>', `${head}\n  </head>`)
+  writeFileSync(resolve(dist, 'index.html'), html)
+  console.log('[seo] prerendered homepage head')
+}
+
+// Writes dist/404.html: a real, self-contained "page not found" served by Vercel
+// (with a genuine 404 status) for any path not in the rewrite allowlist. It is NOT a
+// SPA fallback — it ships no app JS and does not redirect, so unknown URLs can't become
+// soft-404 duplicates of the homepage. Standalone styles (not Tailwind) so it never
+// depends on the content-scan or the hashed CSS filename.
+function write404Page(dist: string): void {
+  const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found | FindComedy</title>
+    <link rel="icon" type="image/svg+xml" href="/mic.svg" />
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; margin: 0; }
+      body {
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        padding: 1rem; background: #09090b; color: #fff; text-align: center;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      main { max-width: 28rem; }
+      .code { font-size: 4rem; font-weight: 700; line-height: 1; color: #fbbf24; }
+      h1 { margin-top: 1rem; font-size: 1.5rem; font-weight: 600; }
+      p { margin-top: 0.75rem; color: #a1a1aa; }
+      a {
+        display: inline-block; margin-top: 1.5rem; padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem; background: #fbbf24; color: #09090b;
+        font-weight: 500; text-decoration: none;
+      }
+      a:hover { background: #fcd34d; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">404</p>
+      <h1>This page took the night off</h1>
+      <p>We couldn't find that page. The link may be wrong, or the night may have ended.</p>
+      <a href="/">Browse comedy nights</a>
+    </main>
+  </body>
+</html>
+`
+  writeFileSync(resolve(dist, '404.html'), html)
+  console.log('[seo] wrote 404.html')
+}
+
 // Generates SEO artifacts after the bundle is written: sitemap.xml + per-night static HTML + area pages.
 function seoArtifacts(siteUrl: string, env: Env): Plugin {
   return {
@@ -185,6 +265,10 @@ function seoArtifacts(siteUrl: string, env: Env): Plugin {
       prerenderNights(dist, siteUrl, nights)
       prerenderAreasIndex(dist, siteUrl, boroughMap)
       prerenderAreaPages(dist, siteUrl, boroughMap)
+      // Last: overwrites dist/index.html, so it must follow the prerenders above
+      // that read it as their template.
+      prerenderHome(dist, siteUrl)
+      write404Page(dist)
     },
   }
 }
