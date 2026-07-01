@@ -37,11 +37,9 @@ function ReportRow({ report, nightPath, onResolve, onDelete, busy }: {
         <div className="flex gap-1 shrink-0">
           <Link
             to={nightPath}
-            target="_blank"
-            rel="noopener noreferrer"
             className="text-xs px-2 py-1 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-700 ring-1 ring-gray-200 dark:ring-zinc-700 transition-colors"
           >
-            View ↗
+            View
           </Link>
           {!report.resolvedAt && (
             <button
