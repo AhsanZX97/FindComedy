@@ -28,6 +28,17 @@ function MoonIcon() {
   )
 }
 
+function KofiIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M2 8h15a4 4 0 0 1 0 8h-1" />
+      <path d="M2 8v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8" />
+      <path d="M6 1c-1 1.5 1 2-.5 3.5" />
+      <path d="M11 1c-1 1.5 1 2-.5 3.5" />
+    </svg>
+  )
+}
+
 export default function Header() {
   const { user, isAdmin, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
@@ -147,6 +158,17 @@ export default function Header() {
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
+
+          <a
+            href="https://ko-fi.com/ahsandegreat"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Support FindComedy on Ko-fi"
+            title="Support FindComedy on Ko-fi"
+            className="shrink-0 ml-1 p-2 rounded-lg text-gray-500 hover:text-[#FF5E5B] dark:text-zinc-400 dark:hover:text-[#FF5E5B] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <KofiIcon />
+          </a>
         </nav>
       </div>
 
