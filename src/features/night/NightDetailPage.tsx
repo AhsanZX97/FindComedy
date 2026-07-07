@@ -9,6 +9,7 @@ import { useSocial } from '../social/SocialContext'
 import FavouriteButton from '../../components/FavouriteButton'
 import CalendarIcon from '../../components/CalendarIcon'
 import ReportModal from '../../components/ReportModal'
+import ShareButton from '../../components/ShareButton'
 import ReviewsSection from '../reviews/ReviewsSection'
 import Header from '../../components/Header'
 import { formatScheduleEntry } from '../../utils/formatSchedule'
@@ -187,6 +188,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
                 isLoggedIn={Boolean(user)}
                 onAuthRequired={() => navigate('/auth')}
               />
+              <ShareButton />
               {(isAdmin || (user && night.ownerId === user.id)) && (
                 <Link
                   to={`/admin/nights/${night.id}`}
@@ -323,17 +325,6 @@ function NightDetail({ night }: { night: ComedyNight }) {
           isAdmin={isAdmin}
           onAuthRequired={() => navigate('/auth')}
         />
-
-        <hr className="border-gray-200 dark:border-zinc-800" />
-
-        {/* Share */}
-        <Section title="Share this night">
-          <div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-gray-200 dark:ring-zinc-800 p-4 flex flex-col gap-2">
-            <p className="text-xs text-gray-500 dark:text-zinc-400">Copy this link to share:</p>
-            <code className="text-sm text-amber-700 dark:text-amber-400 break-all">{window.location.href}</code>
-          </div>
-        </Section>
-
 
       </main>
     </div>
