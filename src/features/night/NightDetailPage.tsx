@@ -153,7 +153,7 @@ function NightDetail({ night }: { night: ComedyNight }) {
     path: `/night/${nightSlug(night)}`,
     type: 'article',
     image: night.images?.[0],
-    jsonLd: buildEventJsonLd(night, SITE_URL),
+    jsonLd: buildEventJsonLd(night, SITE_URL) ?? undefined,
   })
 
   return (

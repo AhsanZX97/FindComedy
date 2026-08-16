@@ -86,7 +86,7 @@ function prerenderNights(dist: string, siteUrl: string, nights: ComedyNight[]): 
       path: `/night/${slug}`,
       image: night.images?.[0],
       type: 'article',
-      jsonLd: buildEventJsonLd(night, siteUrl),
+      jsonLd: buildEventJsonLd(night, siteUrl) ?? undefined,
     })
     const head = [
       `    <link rel="canonical" href="${escAttr(canonical)}" />`,
