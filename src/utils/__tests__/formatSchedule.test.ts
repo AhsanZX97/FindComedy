@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatTime, formatScheduleEntry, formatSchedule } from '../formatSchedule'
+import { formatTime, formatScheduleEntry, formatScheduleEntryLong, formatSchedule } from '../formatSchedule'
 import type { ComedyNight, Schedule } from '../../types/comedyNight'
 
 function makeNight(schedules: Partial<Schedule>[] = [{}]): ComedyNight {
@@ -58,6 +58,23 @@ describe('formatScheduleEntry', () => {
 
   it('irregular entry returns only time', () =>
     expect(formatScheduleEntry({ frequency: 'irregular', weekday: 0, startTime: '18:00' })).toBe('6pm'))
+})
+
+describe('formatScheduleEntryLong', () => {
+  it('spells out a weekly entry in full', () =>
+    expect(formatScheduleEntryLong({ frequency: 'weekly', weekday: 1, startTime: '20:00' })).toBe('Every Monday at 8pm'))
+
+  it('spells out a biweekly entry in full', () =>
+    expect(formatScheduleEntryLong({ frequency: 'biweekly', weekday: 4, startTime: '19:30' })).toBe('Every other Thursday at 7:30pm'))
+
+  it('reads monthly entries as "Monthly on"', () =>
+    expect(formatScheduleEntryLong({ frequency: 'monthly', weekday: 5, startTime: '20:30' })).toBe('Monthly on Friday at 8:30pm'))
+
+  it('returns only the time for an irregular entry', () =>
+    expect(formatScheduleEntryLong({ frequency: 'irregular', weekday: 0, startTime: '18:00' })).toBe('6pm'))
+
+  it('omits the time when startTime is missing', () =>
+    expect(formatScheduleEntryLong({ frequency: 'weekly', weekday: 2, startTime: '' })).toBe('Every Tuesday'))
 })
 
 describe('formatSchedule', () => {

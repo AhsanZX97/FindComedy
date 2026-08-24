@@ -31,6 +31,26 @@ export function formatScheduleEntry(s: Schedule): string {
   return `${freq} ${day} · ${time}`.trim()
 }
 
+/** Prose form of the frequency, for long-form copy rather than compact chips. */
+const FREQ_LABELS_LONG: Record<string, string> = {
+  weekly: 'Every',
+  biweekly: 'Every other',
+  monthly: 'Monthly on',
+  irregular: '',
+}
+
+/**
+ * "Every Monday at 8pm" — the spelled-out counterpart to `formatScheduleEntry`,
+ * for prose contexts (prerendered page copy) where abbreviations read badly.
+ */
+export function formatScheduleEntryLong(s: Schedule): string {
+  const time = formatTime(s.startTime)
+  if (s.frequency === 'irregular') return time
+  const day = WEEKDAY_LONG_LABELS[s.weekday]
+  const when = `${FREQ_LABELS_LONG[s.frequency]} ${day}`.trim()
+  return time ? `${when} at ${time}` : when
+}
+
 export function formatSchedule(night: ComedyNight): string {
   if (!night.schedules || night.schedules.length === 0) return ''
   const entries = night.schedules.map(formatScheduleEntry)

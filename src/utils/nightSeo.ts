@@ -1,7 +1,7 @@
 import type { ComedyNight, NightType, Schedule } from '../types/comedyNight'
 import { WEEKDAY_LONG_LABELS, formatTime } from './formatSchedule'
 
-const TYPE_LABELS: Record<NightType, string> = {
+export const TYPE_LABELS: Record<NightType, string> = {
   'open-mic': 'Open Mic',
   showcase: 'Showcase',
   pro: 'Pro Night',
