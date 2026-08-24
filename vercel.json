@@ -30,6 +30,6 @@
     { "source": "/submit", "destination": "/index.html" },
     { "source": "/admin", "destination": "/index.html" },
     { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!_vercel/).*)", "destination": "/index.html" }
   ]
 }
