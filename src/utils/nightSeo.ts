@@ -62,19 +62,19 @@ function schedulePhrase(schedules: Schedule[]): string {
   return `${scheduleEntryPhrase(first)} and ${rest} more nights`
 }
 
-/** "Open mic at Cavendish Arms, Stockwell — every Monday, 8pm." */
+/** "Open mic at Cavendish Arms, Stockwell: every Monday, 8pm." */
 function factSentence(night: ComedyNight): string {
   const area = night.venue.area ? `, ${night.venue.area}` : ''
   const where = `${TYPE_LABELS_PROSE[night.type]} at ${night.venue.name}${area}`
   const when = schedulePhrase(night.schedules ?? [])
-  return when ? `${where} — ${when}.` : `${where}.`
+  return when ? `${where}: ${when}.` : `${where}.`
 }
 
 /** The single fact a comedian checks before turning up. */
 function bringerSentence({ bringer }: ComedyNight): string {
   if (!bringer.required) return 'No bringer required.'
   if (bringer.count === undefined) return 'Bringer night.'
-  return `Bringer — bring ${bringer.count} ${bringer.count === 1 ? 'guest' : 'guests'}.`
+  return `Bringer: bring ${bringer.count} ${bringer.count === 1 ? 'guest' : 'guests'}.`
 }
 
 /**

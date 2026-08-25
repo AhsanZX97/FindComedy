@@ -68,7 +68,7 @@ describe('nightSeo title', () => {
 describe('nightSeo description', () => {
   it('leads with the type, venue and schedule', () => {
     expect(nightSeo(makeNight()).description).toBe(
-      'Open mic at Cavendish Arms, Stockwell — every Monday, 8pm. Bringer night. A bringer open mic for brand-new acts in a cosy Stockwell pub.',
+      'Open mic at Cavendish Arms, Stockwell: every Monday, 8pm. Bringer night. A bringer open mic for brand-new acts in a cosy Stockwell pub.',
     )
   })
 
@@ -90,17 +90,17 @@ describe('nightSeo description', () => {
 
   it('gives the time only for an irregular schedule', () => {
     const night = makeNight({ description: '', schedules: [schedule({ frequency: 'irregular' })] })
-    expect(nightSeo(night).description).toContain('— 8pm.')
+    expect(nightSeo(night).description).toContain(': 8pm.')
   })
 
   it('states the bringer count when one is set', () => {
     const night = makeNight({ description: '', bringer: { required: true, count: 1 } })
-    expect(nightSeo(night).description).toContain('Bringer — bring 1 guest.')
+    expect(nightSeo(night).description).toContain('Bringer: bring 1 guest.')
   })
 
   it('pluralises the bringer count', () => {
     const night = makeNight({ description: '', bringer: { required: true, count: 2 } })
-    expect(nightSeo(night).description).toContain('Bringer — bring 2 guests.')
+    expect(nightSeo(night).description).toContain('Bringer: bring 2 guests.')
   })
 
   it('says so when no bringer is required', () => {
@@ -110,7 +110,7 @@ describe('nightSeo description', () => {
 
   it('still describes the night when it has no prose description', () => {
     const { description } = nightSeo(makeNight({ description: '' }))
-    expect(description).toBe('Open mic at Cavendish Arms, Stockwell — every Monday, 8pm. Bringer night.')
+    expect(description).toBe('Open mic at Cavendish Arms, Stockwell: every Monday, 8pm. Bringer night.')
   })
 
   it('still describes the night when it has no schedules', () => {

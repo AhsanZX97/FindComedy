@@ -59,7 +59,7 @@ export default function MyNightsPage() {
         <NightGrid
           title="Favourites"
           nights={favouriteNights}
-          emptyMessage="No favourites yet — tap ♡ on any night to save it here."
+          emptyMessage="No favourites yet. Tap ♡ on any night to save it here."
         />
       </main>
     </div>

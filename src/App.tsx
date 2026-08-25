@@ -16,6 +16,8 @@ const AdminSubmissionReview = lazy(() => import('./features/admin/AdminSubmissio
 const AdminUsers = lazy(() => import('./features/admin/AdminUsers'))
 const AreaPage = lazy(() => import('./features/area/AreaPage'))
 const AreasIndexPage = lazy(() => import('./features/area/AreasIndexPage'))
+const GuidesIndexPage = lazy(() => import('./features/guides/GuidesIndexPage'))
+const GuidePage = lazy(() => import('./features/guides/GuidePage'))
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="/" element={<BrowsePage />} />
         <Route path="/comedy" element={<AreasIndexPage />} />
         <Route path="/comedy/:areaSlug" element={<AreaPage />} />
+        <Route path="/guides" element={<GuidesIndexPage />} />
+        <Route path="/guides/:slug" element={<GuidePage />} />
         <Route path="/tonight" element={<Navigate to="/" replace />} />
         <Route path="/map" element={<Navigate to="/" replace />} />
         <Route path="/night/:id" element={<NightDetailPage />} />

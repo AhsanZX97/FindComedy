@@ -25,6 +25,8 @@
     { "source": "/night/:slug", "destination": "/night/:slug.html" },
     { "source": "/comedy/:area", "destination": "/comedy/:area.html" },
     { "source": "/comedy", "destination": "/comedy.html" },
+    { "source": "/guides/:slug", "destination": "/guides/:slug.html" },
+    { "source": "/guides", "destination": "/guides.html" },
     { "source": "/submit", "destination": "/submit.html" },
     { "source": "/auth", "destination": "/auth.html" },
     { "source": "/my", "destination": "/index.html" },

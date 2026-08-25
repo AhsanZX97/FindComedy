@@ -133,7 +133,7 @@ function BookingTabs({ night }: { night: ComedyNight }) {
       )}
       {night.bringer.required && (
         <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
-          Bringer required{night.bringer.count ? ` — bring ${night.bringer.count} paying guest${night.bringer.count > 1 ? 's' : ''}` : ''}
+          Bringer required{night.bringer.count ? `, bring ${night.bringer.count} paying guest${night.bringer.count > 1 ? 's' : ''}` : ''}
           {night.bringer.note ? `. ${night.bringer.note}` : ''}
         </p>
       )}

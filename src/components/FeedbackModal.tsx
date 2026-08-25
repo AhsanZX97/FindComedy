@@ -78,7 +78,7 @@ function FeedbackModal({ onClose }: FeedbackModalProps) {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700 dark:text-zinc-300" htmlFor="fb-email">
-                Email <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">(optional — if you'd like a reply)</span>
+                Email <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">(optional, if you'd like a reply)</span>
               </label>
               <input
                 id="fb-email"
@@ -91,7 +91,7 @@ function FeedbackModal({ onClose }: FeedbackModalProps) {
             </div>
 
             {status === 'error' && (
-              <p className="text-xs text-red-500">Something went wrong — please try again.</p>
+              <p className="text-xs text-red-500">Something went wrong. Please try again.</p>
             )}
 
             <button

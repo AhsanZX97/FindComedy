@@ -11,11 +11,16 @@ import { nightSeo, TYPE_LABELS } from './src/utils/nightSeo'
 import { formatScheduleEntryLong, WEEKDAY_LONG_LABELS } from './src/utils/formatSchedule'
 import { buildSeoTags } from './src/utils/seoTags'
 import { buildEventJsonLd } from './src/utils/eventJsonLd'
+import { buildGuideJsonLd } from './src/utils/guideJsonLd'
 import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION } from './src/utils/homeSeo'
-import { buildAreasItemList } from './src/utils/areasJsonLd'
+import { buildAreasItemList, buildBoroughItemList } from './src/utils/areasJsonLd'
+import { describeBoroughScene } from './src/utils/boroughDescription'
 import type { ComedyNight, Level } from './src/types/comedyNight'
+import type { GuideArticle } from './src/types/guide'
 import { slugify } from './src/utils/slug'
 import { normalizeToBorough } from './src/utils/londonBoroughs'
+import { listGuides } from './src/data/guides'
+import { resolveGuideVenues, type ResolvedGuideVenue } from './src/utils/guideVenues'
 
 type Env = Record<string, string>
 
@@ -55,6 +60,7 @@ const isIndexable = (n: ComedyNight): boolean => n.status === 'active'
 const NAV_LINKS: { href: string; label: string }[] = [
   { href: '/', label: 'Browse London comedy nights' },
   { href: '/comedy', label: 'Comedy nights by London borough' },
+  { href: '/guides', label: 'Comedy guides' },
   { href: '/submit', label: 'Submit a comedy night' },
 ]
 
@@ -99,17 +105,29 @@ function pickSiblings(pool: ComedyNight[], night: ComedyNight, count: number): C
 
 // Every URL here must be indexable and canonical to itself, or crawlers report it as a
 // non-canonical page in the sitemap. That rules out /auth (noindex) and non-active nights.
-function writeSitemap(dist: string, siteUrl: string, nights: ComedyNight[], boroughMap: BoroughMap): void {
-  const staticPaths = ['/', '/comedy', '/submit']
+function writeSitemap(
+  dist: string,
+  siteUrl: string,
+  nights: ComedyNight[],
+  boroughMap: BoroughMap,
+  guides: GuideArticle[],
+): void {
+  const staticPaths = ['/', '/comedy', '/guides', '/submit']
   const nightPaths = nights.filter(isIndexable).map((n) => `/night/${nightSlug(n)}`)
   const areaPaths = [...boroughMap.keys()].sort().map((s) => `/comedy/${s}`)
-  const lastmod = new Date().toISOString().slice(0, 10)
-  const body = [...staticPaths, ...nightPaths, ...areaPaths]
-    .map((p) => `  <url><loc>${siteUrl}${p}</loc><lastmod>${lastmod}</lastmod></url>`)
+  const guidePaths = guides.map((g) => `/guides/${g.slug}`)
+  const buildDate = new Date().toISOString().slice(0, 10)
+  // Guide pages carry their own publishedDate as lastmod, since it's real content
+  // freshness rather than a build-time snapshot — everything else has no per-item date.
+  const guideLastmod = new Map(guides.map((g) => [`/guides/${g.slug}`, g.publishedDate]))
+  const body = [...staticPaths, ...nightPaths, ...areaPaths, ...guidePaths]
+    .map((p) => `  <url><loc>${siteUrl}${p}</loc><lastmod>${guideLastmod.get(p) ?? buildDate}</lastmod></url>`)
     .join('\n')
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`
   writeFileSync(resolve(dist, 'sitemap_index.xml'), xml)
-  console.log(`[seo] wrote sitemap with ${staticPaths.length + nightPaths.length + areaPaths.length} urls`)
+  console.log(
+    `[seo] wrote sitemap with ${staticPaths.length + nightPaths.length + areaPaths.length + guidePaths.length} urls`,
+  )
 }
 
 const LEVEL_LABELS: Record<Level, string> = {
@@ -121,10 +139,10 @@ const LEVEL_LABELS: Record<Level, string> = {
 /** The one fact a comedian checks before turning up, spelled out rather than abbreviated. */
 function bringerLine({ bringer }: ComedyNight): string {
   if (!bringer.required) {
-    return 'No bringer required — you can put your name down without bringing an audience member.'
+    return 'No bringer required. You can put your name down without bringing an audience member.'
   }
   const who = bringer.count === undefined ? 'a guest' : `${bringer.count} ${bringer.count === 1 ? 'guest' : 'guests'}`
-  return `Bringer night — acts are asked to bring ${who}.${bringer.note ? ` ${escHtml(bringer.note)}` : ''}`
+  return `Bringer night: acts are asked to bring ${who}.${bringer.note ? ` ${escHtml(bringer.note)}` : ''}`
 }
 
 // The prerendered body is all a non-JS crawler ever sees, so it carries the same facts
@@ -251,7 +269,7 @@ function prerenderAreasIndex(dist: string, siteUrl: string, boroughMap: BoroughM
   const template = readFileSync(resolve(dist, 'index.html'), 'utf8')
   const title = 'Open Mic Comedy Nights in London by Borough | FindComedy'
   // Kept under 155 characters — anything longer is truncated in the SERP snippet.
-  const description = 'Open mic comedy nights, showcases and pro nights in every London borough — Camden, Hackney, Islington, Lambeth and more. Kept fresh by comedians.'
+  const description = 'Open mic comedy nights, showcases and pro nights in every London borough, including Camden, Hackney, Islington and Lambeth. Kept fresh by comedians.'
   const { canonical, metas } = buildSeoTags({ title, description, baseUrl: siteUrl, path: '/comedy', type: 'website' })
   const sorted = [...boroughMap.entries()].sort((a, b) => b[1].nights.length - a[1].nights.length)
   const jsonLd = buildAreasItemList(sorted.map(([slug, { name }]) => ({ name, slug })), siteUrl)
@@ -289,9 +307,11 @@ function prerenderAreaPages(dist: string, siteUrl: string, boroughMap: BoroughMa
     const title = `Open Mic Comedy Nights in ${name}, London | FindComedy`
     const description = `Find open mic comedy, showcases and pro nights in ${name}, London. Every listing kept fresh by comedians and audiences who actually go.`
     const { canonical, metas } = buildSeoTags({ title, description, baseUrl: siteUrl, path: `/comedy/${slug}`, type: 'website' })
+    const jsonLd = buildBoroughItemList(name, slug, nights, siteUrl)
     const head = [
       `    <link rel="canonical" href="${escAttr(canonical)}" />`,
       ...metas.map((m) => `    <meta ${m.attr}="${m.key}" content="${escAttr(m.content)}" />`),
+      `    <script type="application/ld+json">${escJsonLd(jsonLd)}</script>`,
     ].join('\n')
     const listItems = nights
       .map((n) => {
@@ -299,7 +319,7 @@ function prerenderAreaPages(dist: string, siteUrl: string, boroughMap: BoroughMa
         return `<li><a href="/night/${nightSlug(n)}">${escHtml(n.name)}</a> — ${escHtml(n.venue.name)}${day ? ` · ${day}` : ''}</li>`
       })
       .join('')
-    const main = `<h1>Open Mic Comedy Nights in ${escHtml(name)}, London</h1><p>Find open mic comedy, showcases and pro nights in ${escHtml(name)}, London. Every listing kept fresh by comedians and audiences who actually go.</p><ul>${listItems}</ul><p>Running a night in ${escHtml(name)} that isn't listed? <a href="/submit">Add it to FindComedy</a>.</p>`
+    const main = `<h1>Open Mic Comedy Nights in ${escHtml(name)}, London</h1><p>${escHtml(describeBoroughScene(name, nights))}</p><ul>${listItems}</ul><p>Running a night in ${escHtml(name)} that isn't listed? <a href="/submit">Add it to FindComedy</a>.</p>`
     const html = template
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
       .replace(/\s*<meta name="description"[^>]*>/, '')
@@ -307,6 +327,100 @@ function prerenderAreaPages(dist: string, siteUrl: string, boroughMap: BoroughMa
     writeFileSync(resolve(dist, 'comedy', `${slug}.html`), injectBody(html, pageBody(`/comedy/${slug}`, boroughMap, main)))
   }
   console.log(`[seo] prerendered ${boroughMap.size} borough pages`)
+}
+
+function guideVenueMain(v: ResolvedGuideVenue): string {
+  const { night } = v
+  const caveat = v.caveat ? `<p><strong>Check before you go:</strong> ${escHtml(v.caveat)}</p>` : ''
+  const price = v.priceNote ? `<p>${escHtml(v.priceNote)}</p>` : ''
+  const schedule = (night.schedules ?? []).map(formatScheduleEntryLong).join(' · ')
+  return (
+    `<h2>${escHtml(night.name)}</h2>` +
+    price +
+    `<p>${escHtml(schedule)}</p>` +
+    `<p>${escHtml(night.venue.name)}, ${escHtml(night.venue.address)}</p>` +
+    `<p>${escHtml(v.editorialNote)}</p>` +
+    caveat +
+    `<p><a href="/night/${nightSlug(night)}">View on FindComedy</a></p>`
+  )
+}
+
+function formatGuideDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function guideMain(guide: GuideArticle, nights: ComedyNight[]): string {
+  const resolved = resolveGuideVenues(guide.venues, nights)
+  const parts = [
+    `<h1>${escHtml(guide.title)}</h1>`,
+    `<time datetime="${guide.publishedDate}">Published ${escHtml(formatGuideDate(guide.publishedDate))}</time>`,
+    `<p>${escHtml(guide.intro)}</p>`,
+  ]
+  parts.push(...resolved.map(guideVenueMain))
+  if (guide.closingNote) parts.push(`<p>${escHtml(guide.closingNote)}</p>`)
+  parts.push(`<p><a href="/comedy/${guide.areaSlug}">See every comedy night in ${escHtml(guide.city)}</a></p>`)
+  return parts.join('')
+}
+
+function prerenderGuidesIndex(dist: string, siteUrl: string, boroughMap: BoroughMap, guides: GuideArticle[]): void {
+  const template = readFileSync(resolve(dist, 'index.html'), 'utf8')
+  const title = 'Comedy Guides | FindComedy'
+  const description = "City-by-city guides to comedy nights in London, built from FindComedy's own listings."
+  const { canonical, metas } = buildSeoTags({ title, description, baseUrl: siteUrl, path: '/guides', type: 'website' })
+  const head = [
+    `    <link rel="canonical" href="${escAttr(canonical)}" />`,
+    ...metas.map((m) => `    <meta ${m.attr}="${m.key}" content="${escAttr(m.content)}" />`),
+  ].join('\n')
+  const items = guides
+    .map(
+      (g) =>
+        `<li><a href="/guides/${g.slug}">${escHtml(g.title)}</a> — ${escHtml(g.hook)} <time datetime="${g.publishedDate}">${g.publishedDate}</time></li>`,
+    )
+    .join('')
+  const main = `<h1>Comedy Guides</h1><p>${escHtml(description)}</p><ul>${items}</ul>`
+  const html = template
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
+    .replace(/\s*<meta name="description"[^>]*>/, '')
+    .replace('</head>', `${head}\n  </head>`)
+  writeFileSync(resolve(dist, 'guides.html'), injectBody(html, pageBody('/guides', boroughMap, main)))
+  console.log('[seo] prerendered /guides index')
+}
+
+function prerenderGuidePages(
+  dist: string,
+  siteUrl: string,
+  boroughMap: BoroughMap,
+  guides: GuideArticle[],
+  nights: ComedyNight[],
+): void {
+  const template = readFileSync(resolve(dist, 'index.html'), 'utf8')
+  mkdirSync(resolve(dist, 'guides'), { recursive: true })
+  for (const guide of guides) {
+    const resolved = resolveGuideVenues(guide.venues, nights)
+    const { canonical, metas, jsonLd } = buildSeoTags({
+      title: guide.metaTitle,
+      description: guide.metaDescription,
+      baseUrl: siteUrl,
+      path: `/guides/${guide.slug}`,
+      image: resolved[0]?.night.images?.[0] ?? resolved[0]?.image?.url,
+      type: 'article',
+      jsonLd: buildGuideJsonLd(guide, resolved, siteUrl),
+    })
+    const head = [
+      `    <link rel="canonical" href="${escAttr(canonical)}" />`,
+      ...metas.map((m) => `    <meta ${m.attr}="${m.key}" content="${escAttr(m.content)}" />`),
+      `    <script type="application/ld+json">${escJsonLd(jsonLd)}</script>`,
+    ].join('\n')
+    const html = template
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(guide.metaTitle)}</title>`)
+      .replace(/\s*<meta name="description"[^>]*>/, '')
+      .replace('</head>', `${head}\n  </head>`)
+    writeFileSync(
+      resolve(dist, 'guides', `${guide.slug}.html`),
+      injectBody(html, pageBody(`/guides/${guide.slug}`, boroughMap, guideMain(guide, nights))),
+    )
+  }
+  console.log(`[seo] prerendered ${guides.length} guide pages`)
 }
 
 /**
@@ -456,10 +570,13 @@ function seoArtifacts(siteUrl: string, env: Env): Plugin {
       const dist = resolve(process.cwd(), 'dist')
       const nights = await fetchNights(env)
       const boroughMap = buildBoroughMap(nights)
-      writeSitemap(dist, siteUrl, nights, boroughMap)
+      const guides = listGuides()
+      writeSitemap(dist, siteUrl, nights, boroughMap, guides)
       prerenderNights(dist, siteUrl, nights, boroughMap)
       prerenderAreasIndex(dist, siteUrl, boroughMap, nights)
       prerenderAreaPages(dist, siteUrl, boroughMap)
+      prerenderGuidesIndex(dist, siteUrl, boroughMap, guides)
+      prerenderGuidePages(dist, siteUrl, boroughMap, guides, nights)
       prerenderStatic(
         dist,
         siteUrl,

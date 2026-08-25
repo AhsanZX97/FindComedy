@@ -9,7 +9,7 @@ import Header from '../../components/Header'
 
 const TITLE = 'Open Mic Comedy Nights in London by Borough | FindComedy'
 const DESCRIPTION =
-  'Find open mic comedy nights, showcases and pro nights across every London borough — Camden, Hackney, Islington, Lambeth, Southwark and more. Every listing kept fresh by comedians and audiences who actually go.'
+  'Find open mic comedy nights, showcases and pro nights across every London borough, including Camden, Hackney, Islington, Lambeth and Southwark. Every listing kept fresh by comedians and audiences who actually go.'
 
 export default function AreasIndexPage() {
   const nightsState = useNights()

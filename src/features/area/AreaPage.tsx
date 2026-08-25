@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useNights } from '../../hooks/useNights'
-import { useSeo } from '../../hooks/useSeo'
+import { useSeo, SITE_URL } from '../../hooks/useSeo'
 import { slugify, nightSlug } from '../../utils/slug'
 import { normalizeToBorough, LONDON_BOROUGHS } from '../../utils/londonBoroughs'
+import { buildBoroughItemList } from '../../utils/areasJsonLd'
+import { describeBoroughScene } from '../../utils/boroughDescription'
 import NightCard from '../../components/NightCard'
 import Header from '../../components/Header'
 
@@ -44,11 +46,13 @@ export default function AreaPage() {
   }, [nightsState, areaSlug])
 
   const displayArea = borough
+  const sceneDescription = useMemo(() => describeBoroughScene(displayArea, nights), [displayArea, nights])
 
   useSeo({
     title: `Open Mic Comedy Nights in ${displayArea}, London | FindComedy`,
     description: `Find open mic comedy, showcases and pro nights in ${displayArea}, London. Every listing kept fresh by comedians and audiences who actually go.`,
     path: `/comedy/${areaSlug}`,
+    jsonLd: nights.length ? buildBoroughItemList(displayArea, areaSlug, nights, SITE_URL) : undefined,
   })
 
   return (
@@ -62,9 +66,9 @@ export default function AreaPage() {
             Open Mic Comedy Nights in {displayArea}, London
           </h1>
           <p className="text-gray-600 dark:text-zinc-400 leading-relaxed">
-            Looking for comedy nights in {displayArea}? FindComedy lists every open mic, showcase
-            and pro comedy night in {displayArea} — kept up to date by comedians and audiences who
-            actually go.
+            {nightsState.status === 'ready'
+              ? sceneDescription
+              : `Looking for comedy nights in ${displayArea}? FindComedy lists every open mic, showcase and pro comedy night in ${displayArea} — kept up to date by comedians and audiences who actually go.`}
           </p>
           <Link
             to="/"

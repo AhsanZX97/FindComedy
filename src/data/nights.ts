@@ -80,7 +80,7 @@ const nights: ComedyNight[] = [
     id: 'banana-cabaret-balham',
     name: 'Banana Cabaret',
     description:
-      'One of the best weekly club nights in South London. A proper four-act bill with a headliner you\'d pay to see at the Hammersmith. Been running since 1993.',
+      'A proper four-act bill in South London, running weekly since 1993. Booked acts, not open-mic slots.',
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
@@ -158,7 +158,7 @@ const nights: ComedyNight[] = [
     id: '99-club-leicester-sq',
     name: '99 Club Leicester Square',
     description:
-      'Mid-week club night in the heart of the West End. Usually a four-act bill, decent headline slot. Good for spotting acts on the way up.',
+      'Mid-week club night off Leicester Square. Usually a four-act bill, decent headline slot. Good for spotting acts on the way up.',
     type: 'showcase',
     levels: ['experienced', 'pro'],
     bringer: { required: false },
@@ -183,7 +183,7 @@ const nights: ComedyNight[] = [
     id: 'we-are-funny-project-brixton',
     name: 'We Are Funny Project',
     description:
-      'A Monday night open-mic for absolute beginners. Genuinely zero-judgment, zero-bringer. Five minutes, a supportive room, and a cheap pint. The best place to do your first ever gig.',
+      'A Monday night open-mic for absolute beginners. No judgment, no bringer requirement, just five minutes each in a supportive room. Built for a first-ever gig.',
     type: 'open-mic',
     levels: ['new'],
     bringer: { required: false },
@@ -457,7 +457,7 @@ const nights: ComedyNight[] = [
     id: 'smoke-comedy-hackney',
     name: 'Smoke Comedy',
     description:
-      'Monthly showcase from the team behind some of the best mid-size rooms in London. Strong lineups, intimate venue, always over-subscribed.',
+      'Monthly showcase in an intimate venue, run by a team that also books other mid-size rooms in London. Tends to sell out.',
     type: 'showcase',
     levels: ['pro'],
     bringer: { required: false },
@@ -508,7 +508,7 @@ const nights: ComedyNight[] = [
     id: 'amused-moose-soho',
     name: 'Amused Moose Soho',
     description:
-      'Monthly showcase in the heart of Soho from one of London\'s most respected comedy promoters. If you\'re seeing someone here, they\'re the real deal.',
+      'Monthly showcase in Soho from a long-running comedy promoter. Booked acts, not open-mic slots.',
     type: 'showcase',
     levels: ['pro'],
     bringer: { required: false },
