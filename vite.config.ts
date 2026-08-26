@@ -613,11 +613,37 @@ function seoArtifacts(siteUrl: string, env: Env): Plugin {
   }
 }
 
+// Ahrefs Web Analytics: a public `data-key` snippet injected into the <head> when
+// VITE_AHREFS_ANALYTICS_KEY is configured (set in the Vercel project, not committed).
+// Injecting into index.html means every prerendered page — which copies the built
+// index.html as its template — inherits the tag too. No key, no tag: local dev and
+// preview builds without the var stay clean.
+function ahrefsAnalytics(env: Env): Plugin {
+  const key = env.VITE_AHREFS_ANALYTICS_KEY
+  return {
+    name: 'ahrefs-analytics',
+    transformIndexHtml() {
+      if (!key) return []
+      return [
+        {
+          tag: 'script',
+          attrs: {
+            src: 'https://analytics.ahrefs.com/analytics.js',
+            'data-key': key,
+            async: true,
+          },
+          injectTo: 'head',
+        },
+      ]
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const siteUrl = (env.VITE_SITE_URL ?? 'https://www.findcomedy.xyz').replace(/\/$/, '')
   return {
-    plugins: [react(), seoArtifacts(siteUrl, env)],
+    plugins: [react(), ahrefsAnalytics(env), seoArtifacts(siteUrl, env)],
     base: '/',
     test: {
       environment: 'jsdom',
