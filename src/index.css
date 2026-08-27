@@ -11,3 +11,9 @@
     display: none;
   }
 }
+
+/* Fakes a dark basemap on top of OpenStreetMap's light tiles (no API key required,
+   unlike CARTO's dark_all tileset). */
+.map-tiles-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}

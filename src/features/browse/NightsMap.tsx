@@ -204,13 +204,7 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
     if (!selectedNight) setPopupPos(null)
   }, [selectedNight])
 
-  const tileUrl = isDark
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-
-  const tileAttribution = isDark
-    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
   return (
     <div className="isolate h-full w-full relative">
@@ -220,7 +214,12 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
         style={{ height: '100%', width: '100%' }}
         attributionControl={false}
       >
-        <TileLayer url={tileUrl} attribution={tileAttribution} />
+        <TileLayer
+          key={isDark ? 'dark' : 'light'}
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={tileAttribution}
+          className={isDark ? 'map-tiles-dark' : undefined}
+        />
 
         {validNights.map((night) => {
           const isSelected = night.id === selectedId
