@@ -52,10 +52,63 @@ const guides: GuideArticle[] = [
     ],
     closingNote: 'Every comedy night listed in Hackney is on the borough page, not just these three.',
   },
+  {
+    slug: 'cheap-free-open-mics-camden',
+    city: 'Camden',
+    areaSlug: 'camden',
+    title: 'Cheap Comedy and Open Mics in Camden',
+    hook: 'A £6 comedy-and-drink deal, plus Camden open mics with current booking details.',
+    metaTitle: 'Cheap Comedy and Open Mics in Camden, London | FindComedy',
+    metaDescription:
+      'Cheap comedy and open mics in Camden, London, including a £6 comedy-and-drink deal, performer booking details and the current venue information.',
+    publishedDate: '2026-09-01',
+    intro:
+      'Camden has a low-cost midweek stand-up option and several open mics for people who want to watch or book a short set. Prices can change quickly at pub venues, so the listings without a current ticket price are marked clearly.',
+    venues: [
+      {
+        nightId: 'comedy-in-your-eye-the-camden-eye',
+        editorialNote:
+          'The Tuesday new-act and new-material show sits alongside the regular comedy programme. It works for an audience after a midweek show, while performers can use the booking link for the new-material night.',
+        priceNote: '£6 entry and drink deal',
+        image: {
+          url: '/guides/comedy-in-your-eye-camden.jpg',
+          credit: 'Comedy in Your Eye',
+          creditUrl: 'https://www.instagram.com/comedyinyoureye/',
+        },
+      },
+      {
+        nightId: 'funny-fix-163-royal-college-st',
+        editorialNote:
+          'Funny Fix runs a biweekly Monday open mic at the Prince Albert. The bill is a useful option for an audience who wants a local pub night, and performers can ask for a place by direct message.',
+        priceNote: 'Price not currently published',
+        caveat:
+          'The latest public flyer did not state an entry price, so check the Instagram page before travelling or arranging a spot.',
+        image: {
+          url: '/guides/funny-fix-camden.jpg',
+          credit: 'Funny Fix',
+          creditUrl: 'https://www.instagram.com/funnyfix1/',
+        },
+      },
+      {
+        nightId: 'hot-comedy-chalk-farm',
+        editorialNote:
+          'Hot Comedy has a Tuesday new-act slot at Hot Toddy\'s on Camden High Street. It gives newer and experienced acts a place to try material, while audience members can catch a smaller room than the usual weekend circuit.',
+        priceNote: 'Price not currently published',
+        caveat:
+          'The venue promotes several comedy formats during the week, so check the current listing for the Tuesday open mic and its entry price before you go.',
+        image: {
+          url: '/guides/hot-comedy-camden.jpg',
+          credit: "Hot Toddy's - Camden",
+          creditUrl: 'https://www.instagram.com/hottoddyscamden/',
+        },
+      },
+    ],
+    closingNote: 'The Camden borough page has the full list of comedy nights, including other open mics and ticketed shows.',
+  },
 ]
 
 export function listGuides(): GuideArticle[] {
-  return guides
+  return [...guides].sort((a, b) => b.publishedDate.localeCompare(a.publishedDate))
 }
 
 export function getGuideBySlug(slug: string): GuideArticle | undefined {

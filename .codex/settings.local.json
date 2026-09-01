@@ -1,0 +1,64 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_take_screenshot",
+      "Bash(node final.js)",
+      "Bash(sed -n '/^## Ruled out/q;p' \"c:/Users/ahsan/Desktop/Code/React/FindComedy/docs/new-nights-candidates.md\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\ahsan\\Desktop\\Code\\React\\FindComedy\\docs"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "mcp__playwright__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Get-ChildItem -Path '.playwright-mcp' -File -ErrorAction SilentlyContinue | Remove-Item -Force 2>$null; exit 0",
+            "shell": "powershell",
+            "statusMessage": "Cleaning .playwright-mcp/..."
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__playwright__browser_take_screenshot",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Get-ChildItem -Path '.' -Filter '*.png' -ErrorAction SilentlyContinue | Remove-Item -Force; exit 0",
+            "shell": "powershell",
+            "statusMessage": "Cleaning up screenshot PNG..."
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking UI changes"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Get-ChildItem -Path '.playwright-mcp' -File -ErrorAction SilentlyContinue | Remove-Item -Force; Get-ChildItem -Path '.' -Filter '*.png' -ErrorAction SilentlyContinue | Remove-Item -Force; exit 0",
+            "shell": "powershell",
+            "statusMessage": "Cleaning up Playwright artifacts..."
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Impeccable design detector: runs after Edit/Write/MultiEdit on UI files and surfaces findings as system reminders."
+}
