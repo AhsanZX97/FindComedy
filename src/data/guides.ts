@@ -2,6 +2,60 @@ import type { GuideArticle } from '../types/guide'
 
 const guides: GuideArticle[] = [
   {
+    slug: 'free-comedy-open-mics-islington',
+    city: 'Islington',
+    areaSlug: 'islington',
+    title: 'Free Comedy and Open Mics in Islington',
+    hook: 'Three free comedy nights, from a basement in Exmouth Market to a Sunday open mic at North Nineteen.',
+    metaTitle: 'Free Comedy and Open Mics in Islington, London | FindComedy',
+    metaDescription:
+      'Free comedy in Islington at Coin Laundry, the Artillery Arms and North Nineteen, with audience booking advice and open-mic details for performers.',
+    publishedDate: '2026-09-08',
+    intro:
+      'A comedy night in Islington can cost nothing to watch. Slap and Giggle takes over the basement at Coin Laundry, Too Far brings stand-up to the Artillery Arms, and The OM runs a Sunday open mic at North Nineteen. All three offer free entry, with a guest required for performers booking a bringer spot.',
+    venues: [
+      {
+        nightId: 'slap-and-giggle-coin-laundry',
+        editorialNote:
+          'Reserve a free seat or table for stand-up in the basement at Coin Laundry. The bill mixes newer acts with experienced comics, and the audience clap-off gives one act a prize. Performers apply through the sign-up form and bring a guest for an open-mic spot.',
+        priceNote: 'Free (reserve a seat or table)',
+        caveat:
+          'Slap and Giggle runs at several London venues. Choose the Coin Laundry event when booking and check its date before travelling.',
+        image: {
+          url: '/guides/slap-and-giggle-islington.jpg',
+          credit: 'Slap and Giggle',
+          creditUrl: 'https://www.slapandgiggle.com/events',
+        },
+      },
+      {
+        nightId: 'too-far-102-bunhill-row',
+        editorialNote:
+          'A Monday pub show with free entry for the audience. Doors open at 7.15pm, giving you time to settle in before the comedy. Acts book through the monthly form advertised in the Too Far newsletter and bring a guest.',
+        priceNote: 'Free entry',
+        image: {
+          url: '/guides/too-far-islington.jpg',
+          credit: 'Too Far Comedy',
+          creditUrl: 'https://www.instagram.com/toofarcomedy/',
+        },
+      },
+      {
+        nightId: 'the-om-194-sussex-way',
+        editorialNote:
+          'The OM welcomes first-time comics and acts developing longer sets at North Nineteen. It runs on the first and third Sundays of the month, with free entry for anyone watching. Performers apply through the form linked on Instagram and bring a guest.',
+        priceNote: 'Free entry',
+        caveat:
+          'Check the latest Instagram announcement for the start time before setting off, as advertised times differ between listings.',
+        image: {
+          url: '/guides/the-om-islington.jpg',
+          credit: 'The OM',
+          creditUrl: 'https://www.instagram.com/theomcomedyclub/',
+        },
+      },
+    ],
+    closingNote:
+      'The Islington borough page has more comedy nights, including other open mics and options for acts who cannot bring a guest.',
+  },
+  {
     slug: 'best-cheap-comedy-clubs-hackney',
     city: 'Hackney',
     areaSlug: 'hackney',
