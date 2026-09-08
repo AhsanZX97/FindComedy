@@ -12,7 +12,7 @@ import { formatScheduleEntryLong, WEEKDAY_LONG_LABELS } from './src/utils/format
 import { buildSeoTags } from './src/utils/seoTags'
 import { buildEventJsonLd } from './src/utils/eventJsonLd'
 import { buildGuideJsonLd } from './src/utils/guideJsonLd'
-import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION } from './src/utils/homeSeo'
+import { buildHomeJsonLd, HOME_TITLE, HOME_DESCRIPTION, HOME_SEO_SECTIONS } from './src/utils/homeSeo'
 import { buildAreasItemList, buildBoroughItemList } from './src/utils/areasJsonLd'
 import { describeBoroughScene } from './src/utils/boroughDescription'
 import type { ComedyNight, Level } from './src/types/comedyNight'
@@ -21,6 +21,7 @@ import { slugify } from './src/utils/slug'
 import { normalizeToBorough } from './src/utils/londonBoroughs'
 import { listGuides } from './src/data/guides'
 import { resolveGuideVenues, type ResolvedGuideVenue } from './src/utils/guideVenues'
+import { relatedNights } from './src/utils/relatedNights'
 
 type Env = Record<string, string>
 
@@ -91,18 +92,6 @@ function pageBody(current: string, boroughMap: BoroughMap, main: string): string
   return `<main>${main}</main>${staticFooter(current, boroughMap)}`
 }
 
-/**
- * Spreads sibling links evenly across the pool instead of always linking the first
- * few, so no night page ends up with a single incoming internal link.
- */
-function pickSiblings(pool: ComedyNight[], night: ComedyNight, count: number): ComedyNight[] {
-  const others = pool.filter((n) => n.id !== night.id)
-  if (others.length <= count) return others
-  const hash = Math.abs([...night.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7))
-  const start = hash % others.length
-  return Array.from({ length: count }, (_, i) => others[(start + i) % others.length])
-}
-
 // Every URL here must be indexable and canonical to itself, or crawlers report it as a
 // non-canonical page in the sitemap. That rules out /auth (noindex) and non-active nights.
 function writeSitemap(
@@ -148,7 +137,7 @@ function bringerLine({ bringer }: ComedyNight): string {
 // The prerendered body is all a non-JS crawler ever sees, so it carries the same facts
 // the hydrated page shows: what kind of night, when it runs, where it is, who it suits,
 // and links out to sibling nights so no page sits on a single incoming internal link.
-function nightMain(night: ComedyNight, pool: ComedyNight[], borough: string | null, boroughSlug: string | null): string {
+function nightMain(night: ComedyNight, allNights: ComedyNight[], borough: string | null, boroughSlug: string | null): string {
   const area = night.venue.area
   const parts: string[] = [`<h1>${escHtml(night.name)}</h1>`]
 
@@ -180,7 +169,7 @@ function nightMain(night: ComedyNight, pool: ComedyNight[], borough: string | nu
     parts.push(`<p>How to book a spot: ${escHtml(night.howToBook.contact.trim())}</p>`)
   }
 
-  const siblings = pickSiblings(pool, night, 6)
+  const siblings = relatedNights(allNights, night, 6)
   if (siblings.length > 0) {
     const where = borough ? escHtml(borough) : 'London'
     const items = siblings
@@ -210,7 +199,6 @@ function prerenderNights(dist: string, siteUrl: string, nights: ComedyNight[], b
     const slug = nightSlug(night)
     const borough = night.venue.area ? normalizeToBorough(night.venue.area) : null
     const boroughSlug = borough ? slugify(borough) : null
-    const pool = (boroughSlug && boroughMap.get(boroughSlug)?.nights) || active
     const { title, description } = nightSeo(night)
     const { canonical, metas, jsonLd } = buildSeoTags({
       title,
@@ -233,7 +221,7 @@ function prerenderNights(dist: string, siteUrl: string, nights: ComedyNight[], b
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
       .replace(/\s*<meta name="description"[^>]*>/, '')
       .replace('</head>', `${head}\n  </head>`)
-    const main = nightMain(night, pool, borough, boroughSlug)
+    const main = nightMain(night, active, borough, boroughSlug)
     writeFileSync(resolve(dist, 'night', `${slug}.html`), injectBody(html, pageBody(`/night/${slug}`, boroughMap, main)))
   }
   console.log(`[seo] prerendered ${nights.length} night pages (${nights.length - active.length} noindex)`)
@@ -508,7 +496,10 @@ function prerenderHome(dist: string, siteUrl: string, nights: ComedyNight[], bor
       return `<li><a href="/night/${nightSlug(n)}">${escHtml(n.name)}</a> — ${escHtml(n.venue.name)}${n.venue.area ? `, ${escHtml(n.venue.area)}` : ''}${day ? ` · ${day}` : ''}</li>`
     })
     .join('')
-  const main = `<h1>Open Mic Comedy Nights in London</h1><p>${escHtml(HOME_DESCRIPTION)}</p><ul>${items}</ul>`
+  const supportingCopy = HOME_SEO_SECTIONS.map(
+    (section) => `<section><h2>${escHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escHtml(paragraph)}</p>`).join('')}</section>`,
+  ).join('')
+  const main = `<h1>Open Mic Comedy Nights in London</h1><p>${escHtml(HOME_DESCRIPTION)}</p><ul>${items}</ul>${supportingCopy}`
   writeFileSync(resolve(dist, 'index.html'), injectBody(html, pageBody('/', boroughMap, main)))
   console.log('[seo] prerendered homepage head + body')
 }

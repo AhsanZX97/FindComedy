@@ -4,6 +4,7 @@ import { useNights } from '../../hooks/useNights'
 import { filterNights, sortByTime } from '../../utils/filterNights'
 import NightCard from '../../components/NightCard'
 import FilterBar from './FilterBar'
+import HomeSeoContent from './HomeSeoContent'
 import Header from '../../components/Header'
 import NightsMap, { TYPE_COLORS, TYPE_LABELS } from './NightsMap'
 import type { ComedyNight, Weekday } from '../../types/comedyNight'
@@ -246,6 +247,8 @@ export default function BrowsePage() {
                 ))}
               </div>
             )}
+
+            {nightsState.status === 'ready' && <HomeSeoContent />}
           </div>
         </div>
       </div>

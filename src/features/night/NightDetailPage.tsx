@@ -18,6 +18,7 @@ import { normalizeToBorough } from '../../utils/londonBoroughs'
 import { buildEventJsonLd } from '../../utils/eventJsonLd'
 import { nightSeo } from '../../utils/nightSeo'
 import { useSeo, SITE_URL } from '../../hooks/useSeo'
+import RelatedNights from './RelatedNights'
 
 const VenueMiniMap = lazy(() => import('./VenueMiniMap'))
 
@@ -141,7 +142,12 @@ function BookingTabs({ night }: { night: ComedyNight }) {
   )
 }
 
-function NightDetail({ night }: { night: ComedyNight }) {
+interface NightDetailProps {
+  night: ComedyNight
+  nights: readonly ComedyNight[]
+}
+
+function NightDetail({ night, nights }: NightDetailProps) {
   const { user, isAdmin } = useAuth()
   const { isFavourite, toggleFavourite } = useSocial()
   const navigate = useNavigate()
@@ -307,6 +313,8 @@ function NightDetail({ night }: { night: ComedyNight }) {
           </Suspense>
         </Section>
 
+        <RelatedNights night={night} nights={nights} />
+
         {/* Booking */}
         <Section title="How to attend">
           <BookingTabs night={night} />
@@ -356,5 +364,5 @@ export default function NightDetailPage() {
 
   if (!night) return <Navigate to="/" replace />
 
-  return <NightDetail night={night} />
+  return <NightDetail night={night} nights={nightsState.data} />
 }
