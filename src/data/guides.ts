@@ -2,6 +2,59 @@ import type { GuideArticle } from '../types/guide'
 
 const guides: GuideArticle[] = [
   {
+    slug: 'cheap-comedy-open-mics-westminster',
+    city: 'Westminster',
+    areaSlug: 'westminster',
+    title: 'Cheap Comedy and Open Mics in Westminster',
+    hook: 'A free Covent Garden open mic, £5 new material in Fitzrovia and a £12 gong show near Leicester Square.',
+    metaTitle: 'Cheap Comedy and Open Mics in Westminster, London | FindComedy',
+    metaDescription:
+      'Cheap comedy and open mics in Westminster, London, with current prices, schedules and performer booking details for three central London shows.',
+    publishedDate: '2026-09-14',
+    intro:
+      'Westminster has comedy for three different kinds of Monday or Thursday night out. Virtue Comedy is free in Covent Garden, Fool & Co. starts at £5 in Fitzrovia, and King Gong puts new acts in front of a judging crowd at The Comedy Store from £12.',
+    venues: [
+      {
+        nightId: 'virtue-comedy-the-north-star',
+        editorialNote:
+          'A free new-act and new-material night at The Long Acre in Covent Garden. Audience members can watch without buying a ticket, while performers apply through GigGag and bring a guest for their spot.',
+        priceNote: 'Free entry',
+        caveat:
+          'Dates are advertised individually, so check the latest Instagram or GigGag listing before travelling.',
+        image: {
+          url: '/guides/virtue-comedy-westminster.jpg',
+          credit: 'Virtue Comedy',
+          creditUrl: 'https://www.instagram.com/virtuecomedy/',
+        },
+      },
+      {
+        nightId: 'fool-co-60762c83',
+        editorialNote:
+          'Fool & Co. gives new comics a place to learn and experienced acts a room for fresh material. Doors open at 7pm for a 7.30pm start at The Albany. New performers can apply for a bringer five or one of the limited non-bringer spots.',
+        priceNote: 'From £5',
+        image: {
+          url: '/guides/fool-and-co-westminster.jpg',
+          credit: 'Fool & Co.',
+          creditUrl: 'https://www.instagram.com/foolandcomedy/',
+        },
+      },
+      {
+        nightId: 'king-gong',
+        editorialNote:
+          'Thirty new comics try to last five minutes at The Comedy Store while three audience judges decide who gets gonged off. It runs on the last Monday of the month, and performers register by email for a spot.',
+        priceNote: 'From £12',
+        caveat: 'King Gong is strictly 18+, and advance booking is sensible for this ticketed club show.',
+        image: {
+          url: '/guides/king-gong-westminster-square.png',
+          credit: 'The Comedy Store London',
+          creditUrl: 'https://london.thecomedystore.co.uk/event/king-gong',
+        },
+      },
+    ],
+    closingNote:
+      'The Westminster borough page has the full list of comedy nights, including other open mics around Soho and the West End.',
+  },
+  {
     slug: 'free-comedy-open-mics-islington',
     city: 'Islington',
     areaSlug: 'islington',

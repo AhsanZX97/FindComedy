@@ -8,6 +8,7 @@ describe('listGuides', () => {
 
   it('returns guides newest first', () => {
     expect(listGuides().map((guide) => guide.slug)).toEqual([
+      'cheap-comedy-open-mics-westminster',
       'free-comedy-open-mics-islington',
       'cheap-free-open-mics-camden',
       'best-cheap-comedy-clubs-hackney',
@@ -49,5 +50,27 @@ describe('getGuideBySlug', () => {
       expect(venue.image?.creditUrl).toMatch(/^https:\/\//)
     }
     expect(guide?.venues[2].caveat).toMatch(/start time/)
+  })
+
+  it('returns the Westminster guide with three live, priced and self-hosted venues', () => {
+    const guide = getGuideBySlug('cheap-comedy-open-mics-westminster')
+
+    expect(guide?.city).toBe('Westminster')
+    expect(guide?.areaSlug).toBe('westminster')
+    expect(guide?.venues.map((venue) => venue.nightId)).toEqual([
+      'virtue-comedy-the-north-star',
+      'fool-co-60762c83',
+      'king-gong',
+    ])
+    expect(guide?.venues.map((venue) => venue.image?.url)).toEqual([
+      '/guides/virtue-comedy-westminster.jpg',
+      '/guides/fool-and-co-westminster.jpg',
+      '/guides/king-gong-westminster-square.png',
+    ])
+    for (const venue of guide!.venues) {
+      expect(venue.priceNote).toBeTruthy()
+      expect(venue.image?.credit).toBeTruthy()
+      expect(venue.image?.creditUrl).toMatch(/^https:\/\//)
+    }
   })
 })
