@@ -53,7 +53,15 @@ export class BrowsePage extends BasePage {
   }
 
   async visibleNightNames(): Promise<string[]> {
-    return this.page.getByRole('heading', { level: 2 }).allInnerTexts()
+    const nightHeading = this.page.getByRole('heading', { level: 2 })
+    const browseCards = this.page
+      .getByRole('button')
+      .filter({ has: nightHeading, hasText: 'View full night' })
+    const linkedCards = this.page
+      .getByRole('link')
+      .filter({ has: nightHeading, hasText: 'View full night' })
+
+    return browseCards.or(linkedCards).getByRole('heading', { level: 2 }).allInnerTexts()
   }
 
   noMatchesMessage(): Locator {
