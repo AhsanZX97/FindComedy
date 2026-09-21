@@ -227,12 +227,13 @@ export default function NightsMap({ nights, selectedId, onSelect, onDeselect, in
             <CircleMarker
               key={night.id}
               center={[night.venue.location.lat, night.venue.location.lng]}
-              radius={isSelected ? 11 : 7}
+              radius={isSelected ? 12 : 8}
               pathOptions={{
+                className: 'night-map-marker',
                 fillColor: TYPE_COLORS[night.type],
-                fillOpacity: isSelected ? 1 : 0.85,
-                color: isSelected ? '#f59e0b' : (isDark ? '#18181b' : '#ffffff'),
-                weight: isSelected ? 2.5 : 1.5,
+                fillOpacity: 1,
+                color: isSelected ? '#f59e0b' : '#ffffff',
+                weight: isSelected ? 3.5 : 2.5,
               }}
               eventHandlers={{ click: () => onSelect(night.id) }}
             />

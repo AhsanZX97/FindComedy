@@ -17,3 +17,8 @@
 .map-tiles-dark {
   filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
 }
+
+/* A light rim and dark shadow separate venue dots from busy tiles in either theme. */
+.night-map-marker {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.7));
+}
