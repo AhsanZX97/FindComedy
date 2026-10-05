@@ -8,6 +8,7 @@ describe('listGuides', () => {
 
   it('returns guides newest first', () => {
     expect(listGuides().map((guide) => guide.slug)).toEqual([
+      'free-comedy-open-mics-lambeth',
       'cheap-comedy-open-mics-westminster',
       'free-comedy-open-mics-islington',
       'cheap-free-open-mics-camden',

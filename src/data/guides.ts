@@ -2,6 +2,57 @@ import type { GuideArticle } from '../types/guide'
 
 const guides: GuideArticle[] = [
   {
+    slug: 'free-comedy-open-mics-lambeth',
+    city: 'Lambeth',
+    areaSlug: 'lambeth',
+    title: 'Free Comedy and Open Mics in Lambeth',
+    hook: 'Free weekly open mics in Clapham and Stockwell, plus a Streatham Hill basement night where £2 guarantees a seat.',
+    metaTitle: 'Free Comedy and Open Mics in Lambeth, London | FindComedy',
+    metaDescription:
+      'Free comedy and open mics in Lambeth, London: Comedy Bandits in Clapham, Comedy Virgins in Stockwell and Low Stakes in Streatham, with prices and performer booking details.',
+    publishedDate: '2026-10-05',
+    intro:
+      'Stand-up in Lambeth costs nothing on a Monday, Tuesday or Wednesday. Comedy Bandits runs two nights a week above a pub on Clapham High Street, Comedy Virgins does the same in Stockwell, and Low Stakes fills a basement room in Streatham Hill every Wednesday.',
+    venues: [
+      {
+        nightId: 'comedy-bandits',
+        editorialNote:
+          'A free new-material night upstairs at The Railway, two minutes from Clapham High Street station. Expect eight to ten acts in a 90-minute show, with circuit comics testing new jokes alongside newer acts working on their first five minutes. Seats can be reserved online at no cost, and some are held back for a waiting list at the door. Comics get booking details through the Comedy Bandits Facebook group.',
+        priceNote: 'Free entry',
+        image: {
+          url: '/guides/comedy-bandits-lambeth.jpg',
+          credit: 'Comedy Bandits',
+          creditUrl: 'https://www.instagram.com/comedybandits/',
+        },
+      },
+      {
+        nightId: 'comedy-virgins',
+        editorialNote:
+          'A new-act night at The Cavendish Arms where comics get five minutes each and the crowd shouts "buy them a drink!" for the sets they like. The loudest go through to a clap-off for a mini gold plastic trophy. Audience entry is free. Performers book a slot online and must bring at least one friend. Same-day slots cost nothing but are limited, while advance bookings need a £10 drink pre-order.',
+        priceNote: 'Free entry',
+        caveat: 'Some nights add a second show at 9pm, so check the listings on The Cav website for the time that suits you.',
+        image: {
+          url: '/guides/comedy-virgins-lambeth.jpg',
+          credit: 'Comedy Virgins',
+          creditUrl: 'https://www.instagram.com/comedyvirginsshow/',
+        },
+      },
+      {
+        nightId: 'low-stakes-10-streatham-high-rd',
+        editorialNote:
+          'A weekly stand-up night in the basement of The Hamlet on Streatham High Road, with five-minute sets from new and experienced acts. Entry is free at the door, or £2 reserves a seat in a room with limited capacity. Comics looking for a spot can message host Valerio Sarà through the Low Stakes Instagram.',
+        priceNote: 'Free, or £2 to reserve',
+        image: {
+          url: '/guides/low-stakes-lambeth.jpg',
+          credit: 'Low Stakes Comedy',
+          creditUrl: 'https://www.instagram.com/lowstakescomedy/',
+        },
+      },
+    ],
+    closingNote:
+      'The Lambeth borough page has the full list of comedy nights in the area, including more pub shows around Clapham and Waterloo.',
+  },
+  {
     slug: 'cheap-comedy-open-mics-westminster',
     city: 'Westminster',
     areaSlug: 'westminster',
